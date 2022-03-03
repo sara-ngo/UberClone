@@ -23,6 +23,10 @@ On the back-end,
 - add frameworks and packages in `package.json`
 - safely store app secrets in `.env` (nobody can see this but you and people you invite)
 
+To run it locally, first clone the repo
+Navigate to the repo location in your terminal, then type npm start
+If errors show up, probably some packages are missing
+
 # Links
 - Mural: https://app.mural.co/t/cs1602469/m/cs1602469/1644896505136/d6392ae4000c09cd70ecac68205d9b3a54971d31?sender=uff1dd9e0687b384258603617
 - ZenHub: https://app.zenhub.com/workspaces/cs-160-61fb2fead5ba350011b54702/issues/sara-ngo/uberclone/11
