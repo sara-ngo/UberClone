@@ -31,3 +31,4 @@ On the back-end,
 - Github Sara: https://github.com/sara-ngo/UberClone/tree/sara-branch
 - Glitch Edit: https://glitch.com/edit/#!/sjsu-cs-160-uber-clone
 - Glitch View: https://sjsu-cs-160-uber-clone.glitch.me/
+- Glitch Starter App Template: https://glitch.com/edit/#!/starter-react-redux?path=README.md%3A1%3A0
