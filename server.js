@@ -9,7 +9,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 async function listDatabases(client) {
   var databasesList = await client.db().admin().listDatabases();
 
-  console.log("Databases:");
+  console.log("MongoDB Databases:");
   databasesList.databases.forEach((db) => console.log(` - ${db.name}`));
 }
 
@@ -28,22 +28,8 @@ client.connect((err) => {
   }
 
   var dbUberUsers = client.db("UberUsers");
-  //var userInfo = client.getUsers({showCredentials:true});
-  //console.log(userInfo);
-  var collection = client.db("UberUsers").collection("users");
+  var collection = dbUberUsers.collection("users");
   listDatabases(client);
-  //console.log(userInfo2);
-
-  // does user exist
-  /*collection.find({}, function (err, doc) {
-    if (err) throw err;
-    if (doc) {
-      console.log("Found: " + doc._id + ", pass=" + doc.pass);
-    } else {
-      console.log("Not found: ");
-      console.log(doc);
-    }
-  });*/
 });
 
 // http://expressjs.com/en/starter/static-files.html
