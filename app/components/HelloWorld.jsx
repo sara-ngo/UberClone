@@ -3,6 +3,7 @@ const Link = require('react-router-dom').Link
 const UnorderedList = require('./UnorderedList');
 const About = require('./About');
 const VoteContainer = require('../containers/VoteContainer');
+const Map = require('./Map')
 
 const dependenciesArray = [
   'express - middleware for the node server',
@@ -32,7 +33,7 @@ const HelloWorld = function() {
 
       <Link to='/about'>Read about and Rate this app!</Link>
 
-      <p>This is a starter <a href="http://glitch.com">Glitch</a> app for React! 
+      {/* <p>This is a starter <a href="http://glitch.com">Glitch</a> app for React! 
         It uses only a few dependencies to get you started on working with 
         state handling via Redux:</p>
 
@@ -42,7 +43,8 @@ const HelloWorld = function() {
 
       <UnorderedList items={componentsMade} />
       
-      <VoteContainer label="Upvote or downvote this app!"/>
+      <VoteContainer label="Upvote or downvote this app!"/> */}
+      <Map/>
     </div>
   );
 };
