@@ -1,18 +1,16 @@
-Starter React Redux App on Glitch
+Uber Clone
 =================================
 
-This app is a very small scaffold to get you started using Redux with React, and it's a remix of [starter-react-router](https://starter-react-.glitch.me).
+## Technology Stack
 
-This project relates to video 4 of 5 in the [React Starter Kit](https://glitch.com/react-starter-kit) video series.
+MERN = MongoDB, Express, React, Node
 
-[![](https://cdn.glitch.com/7416f09f-3fb8-4d64-a222-f533d74a29fa%2Freact-redux.png?1513175252007)](https://youtu.be/M4bqyGj-rYw)
+## Tutorials used
 
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
+* very small scaffold to get started with React [starter-react-router](https://starter-react-.glitch.me)
 
 Your Project
 ------------
-
-MERN = MongoDB, Express, React, Node
 
 On the front-end,
 - edit files in `app` folder, it contains all the React stuff
