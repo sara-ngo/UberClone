@@ -15,9 +15,14 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        loader: 'jsx-loader',
         exclude: /node_modules/,
         include: path.join(__dirname, 'app'),
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react']
+          }
+        }
       },
     ],
   },
