@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState }  from 'react';
 import mapboxgl from 'mapbox-gl';
-
 import '../styles/Map.css';
-
+import 'mapbox-gl/dist/mapbox-gl.css'; // for zoom and navigation control
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
@@ -40,6 +39,9 @@ const Map = () => {
 
     // Add navigator directions
 
+
+    
+
     map.on('move', () => {
       setLng(map.getCenter().lng.toFixed(4));
       setLat(map.getCenter().lat.toFixed(4));
@@ -52,11 +54,12 @@ const Map = () => {
 
   return (
     <div>
-      <div className='sidebarStyle'>
-        <div>
-          Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+      <div class="sidebar">
+        <div class="heading">
+          <h1>Routes</h1>
         </div>
-      </div>
+        <div id="reports" class="reports"></div>
+    </div>
       <div className='map-container' ref={mapContainerRef} />
     </div>
   );
