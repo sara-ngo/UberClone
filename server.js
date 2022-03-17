@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import User from './models/user.js'
+import path from 'path'
 // Required environment variables- MONGO_URI
 
 dotenv.config()
@@ -37,7 +38,7 @@ app.get('/', (req, res) => {
 })
 
 app.get("/estimate", function (request, response) {
-  response.sendFile(path.resolve(path.dirname('')) + "/app/index.html");
+  response.sendFile(path.resolve(path.dirname('')) + "/frontend/public/estimate.html");
 });
 
 export default app
