@@ -1,35 +1,71 @@
 import React, { useRef, useEffect, useState }  from 'react';
 import mapboxgl from 'mapbox-gl';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '../styles/Map.css';
 import 'mapbox-gl/dist/mapbox-gl.css'; // for zoom and navigation control
+import 'react-map-gl-geocoder/dist/mapbox-gl-geocoder.css'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
 const Map = () => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [lng, setLng] = useState(-121.881073);
-  const [lat, setLat] = useState(37.335186);
+  
+  var [lng, setLng] = useState(-121.881073);
+  var [lat, setLat] = useState(37.335186);
   const [zoom, setZoom] = useState(12);
+  
+  // starting point
   const start = [lng, lat];
+  const geocoder = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken
+  });
 
+  // render the map after the side load
   useEffect(() => {
     if (map.current) return; // initialize map only once
+
+    // let lat = geolocationCoordinatesInstance.latitude;
+    // let lng = geolocationCoordinatesInstance.longitude;
+    // console.log("LAT =" + lat);
+    // console.log("LONG =" + lng);
+    
+    // navigator.geolocation.getCurrentPosition(function(position) {
+    //     console.log("Latitude is :", position.coords.latitude);
+    //     console.log("Longitude is :", position.coords.longitude);
+    // });
+
+
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v11',
+      //starting point is center of the map
       center: [lng, lat],
       zoom: zoom
     });
+
     map.current.on('move', () => {
       setLng(map.current.getCenter().lng.toFixed(4));
       setLat(map.current.getCenter().lat.toFixed(4));
       setZoom(map.current.getZoom().toFixed(2));
     });
-    route();
 
+    addGeoCoder();
+    route();
+    zoomControl();
   }, [map.current]);
 
+  const zoomControl = () => {
+    map.current.addControl(
+      new mapboxgl.NavigationControl(), "top-left"
+    );
+  }
+
+  const addGeoCoder = () => {
+    map.current.addControl(geocoder);
+  }
+
+  // get real time location
   const locate = () => {
     map.current.addControl(
       new mapboxgl.GeolocateControl({
@@ -55,7 +91,7 @@ const Map = () => {
       // make an initial directions request that
       // starts and ends at the same location
       // getRoute(start);
-
+        
       // Add starting point to the map
       map.current.addLayer({
         id: 'point',
@@ -130,9 +166,10 @@ const Map = () => {
     });
   }
 
+
   async function getRoute(end) {
     const query = await fetch(
-      `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
       { method: 'GET' }
     );
     const json = await query.json();

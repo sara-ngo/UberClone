@@ -8,7 +8,6 @@ function Rider() {
         <p>Rider - from Rider.js</p>
         <Map/>
     </div>
-
   );
 }
 
