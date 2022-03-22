@@ -36,8 +36,4 @@ app.get('/', (req, res) => {
   })
 })
 
-app.get("/estimate", function (request, response) {
-  response.sendFile(path.resolve(path.dirname('')) + "/app/index.html");
-});
-
 export default app
