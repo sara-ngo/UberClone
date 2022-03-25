@@ -20,9 +20,15 @@ const Map = () => {
   
   // starting point
   const start = [lng, lat];
+
+  // search address box + marker 
   const geocoder = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken
-  });
+    accessToken: mapboxgl.accessToken,
+    marker: {
+    color: 'orange'
+    },
+    mapboxgl: mapboxgl
+    });
 
   // render the map after the side load
   useEffect(() => {
