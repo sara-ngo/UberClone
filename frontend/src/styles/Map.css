@@ -1,0 +1,100 @@
+.map-container {
+  position: absolute;
+  left: 20%;
+  top: 0;
+  bottom: 0;
+  width: 500px;
+  height: 500px;
+
+}
+
+.sidebar {
+  position: absolute;
+  width: 20%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  border-right: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+h1 {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 400;
+}
+
+a {
+  color: #404040;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #101010;
+}
+
+.heading {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  min-height: 60px;
+  line-height: 60px;
+  padding: 0 10px;
+}
+
+.reports {
+  height: 100%;
+  overflow: auto;
+  padding-bottom: 60px;
+}
+
+.reports .item {
+  display: block;
+  border-bottom: 1px solid #eee;
+  padding: 10px;
+  text-decoration: none;
+}
+
+.reports .item:last-child {
+  border-bottom: none;
+}
+
+.reports .item .title {
+  display: block;
+  color: #00853e;
+  font-weight: 700;
+}
+
+.reports .item .warning {
+  display: block;
+  color: red;
+  font-weight: 700;
+}
+
+.reports .item .title small {
+  font-weight: 400;
+}
+
+.reports .item.active .title,
+.reports .item .title:hover {
+  color: #8cc63f;
+}
+
+.reports .item.active {
+  background-color: #f8f8f8;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+  border-left: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00853e;
+  border-radius: 0;
+}
