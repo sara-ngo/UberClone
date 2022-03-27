@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState }  from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
@@ -6,49 +6,51 @@ import '../../styles/Map.css';
 import 'mapbox-gl/dist/mapbox-gl.css'; // for zoom and navigation control
 import 'react-map-gl-geocoder/dist/mapbox-gl-geocoder.css'
 
-import getRoute from './Navigation';
+import {MapNavigation, getRoute} from './Navigation';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
 const Map = () => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  
+
   var [lng, setLng] = useState(-121.881073);
   var [lat, setLat] = useState(37.335186);
   const [zoom, setZoom] = useState(12);
-  
+
   // starting point
   const start = [lng, lat];
 
-  // search address box + marker 
+  // search address box + marker
   const geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     marker: {
-    color: 'orange'
+      color: 'orange'
     },
     mapboxgl: mapboxgl
-    });
+  });
 
   // render the map after the side load
   useEffect(() => {
-    if (map.current) return; // initialize map only once
+    if (map.current)
+      return; // initialize map only once
 
     // let lat = geolocationCoordinatesInstance.latitude;
     // let lng = geolocationCoordinatesInstance.longitude;
     // console.log("LAT =" + lat);
     // console.log("LONG =" + lng);
-    
+
     // navigator.geolocation.getCurrentPosition(function(position) {
     //     console.log("Latitude is :", position.coords.latitude);
     //     console.log("Longitude is :", position.coords.longitude);
     // });
 
     map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
+      container: mapContainer.current, style: 'mapbox://styles/mapbox/streets-v11',
       //starting point is center of the map
-      center: [lng, lat],
+      center: [
+        lng, lat
+      ],
       zoom: zoom
     });
 
@@ -65,9 +67,7 @@ const Map = () => {
   }, [map.current]);
 
   const zoomControl = () => {
-    map.current.addControl(
-      new mapboxgl.NavigationControl(), "top-left"
-    );
+    map.current.addControl(new mapboxgl.NavigationControl(), "top-left");
   }
 
   const addGeoCoder = () => {
@@ -76,22 +76,20 @@ const Map = () => {
 
   // get real time location
   const geolocate = () => {
-    map.current.addControl(
-      new mapboxgl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true,
-        },
-        // When active the map will receive updates to the device's location as it changes.
-        trackUserLocation: true,
-        style: {
-          right: 10,
-          top: 10
-        },
-        position: 'bottom-left',
-        // Draw an arrow next to the location dot to indicate which direction the device is heading.
-        showUserHeading: true
-      })
-    );
+    map.current.addControl(new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      // When active the map will receive updates to the device's location as it changes.
+      trackUserLocation: true,
+      style: {
+        right: 10,
+        top: 10
+      },
+      position: 'bottom-left',
+      // Draw an arrow next to the location dot to indicate which direction the device is heading.
+      showUserHeading: true
+    }));
   }
 
   const route = () => {
@@ -103,7 +101,7 @@ const Map = () => {
       // make an initial directions request that
       // starts and ends at the same location
       // getRoute(start);
- 
+
       // Add starting point to the map
       map.current.addLayer({
         id: 'point',
@@ -178,17 +176,13 @@ const Map = () => {
     });
   }
 
-
-  return (
-    <>
-      <div ref={mapContainer} className="map-container" />
-      <div id="instructions" className="instructions"></div>
-    </>
-  );
+  return (< > <div ref = {
+    mapContainer
+  }
+  className = "map-container" / > < / > );
 };
 
 export default Map;
-
 
 //TODO:
 //show marker when locate an address
