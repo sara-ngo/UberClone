@@ -3,11 +3,10 @@
   left: 20%;
   top: 0;
   bottom: 0;
-  width: 85%;
-  height: 1000px;
+  width: 500px;
+  height: 500px;
 
 }
-
 
 .sidebar {
   position: absolute;
