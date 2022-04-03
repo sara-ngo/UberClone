@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState }  from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
@@ -7,6 +7,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'; // for zoom and navigation control
 import 'react-map-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import calculateRoute from './costEstimation';
 import getRoute from './Navigation';
+
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 mapboxgl.accessToken = ACCESS_TOKEN;
@@ -20,7 +21,8 @@ const Map = (props) => {
   
   var start = [lng,lat];
 
-  // search address box + marker 
+
+  // search address box + marker
   const geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     marker: {
@@ -32,11 +34,10 @@ const Map = (props) => {
     map.current.addControl(geocoder);
   }
 
+
   // zoom controller
   const zoomControl = () => {
-    map.current.addControl(
-      new mapboxgl.NavigationControl(), "top-left"
-    );
+    map.current.addControl(new mapboxgl.NavigationControl(), "top-left");
   }
 
   // get user's real time location
@@ -70,7 +71,7 @@ const Map = (props) => {
       // make an initial directions request that
       // starts and ends at the same location
       // getRoute(start);
- 
+
       // Add starting point to the map
       map.current.addLayer({
         id: 'point',
@@ -205,10 +206,9 @@ const Map = (props) => {
     </div>
     </>
   );
-};
+}
 
 export default Map;
-
 
 //TODO:
 //identify start point and endpoint
