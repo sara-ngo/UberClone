@@ -6,7 +6,7 @@ function Rider() {
   return (
     <div>
         <p>Rider - from Rider.js</p>
-        <Map/>
+        <Map text='rider'/>
     </div>
   );
 }

@@ -6,11 +6,12 @@ import '../../styles/Map.css';
 import 'mapbox-gl/dist/mapbox-gl.css'; // for zoom and navigation control
 import 'react-map-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import calculateRoute from './costEstimation';
+import getRoute from './Navigation';
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 mapboxgl.accessToken = ACCESS_TOKEN;
 
-const Map = () => {
+const Map = (props) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [lng, setLng] = useState(-121.881073);
@@ -140,6 +141,7 @@ const Map = () => {
           });
         }
         calculateRoute(coords, start, map);
+        getRoute(coords, start, map);
       });
     });
   }
@@ -177,13 +179,30 @@ const Map = () => {
       addGeolocate(); //get current location
       route(); // generate route
       calculateRoute();
+      getRoute();
     });
 
     
   return (
     <>
       <div ref={mapContainer} className="map-container" />
-      <div id="costEst" className="costEst"></div>
+      <div>
+      {(() => {
+        if (props.text==='rider') {
+          return (
+            <div id="costEst" className="costEst"></div>
+          )
+        } else if (props.text==='driver') {
+          return (
+            <div id="instructions" className="instructions"></div>
+          )
+        } else {
+          return (
+            <div>catch all</div>
+          )
+        }
+      })()}
+    </div>
     </>
   );
 };

@@ -6,7 +6,7 @@ function Driver() {
   return (
     <div>
         <p>Driver - from Driver.js</p>
-        <Map/>
+        <Map text='driver'/>
     </div>
   );
 }
