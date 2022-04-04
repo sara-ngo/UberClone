@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "../styles/Navbar.css";
+import React from "react"
+import { Link } from "react-router-dom"
+import "../../styles/Navbar.css"
 
 // https://getbootstrap.com/docs/4.0/components/navbar/
 function Navbar() {

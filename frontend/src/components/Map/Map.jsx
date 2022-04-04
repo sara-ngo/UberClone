@@ -21,7 +21,6 @@ const Map = (props) => {
   
   var start = [lng,lat];
 
-
   // search address box + marker
   const geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
@@ -39,6 +38,7 @@ const Map = (props) => {
   const zoomControl = () => {
     map.current.addControl(new mapboxgl.NavigationControl(), "top-left");
   }
+
 
   // get user's real time location
   const geolocate = new mapboxgl.GeolocateControl({
@@ -58,12 +58,15 @@ const Map = (props) => {
     map.current.addControl(geolocate, "top-right");
   }
 
+
+
   useEffect(() => {
     geolocate.on('geolocate', function(position) {
       console.log('geolocateeee');
       console.log(position.coords.latitude);
     });
   });
+  
   
   // get direction
   const route = () => {

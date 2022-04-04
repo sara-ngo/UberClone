@@ -1,7 +1,7 @@
 import React from 'react'
 import '../styles/App.css'
 import Map from '../components/Map/Map'
-import Navbar from '../components/Navbar';
+import Navbar from '../components/Navbar/Navbar'
 
 function Driver() {
   return (
