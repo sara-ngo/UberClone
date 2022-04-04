@@ -59,13 +59,6 @@ async function getRoute(end, start, map) {
     </div>`;
 }
 
-function MapNavigation(props) {
-  return <> < div name = "instructions"
-  className = "instructions" > < /div>
-</ >;
-}
+export default getRoute;
 
-export {
-  MapNavigation,
-  getRoute
-};
+

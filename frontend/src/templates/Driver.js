@@ -6,7 +6,6 @@ import Navbar from '../components/Navbar';
 function Driver() {
   return (
     <div>
-        <p>Driver - from Driver.js</p>
         <Navbar />
         <Map text='driver'/>
     </div>
