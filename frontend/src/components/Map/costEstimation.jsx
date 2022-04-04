@@ -42,17 +42,13 @@ async function calculateRoute(end, start, map) {
         }
       });
     }
+
     // get the sidebar and add the instructions
     const costEst = document.getElementById('costEst');
-    const steps = data.legs[0].steps;
 
-    let tripInstructions = '';
     var tripDuration = Math.floor(data.duration / 60);
     var baseFare = tripDuration * BASE_FEE;
 
-    for (const step of steps) {
-      tripInstructions += `<li>${step.maneuver.instruction}</li>`;
-    }
 
     costEst.innerHTML = 
     `<div>
