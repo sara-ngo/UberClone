@@ -1,62 +1,23 @@
 {
-  "//1": "describes your app and its dependencies",
-  "//2": "https://docs.npmjs.com/files/package.json",
-  "//3": "updating this file will download and update your packages",
-  "name": "sjsu-cs-160-uber-clone",
-  "version": "0.0.1",
-  "description": "A starter app for using Redux to manage state in React",
-  "main": "server.js",
+  "name": "newproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "build": "webpack",
-    "start": "webpack && node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "jsx-loader": "^0.13.2",
-    "npm-run-all": "^4.1.5",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "5.0.0",
-    "react-redux": "^7.2.6",
-    "react-router-dom": "^5.0.0",
-    "redux": "^4.0.1",
-    "webpack": "^5.70.0",
-    "webpack-cli": "^4.9.2",
-    "mongodb": "^4.4.1",
-    "mapbox-gl" : "2.7.0",
-    "@babel/core": "7.17.5",
-    "babel-loader": "8.2.3",
-    "@babel/preset-env": "7.16.11",
-    "@babel/preset-react": "7.16.7"
-  },
-  "engines": {
-    "node": "16.12.0"
-  },
-  "repository": {
-    "url": "https://glitch.com/edit/#!/sjsu-cs-160-uber-clone"
-  },
-  "license": "MIT",
-  "keywords": [
-    "node",
-    "glitch",
-    "express"
-  ],
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "joi": "^17.6.0",
+    "joi-password-complexity": "^5.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.5"
   }
 }
