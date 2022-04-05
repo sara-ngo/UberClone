@@ -197,9 +197,9 @@ const Map = (props) => {
         //   <div id="costEst" className="costEst"></div>
         //)
         } else if (props.text==='driver') {
-          return (
-            <div id="instructions" className="instructions"></div>
-          )
+          //return (
+          //  <div id="instructions" className="instructions"></div>
+          //)
         } else {
           return (
             <div>catch all</div>

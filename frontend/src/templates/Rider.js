@@ -1,7 +1,7 @@
 import React from 'react'
 import '../styles/App.css'
 import Map from '../components/Map/Map'
-import costEstimation from '../components/Map/costEstimation'
+import CostEstimation from '../components/Map/CostEstimation'
 import Navbar from '../components/Navbar/Navbar'
 
 import '../styles/matthewjamestaylor/column-styles.css'
@@ -15,14 +15,13 @@ function Rider() {
     <>
     <Navbar />
     <r-c join>
-        <main data-md2-3 class="main-content">
+        <main data-md2-3 class="main-content no-padding">
             <Map text='rider'/>
         </main>
         <aside data-md1-3 data-md1 class="left-sidebar">
             <h2>Left Sidebar</h2>
             <p>You can put side navigation here or aside content.</p>
-             <costEstimation />
-            <div id="costEst" className="costEst"></div>
+            <CostEstimation />
         </aside>
     </r-c>
     <footer data-r-c data-join class="footer">

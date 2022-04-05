@@ -1,7 +1,7 @@
-const costEstimation= (props) => {
+function CostEstimation(){
   return (
-    <div id="costEst" className="costEst">test</div>
+    <div id="costEst" className="costEst"></div>
   )
 }
 
-export default costEstimation;
+export default CostEstimation;
