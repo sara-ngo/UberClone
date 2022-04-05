@@ -5,7 +5,7 @@ import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '../../styles/Map.css';
 import 'mapbox-gl/dist/mapbox-gl.css'; // for zoom and navigation control
 import 'react-map-gl-geocoder/dist/mapbox-gl-geocoder.css'
-import calculateRoute from './costEstimation';
+import calculateRoute from './calculateRoute';
 import getRoute from './Navigation';
 
 
@@ -18,7 +18,7 @@ const Map = (props) => {
   const [lng, setLng] = useState(-121.881073);
   const [lat, setLat] = useState(37.335186);
   const [zoom, setZoom] = useState(12);
-  
+
   var start = [lng,lat];
 
   // search address box + marker
@@ -66,8 +66,8 @@ const Map = (props) => {
       console.log(position.coords.latitude);
     });
   });
-  
-  
+
+
   // get direction
   const route = () => {
     map.current.on('load', () => {
@@ -153,17 +153,17 @@ const Map = (props) => {
     // render the map after the side load
     useEffect(() => {
       if (map.current) return; // initialize map only once
-  
+
       // let lat = geolocationCoordinatesInstance.latitude;
       // let lng = geolocationCoordinatesInstance.longitude;
       // console.log("LAT =" + lat);
       // console.log("LONG =" + lng);
-      
+
       // navigator.geolocation.getCurrentPosition(function(position) {
       //     console.log("Latitude is :", position.coords.latitude);
       //     console.log("Longitude is :", position.coords.longitude);
       // });
-  
+
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v11',
@@ -171,7 +171,7 @@ const Map = (props) => {
         center: [lng, lat],
         zoom: zoom
       });
-      
+
       map.current.on('move', () => {
         setLng(map.current.getCenter().lng.toFixed(4));
         setLat(map.current.getCenter().lat.toFixed(4));
@@ -186,16 +186,16 @@ const Map = (props) => {
       getRoute();
     });
 
-    
+
   return (
     <>
       <div ref={mapContainer} className="map-container" />
       <div>
       {(() => {
         if (props.text==='rider') {
-          return (
-            <div id="costEst" className="costEst"></div>
-          )
+        //return (
+        //   <div id="costEst" className="costEst"></div>
+        //)
         } else if (props.text==='driver') {
           return (
             <div id="instructions" className="instructions"></div>
