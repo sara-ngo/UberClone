@@ -15,8 +15,8 @@ mapboxgl.accessToken = ACCESS_TOKEN;
 const Map = (props) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [lng, setLng] = useState(-121.881073);
-  const [lat, setLat] = useState(37.335186);
+  const [lng, setLng] = useState(-122.405818);
+  const [lat, setLat] = useState(37.802374);
   const [zoom, setZoom] = useState(12);
   
   var start = [lng,lat];
@@ -63,10 +63,14 @@ const Map = (props) => {
   useEffect(() => {
     geolocate.on('geolocate', function(position) {
       console.log('geolocateeee');
-      console.log(position.coords.latitude);
+      console.log(position);
+
+      setLng(position.coords.longitude);
+      setLat(position.coords.latitude);
     });
   });
   
+  console.log(lng,lat);
   
   // get direction
   const route = () => {
