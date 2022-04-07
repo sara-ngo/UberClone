@@ -4,3 +4,7 @@
     padding: 0;
     font-family: 'Source Sans Pro', sans-serif;
 }
+
+.no-padding {
+  padding: 0 !important;
+}
