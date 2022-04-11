@@ -3,6 +3,7 @@ import '../styles/App.css'
 import Map from '../components/Map/Map'
 import CostEstimation from '../components/Map/CostEstimation'
 import Navbar from '../components/Navbar/Navbar'
+import Chat from '../components/Chat/Chat'
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
@@ -24,6 +25,7 @@ function Rider() {
             <CostEstimation />
         </aside>
     </r-c>
+    <Chat />
     <footer data-r-c data-join class="footer">
         <c1-1>
             <ul class="menu-links">
