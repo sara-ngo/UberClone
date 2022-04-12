@@ -2,12 +2,15 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
+import { createServer } from "http";
+import { Server } from "socket.io";
 import User from './models/user.js'
 import MapServer from './models/mapServer.js'
 import http from 'http'
 import {
   Server
 } from 'socket.io'
+
 // Required environment variables- MONGO_URI
 
 dotenv.config()
@@ -69,11 +72,18 @@ const listener = app.listen(process.env.PORT || 5000, function() {
   console.log("Node is running at http://localhost:" + listener.address().port)
 })
 
+
 // get something from database
 app.get('/', (req, res) => {
   User.User.find({}, (err, data) => {
     res.send(data)
   })
 })
+
+// listen for requests :)
+const listener = httpServer.listen(process.env.PORT || 5000, function () {
+  console.log("Node is running at http://localhost:" + listener.address().port)
+})
+
 
 export default app
