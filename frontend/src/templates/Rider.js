@@ -1,6 +1,7 @@
 import React from 'react'
 import '../styles/App.css'
 import Map from '../components/Map/Map'
+import Chat from '../components/Chat/Chat'
 import CostEstimation from '../components/Map/CostEstimation'
 import Navbar from '../components/Navbar/Navbar'
 
@@ -19,8 +20,7 @@ function Rider() {
             <Map text='rider'/>
         </main>
         <aside data-md1-3 data-md1 class="left-sidebar">
-            <h2>Left Sidebar</h2>
-            <p>You can put side navigation here or aside content.</p>
+            <Chat />
             <CostEstimation />
         </aside>
     </r-c>
