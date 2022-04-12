@@ -1,4 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
+import http from 'http'
+import {
+  Server
+} from 'socket.io'
 
 const messages = new Set();
 const users = new Map();
@@ -56,10 +60,33 @@ class Connection {
   }
 }
 
-function chat(io) {
+function ChatServer(app) {
+  // socket.io
+  const httpServer = http.createServer(app);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  });
+
+  //Whenever someone connects this gets executed
+  io.on('connection', function(socket) {
+     console.log('A user connected');
+
+     //Whenever someone disconnects this piece of code executed
+     socket.on('disconnect', function () {
+        console.log('A user disconnected');
+     });
+  });
+
   io.on('connection', (socket) => {
     new Connection(io, socket);
   });
+
+  httpServer.listen(4000, function() {
+    console.log('Socket server listening at http://localhost:4000')
+  })
 };
 
-export default chat;
+export default ChatServer;

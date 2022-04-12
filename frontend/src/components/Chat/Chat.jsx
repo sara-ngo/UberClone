@@ -9,7 +9,7 @@ function Chat() {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io(`http://${window.location.hostname}:5000`);
+    const newSocket = io(`http://${window.location.hostname}:4000`);
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);
