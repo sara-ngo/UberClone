@@ -4,6 +4,7 @@ import Map from '../components/Map/Map'
 import Chat from '../components/Chat/Chat'
 import MapInstructions from '../components/Map/MapInstructions'
 import Navbar from '../components/Navbar/Navbar'
+import Chat from '../components/Chat/Chat'
 
 function Driver() {
   return (
