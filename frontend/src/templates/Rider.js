@@ -4,6 +4,7 @@ import Map from '../components/Map/Map'
 import Chat from '../components/Chat/Chat'
 import CostEstimation from '../components/Map/CostEstimation'
 import Navbar from '../components/Navbar/Navbar'
+import Chat from '../components/Chat/Chat'
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
