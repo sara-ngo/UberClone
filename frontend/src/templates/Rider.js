@@ -20,12 +20,10 @@ function Rider() {
             <Map text='rider'/>
         </main>
         <aside data-md1-3 data-md1 class="left-sidebar">
-            <h2>Left Sidebar</h2>
-            <p>You can put side navigation here or aside content.</p>
+            <Chat />
             <CostEstimation />
         </aside>
     </r-c>
-    <Chat />
     <footer data-r-c data-join class="footer">
         <c1-1>
             <ul class="menu-links">

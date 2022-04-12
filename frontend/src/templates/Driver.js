@@ -3,6 +3,7 @@ import '../styles/App.css'
 import Map from '../components/Map/Map'
 import MapInstructions from '../components/Map/MapInstructions'
 import Navbar from '../components/Navbar/Navbar'
+import Chat from '../components/Chat/Chat'
 
 function Driver() {
   return (
@@ -13,8 +14,7 @@ function Driver() {
             <Map text='driver'/>
         </main>
         <aside data-md1-3 data-md1 class="left-sidebar">
-            <h2>Left Sidebar</h2>
-            <p>You can put side navigation here or aside content.</p>
+            <Chat />
             <MapInstructions />
         </aside>
     </r-c>
