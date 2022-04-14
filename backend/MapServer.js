@@ -13,7 +13,7 @@ function MapServer(app) {
   })
 
   io.on('connection', socket => {
-    console.log(`User Connected: ${socket.id}`)
+    console.log(`Position User Connected: ${socket.id}`)
 
     socket.on('request_target', () => {
       io.allSockets().then((result) => {
@@ -27,14 +27,14 @@ function MapServer(app) {
       })
     })
 
-    socket.on('send_pm', (data) => {
+    socket.on('send', (data) => {
       console.log(data)
-      socket.to(data.target).emit('receive_pm', data)
+      io.sockets.emit('receive', data)
     })
   })
 
   httpServer.listen(4001, function() {
-    console.log('Socket server listening at http://localhost:4001')
+    console.log('Position Socket server listening at http://localhost:4001')
   })
 }
 

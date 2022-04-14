@@ -1,45 +1,21 @@
-import { useEffect, useState } from 'react'
-import { socket } from './Socket'
+import {
+  socket
+} from './Socket'
+import SharePositionEmitter from './emitter';
 
-function Chat(long, lat, type) {
+function SharePosition() {
+  SharePositionEmitter.on("send", (data) => {
+    data.senderId = socket.id;
+    console.log("Send position data to server:");
+    console.log(data);
+    socket.emit('send', data);
+  });
 
-  const [currentMessage, setCurrentMessage] = useState('')
-  const [target, setTarget] = useState('')
-  const [messageList, setMessageList] = useState([])
+  socket.emit('request_target')
 
-  const sendMessage = () => {
-    if (currentMessage != '') {
-      const messageData = {
-        target: target,
-        author: socket.id,
-        message: currentMessage,
-      }
-      socket.emit('send_pm', messageData)
-      setMessageList((list) => [...list, messageData])
-      setCurrentMessage('')
-    }
-  }
-
-  useEffect(() => {
-    socket.emit('request_target')
-  }, [])
-
-  useEffect(() => {
-    socket.on('receive_pm', (data) => {
-      setTarget(data.author)
-      setMessageList((list) => [...list, data])
-    })
-    socket.on('receive_target', (data) => {
-      //console.log('target received:',data)
-      setTarget(data)
-    })
-    return () => {
-      socket.off('receive_pm')
-      socket.off('receive_target')
-    }
-  }, [socket])
-
-  //return ()
+  socket.on('receive', (data) => {
+    SharePositionEmitter.emit("data", data);
+  })
 }
 
-export default Chat;
+export default SharePosition;

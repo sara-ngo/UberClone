@@ -1,4 +1,8 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useState
+} from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
@@ -8,6 +12,7 @@ import 'react-map-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import calculateRoute from './calculateRoute';
 import getRoute from './Navigation';
 import SharePosition from '../SharePosition/SharePosition';
+import SharePositionEmitter from '../SharePosition/emitter';
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 mapboxgl.accessToken = ACCESS_TOKEN;
@@ -58,15 +63,14 @@ const Map = (props) => {
 
   useEffect(() => {
     geolocate.on('geolocate', function(position) {
-      console.log("geolocate, " + position.coords.longitude + ", " + position.coords.latitude);
-      console.log(position);
-      SharePosition(position.coords.longitude, position.coords.latitude, "rider");
-
-      SharePosition("geolocate, " + position.coords.longitude + ", " + position.coords.latitude);
-
       setLng(position.coords.longitude);
       setLat(position.coords.latitude);
       start = [position.coords.longitude, position.coords.latitude];
+      SharePositionEmitter.emit('send', {
+        "long": position.coords.longitude,
+        "lat": position.coords.latitude,
+        "type": "rider"
+      });
     });
   });
 
@@ -85,16 +89,14 @@ const Map = (props) => {
           type: 'geojson',
           data: {
             type: 'FeatureCollection',
-            features: [
-              {
-                type: 'Feature',
-                properties: {},
-                geometry: {
-                  type: 'Point',
-                  coordinates: start
-                }
+            features: [{
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Point',
+                coordinates: start
               }
-            ]
+            }]
           }
         },
         paint: {
@@ -107,16 +109,14 @@ const Map = (props) => {
         const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
         const end = {
           type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: coords
-              }
+          features: [{
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Point',
+              coordinates: coords
             }
-          ]
+          }]
         };
         if (map.current.getLayer('end')) {
           map.current.getSource('end').setData(end);
@@ -128,16 +128,14 @@ const Map = (props) => {
               type: 'geojson',
               data: {
                 type: 'FeatureCollection',
-                features: [
-                  {
-                    type: 'Feature',
-                    properties: {},
-                    geometry: {
-                      type: 'Point',
-                      coordinates: coords
-                    }
+                features: [{
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Point',
+                    coordinates: coords
                   }
-                ]
+                }]
               }
             },
             paint: {
@@ -168,7 +166,8 @@ const Map = (props) => {
     // });
 
     map.current = new mapboxgl.Map({
-      container: mapContainer.current, style: 'mapbox://styles/mapbox/streets-v11',
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
       //starting point is center of the map
       center: [
         lng, lat
@@ -183,7 +182,7 @@ const Map = (props) => {
     });
 
     /* Once we've got a position, zoom and center the map on it
-      */
+     */
     map.current.on('locationfound', function(e) {
       //map.fitBounds(e.bounds);
       console.log("locationfound, " + e.latlng.lng + ", " + e.latlng.lat);
@@ -198,30 +197,43 @@ const Map = (props) => {
     addGeolocate(); //get current location
     route(); // generate route
     calculateRoute();
-    getRoute();
+    //getRoute();
+    // initialize the SharePosition socket client
+    SharePosition();
+    SharePositionEmitter.on("data", (data) => {
+      console.log("Position Data Received:");
+      console.log(data);
+    })
   });
 
-  return (
-    <>
-      <div ref={mapContainer} className="map-container" />
-      <div>
-      {(() => {
-        if (props.text==='rider') {
-        //return (
-        //   <div id="costEst" className="costEst"></div>
-        //)
-        } else if (props.text==='driver') {
+  return ( <
+    >
+    <
+    div ref = {
+      mapContainer
+    }
+    className = "map-container" / >
+    <
+    div > {
+      (() => {
+        if (props.text === 'rider') {
+          //return (
+          //   <div id="costEst" className="costEst"></div>
+          //)
+        } else if (props.text === 'driver') {
           //return (
           //  <div id="instructions" className="instructions"></div>
           //)
         } else {
-          return (
-            <div>catch all</div>
+          return ( <
+            div >
+            catch all < /div>
           )
         }
-      })()}
-    </div>
-    </>
+      })()
+    } <
+    /div> < /
+    >
   );
 }
 
