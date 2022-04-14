@@ -7,6 +7,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'; // for zoom and navigation control
 import 'react-map-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import calculateRoute from './calculateRoute';
 import getRoute from './Navigation';
+import SharePosition from '../SharePosition/SharePosition';
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 mapboxgl.accessToken = ACCESS_TOKEN;
@@ -59,6 +60,7 @@ const Map = (props) => {
     geolocate.on('geolocate', function(position) {
       console.log("geolocate, " + position.coords.longitude + ", " + position.coords.latitude);
       console.log(position);
+      SharePosition(position.coords.longitude, position.coords.latitude, "rider");
 
       setLng(position.coords.longitude);
       setLat(position.coords.latitude);
