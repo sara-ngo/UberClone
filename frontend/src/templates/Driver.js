@@ -1,11 +1,20 @@
 import React from 'react'
 import '../styles/App.css'
+import MapPositionInit from '../components/MapPosition/MapPosition';
 import Map from '../components/Map/Map'
-import Chat from '../components/Chat/Chat'
 import MapInstructions from '../components/Map/MapInstructions'
+import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 
+import '../styles/matthewjamestaylor/column-styles.css'
+import '../styles/matthewjamestaylor/r-c.css'
+import '../styles/matthewjamestaylor/r-c-min.css'
+import '../styles/matthewjamestaylor/site-styles.css'
+
 function Driver() {
+  // initialize the MapPosition socket client
+  MapPositionInit();
+
   return (
     <>
     <Navbar />
