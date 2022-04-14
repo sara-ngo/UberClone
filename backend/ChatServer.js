@@ -1,4 +1,6 @@
-import { v4 as uuidv4 } from 'uuid';
+import {
+  v4 as uuidv4
+} from 'uuid';
 import http from 'http'
 import {
   Server
@@ -12,7 +14,7 @@ const defaultUser = {
   name: 'Anonymous',
 };
 
-const messageExpirationTimeMS = 5*60 * 1000;
+const messageExpirationTimeMS = 5 * 60 * 1000;
 
 class Connection {
   constructor(io, socket) {
@@ -72,12 +74,12 @@ function ChatServer(app) {
 
   //Whenever someone connects this gets executed
   io.on('connection', function(socket) {
-     console.log('A user connected');
+    console.log('A user connected');
 
-     //Whenever someone disconnects this piece of code executed
-     socket.on('disconnect', function () {
-        console.log('A user disconnected');
-     });
+    //Whenever someone disconnects this piece of code executed
+    socket.on('disconnect', function() {
+      console.log('A user disconnected');
+    });
   });
 
   io.on('connection', (socket) => {

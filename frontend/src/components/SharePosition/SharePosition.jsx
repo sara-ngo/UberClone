@@ -42,4 +42,5 @@ function Chat() {
   //return ()
 }
 
-export default Chat
+export default Chat;
+export socket;
