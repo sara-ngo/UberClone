@@ -2,7 +2,6 @@ import React from 'react'
 import '../styles/App.css'
 import Map from '../components/Map/Map'
 import Chat from '../components/Chat/Chat'
-import Chat2 from '../components/Chat2/Chat'
 import MapInstructions from '../components/Map/MapInstructions'
 import Navbar from '../components/Navbar/Navbar'
 
