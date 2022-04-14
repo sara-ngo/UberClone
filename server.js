@@ -10,7 +10,7 @@ import {
 } from "socket.io";
 import {
   User
-} from './backend/models/user.js'
+} from './models/user.js'
 import connection from './db.js'
 import ChatServer from './backend/ChatServer.js'
 import MapServer from './backend/MapServer.js'
@@ -45,6 +45,7 @@ app.use(express.static("public"))
 
 // get something from database
 app.get('/', (req, res) => {
+  console.log("route /")
   User.find({}, (err, data) => {
     if (err) {
       console.log(err)

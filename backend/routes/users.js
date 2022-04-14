@@ -4,7 +4,7 @@ import {
   User,
   validate
 }
-from "../models/user.js";
+from "../../models/user.js";
 import bcrypt from "bcrypt";
 
 router.post("/", async (req, res) => {

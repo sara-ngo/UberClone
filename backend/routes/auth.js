@@ -2,7 +2,7 @@ import express from 'express';
 var router = express.Router();
 import {
   User
-} from "../models/user.js";
+} from "../../models/user.js";
 import bcrypt from "bcrypt";
 import Joi from "joi";
 

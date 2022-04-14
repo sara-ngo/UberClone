@@ -29,4 +29,4 @@ const validate = (data) => {
 	return schema.validate(data);
 };
 
-export default { User, validate };
+export { User, validate };
