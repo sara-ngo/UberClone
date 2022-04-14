@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { socket } from './Socket'
 
-function Chat() {
+function Chat(long, lat, type) {
 
   const [currentMessage, setCurrentMessage] = useState('')
   const [target, setTarget] = useState('')
@@ -42,4 +42,4 @@ function Chat() {
   //return ()
 }
 
-export default Chat
+export default Chat;

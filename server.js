@@ -8,10 +8,10 @@ import {
 import {
   Server
 } from "socket.io";
-import User from './models/user.js'
-import ChatServer from './models/ChatServer.js'
-import MapServer from './models/MapServer.js'
-
+import {User} from './backend/models/user.js'
+import ChatServer from './backend/ChatServer.js'
+import MapServer from './backend/MapServer.js'
+import AuthServer from './backend/AuthServer.js'
 // Required environment variables- MONGO_URI
 
 dotenv.config()
@@ -65,6 +65,7 @@ mongoose.connect(process.env.MONGO_URI)
       })
   });
 
+AuthServer(app);
 ChatServer(app);
 MapServer(app);
 

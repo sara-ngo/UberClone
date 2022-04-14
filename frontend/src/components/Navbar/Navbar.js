@@ -2,6 +2,11 @@ import React from "react"
 import { Link } from "react-router-dom"
 import "../../styles/Navbar.css"
 
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  window.location.reload();
+};
+
 // https://getbootstrap.com/docs/4.0/components/navbar/
 function Navbar() {
   return (
@@ -23,9 +28,14 @@ function Navbar() {
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
-            <li className="nav-item active">
+          <li className="nav-item active">
               <Link to="/" className="nav-link">
                 Home
+              </Link>
+            </li>
+            <li className="nav-item active">
+              <Link to="/profile" className="nav-link">
+                Profile
               </Link>
             </li>
             <li className="nav-item active">

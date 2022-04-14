@@ -60,6 +60,7 @@ const Map = (props) => {
     geolocate.on('geolocate', function(position) {
       console.log("geolocate, " + position.coords.longitude + ", " + position.coords.latitude);
       console.log(position);
+      SharePosition(position.coords.longitude, position.coords.latitude, "rider");
 
       SharePosition("geolocate, " + position.coords.longitude + ", " + position.coords.latitude);
 
