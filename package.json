@@ -19,7 +19,7 @@
     "joi": "^17.6.0",
     "joi-password-complexity": "^5.1.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.5",
+    "mongoose": "^6.2.11",
     "socket.io" : "^4.4.1",
     "uuid" : "^8.3.2",
     "bcrypt": "^5.0.1",

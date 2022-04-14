@@ -8,12 +8,15 @@ import {
 import {
   Server
 } from "socket.io";
-import {User} from './backend/models/user.js'
+import {
+  User
+} from './backend/models/user.js'
+import connection from './db.js'
 import ChatServer from './backend/ChatServer.js'
 import MapServer from './backend/MapServer.js'
 import AuthServer from './backend/AuthServer.js'
-// Required environment variables- MONGO_URI
 
+// Required environment variables- MONGO_URI
 dotenv.config()
 
 const app = express()
@@ -22,13 +25,16 @@ app.use(cors())
 app.use(express.json())
 
 // connect to database
-mongoose.connect(process.env.MONGO_URI)
-  .then((result) => {
-    result.connection.client.db().admin().listDatabases()
-      .then((result) => {
-        result.databases.forEach((db) => console.log(` - ${db.name}`))
-      })
-  });
+connection();
+
+// list databases in console as a test
+const defaultConnection = mongoose.connection;
+mongoose.connection.on("connected", () => {
+  mongoose.connection.client.db().admin().listDatabases()
+    .then((result) => {
+      result.databases.forEach((db) => console.log(` - ${db.name}`))
+    })
+});
 
 AuthServer(app);
 ChatServer(app);
@@ -39,7 +45,10 @@ app.use(express.static("public"))
 
 // get something from database
 app.get('/', (req, res) => {
-  User.User.find({}, (err, data) => {
+  User.find({}, (err, data) => {
+    if (err) {
+      console.log(err)
+    }
     res.send(data)
   })
 })
