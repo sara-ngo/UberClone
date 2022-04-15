@@ -1,6 +1,6 @@
 import React from 'react'
 import '../styles/App.css'
-import MapPositionInit from '../components/MapPosition/MapPosition';
+import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
 import MapInstructions from '../components/Map/MapInstructions'
 import Chat from '../components/Chat/Chat'
@@ -12,8 +12,8 @@ import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
 function Driver() {
-  // initialize the MapPosition socket client
-  MapPositionInit();
+  // initialize the TripService socket client
+  TripServiceInit();
 
   return (
     <>
