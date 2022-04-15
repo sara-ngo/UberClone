@@ -5,6 +5,7 @@ import Map from '../components/Map/Map'
 import CostEstimation from '../components/Map/CostEstimation'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
+import Rate from '../components/Rate/Rate'
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
@@ -25,6 +26,7 @@ function Rider() {
         <aside data-md1-3 data-md1 class="left-sidebar">
             <Chat />
             <CostEstimation />
+            <Rate />
         </aside>
     </r-c>
     <footer data-r-c data-join class="footer">
