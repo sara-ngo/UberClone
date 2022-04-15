@@ -1,0 +1,72 @@
+#Rate {
+  position: absolute;
+  width: 1920px;
+  height: 1080px;
+  background-color: rgba(255, 255, 255, 1);
+  overflow: hidden;
+  --web-view-name: Rate;
+  --web-view-id: Rate;
+  --web-scale-on-resize: true;
+  --web-enable-deep-linking: true;
+}
+
+#icon-star {
+  position: relative;
+  width: 25px;
+  height: 24px;
+  overflow: visible;
+  display: inline-block;
+}
+
+#Star {
+  fill: rgba(255, 255, 255, 1);
+  stroke: rgba(21, 21, 21, 1);
+  stroke-width: 1px;
+  stroke-linejoin: miter;
+  stroke-linecap: butt;
+  stroke-miterlimit: 4;
+  shape-rendering: auto;
+}
+
+.Star {
+  overflow: visible;
+  position: absolute;
+  width: 26.038px;
+  height: 25.027px;
+  left: 0px;
+  top: 0px;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+}
+
+.RateBox {
+  position: relative;
+  overflow: visible;
+  width: 397px;
+  height: 117px;
+  margin-top: 30px;
+  margin-left: 50px;
+  background-color: rgba(242, 242, 242, 1);
+}
+
+.RateBox .text {
+  margin-top: 16px;
+  margin-left: 26px;
+  position: relative;
+  overflow: visible;
+  width: 150px;
+  white-space: nowrap;
+  text-align: left;
+  font-family: Segoe UI;
+  font-style: normal;
+  font-weight: lighter;
+  font-size: 23px;
+  color: rgba(68, 68, 68, 1);
+}
+
+.RateBox .starBox {
+  position: relative;
+  width: auto;
+  height: auto;
+  margin-top: 40px;
+  margin-left: 26px;
+}
