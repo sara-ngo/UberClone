@@ -21,7 +21,7 @@ function Button() {
 
   return (
     <>
-    <button class="RequestRideButton" onClick={requestRide}>Request</button>
+    <button className="RequestRideButton" onClick={requestRide}>Request</button>
     </>
   )
 }

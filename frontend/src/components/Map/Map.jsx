@@ -202,8 +202,8 @@ const Map = (props) => {
     calculateRoute();
     //getRoute();
     TripService.on("positionData", (data) => {
-      console.log("Position Data Received:");
-      console.log(data);
+      //console.log("Position Data Received:");
+      //console.log(data);
     })
   });
 
