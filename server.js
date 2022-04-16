@@ -8,13 +8,11 @@ import {
 import {
   Server
 } from "socket.io";
-import {
-  User
-} from './models/user.js'
 import connection from './db.js'
 import ChatServer from './backend/ChatServer.js'
 import MapServer from './backend/MapServer.js'
 import AuthServer from './backend/AuthServer.js'
+import DatabaseServer from './backend/DatabaseServer.js'
 
 // Required environment variables- MONGO_URI
 dotenv.config()
@@ -39,20 +37,10 @@ mongoose.connection.on("connected", () => {
 AuthServer(app);
 ChatServer(app);
 MapServer(app);
+DatabaseServer(app);
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"))
-
-// get something from database
-app.get('/', (req, res) => {
-  console.log("route /")
-  User.find({}, (err, data) => {
-    if (err) {
-      console.log(err)
-    }
-    res.send(data)
-  })
-})
 
 // listen for requests :)
 const listener = app.listen(process.env.PORT || 5000, function() {

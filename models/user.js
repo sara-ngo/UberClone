@@ -3,11 +3,21 @@ import jwt from "jsonwebtoken";
 import Joi from "joi";
 import passwordComplexity from "joi-password-complexity";
 
+const tripSchema = new mongoose.Schema({
+	client: { type: String, required: true },
+	clientID: { type: String, required: true },
+	wasRider: { type: Boolean, required: true },
+	rated: {type: Boolean, required: true},
+});
+
 const userSchema = new mongoose.Schema({
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
 	email: { type: String, required: true },
 	password: { type: String, required: true },
+	rating: { type: Number, required: false },
+	numRatings: { type: Number, required: false },
+	trips: [tripSchema],
 });
 
 userSchema.methods.generateAuthToken = function () {
