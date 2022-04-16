@@ -73,7 +73,7 @@ const Map = (props) => {
       } else {
         positionData.type = "rider";
       }
-      TripService.emit('send', positionData);
+      TripService.emit('positionUpdate', positionData);
     });
   });
 
@@ -201,7 +201,7 @@ const Map = (props) => {
     route(); // generate route
     calculateRoute();
     //getRoute();
-    TripService.on("data", (data) => {
+    TripService.on("positionData", (data) => {
       console.log("Position Data Received:");
       console.log(data);
     })

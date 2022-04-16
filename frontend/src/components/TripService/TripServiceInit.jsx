@@ -10,17 +10,15 @@ import TripService from './emitter';
 
 function TripServiceInit() {
   useEffect(() => {
-    TripService.on("send", (data) => {
+    TripService.on("positionUpdate", (data) => {
       //data.senderId = socket.id;
       console.log("Send position data to server:");
       console.log(data);
-      socket.emit('send', data);
+      socket.emit('positionUpdate', data);
     });
 
-    socket.emit('request_target')
-
-    socket.on('receive', (data) => {
-      TripService.emit("data", data);
+    socket.on('positionData', (data) => {
+      TripService.emit("positionData", data);
     });
 
     TripService.on("requestRide", (data) => {

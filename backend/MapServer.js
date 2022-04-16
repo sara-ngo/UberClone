@@ -59,7 +59,8 @@ function MapServer(app) {
   io.on('connection', socket => {
     console.log(`Position User Connected: ${socket.id}`);
     userMap.set(socket.id, {
-      tripMatching: false
+      tripMatching: false,
+      tripDoing: false
     });
     // user object passed by reference
     var userObjRef = userMap.get(socket.id);
@@ -76,7 +77,7 @@ function MapServer(app) {
       })
     })
 
-    socket.on('send', (data) => {
+    socket.on('positionUpdate', (data) => {
       data.timestamp = Date.now();
       data.socketId = socket.id;
       userObjRef.lastUpdate = Date.now();
@@ -103,7 +104,7 @@ function MapServer(app) {
           result.socketId = socket.id;
         }
       }
-      io.sockets.emit('receive', data);
+      io.sockets.emit('positionData', data);
     })
 
     socket.on('requestRide', () => {
@@ -118,6 +119,21 @@ function MapServer(app) {
       data.timestamp = Date.now();
       data.socketId = socket.id;
       io.to(socket.id).emit('requestRideProgress', data)
+    });
+
+    socket.on('currentTrip', () => {
+      var data = {};
+      if (!userObjRef.tripDoing) {
+        data.message = "No trip in progress."
+      } else {
+        data.message = "Trip Matching In Progress!"
+        data.rider = userObjRef;
+        data.driver = userObjRef.trip.driver;
+        data.destination = userObjRef.trip.destination;
+      }
+      data.timestamp = Date.now();
+      data.socketId = socket.id;
+      io.to(socket.id).emit('currentTripData', data)
     });
   })
 
