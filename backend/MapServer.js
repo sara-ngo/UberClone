@@ -85,6 +85,7 @@ function MapServer(app) {
       userObjRef.long = data.long;
       userObjRef.lat = data.lat;
       userObjRef.type = data.type;
+      console.log("position update from: ", socket.id)
       // Add type==driver to the driverPosArray
       if (data.type == "driver") {
         var result = driverPosArray.find(obj => {
