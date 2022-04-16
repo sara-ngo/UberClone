@@ -8,3 +8,8 @@
 .no-padding {
   padding: 0 !important;
 }
+
+.requestButtonPositioning {
+  text-align: right;
+  padding: 5px 5px 5px 5px;
+}

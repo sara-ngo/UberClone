@@ -1,11 +1,12 @@
 import React from 'react'
 import '../styles/App.css'
-import MapPositionInit from '../components/MapPosition/MapPosition';
+import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
 import CostEstimation from '../components/Map/CostEstimation'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import Rate from '../components/Rate/Rate'
+import Button from '../components/RequestRideButton/Button'
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
@@ -13,8 +14,8 @@ import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
 function Rider() {
-  // initialize the MapPosition socket client
-  MapPositionInit();
+  // initialize the TripService socket client
+  TripServiceInit();
 
   return (
     <>
@@ -27,6 +28,7 @@ function Rider() {
             <Chat />
             <CostEstimation />
             <Rate />
+            <p class="requestButtonPositioning"><Button /></p>
         </aside>
     </r-c>
     <footer data-r-c data-join class="footer">
