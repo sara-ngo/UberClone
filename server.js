@@ -21,7 +21,11 @@ dotenv.config()
 
 const app = express()
 
-app.use(cors())
+const corsOptions = {
+  origin: "*",
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(express.json())
 
 // connect to database
