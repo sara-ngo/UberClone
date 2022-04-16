@@ -141,7 +141,11 @@ function MapServer(app) {
 
   httpServer.listen(4001, function() {
     console.log('Position Socket server listening at http://localhost:4001')
-  })
+  });
+  httpServer.on('error', (err) => {
+    console.log('server error:')
+    console.log(err)
+  });
 }
 
 export default MapServer;
