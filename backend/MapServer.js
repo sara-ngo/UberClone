@@ -51,8 +51,9 @@ function MapServer(app) {
   const httpServer = http.createServer(app)
   io = new Server(httpServer, {
     cors: {
-      origin: '*',
-      methods: ['GET', 'POST'],
+      origin: "*",
+      methods: ["PUT", "GET", "POST", "DELETE", "OPTIONS"],
+      credentials: false
     }
   })
 
