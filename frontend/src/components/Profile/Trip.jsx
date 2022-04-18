@@ -3,34 +3,37 @@ import { useEffect, useState } from "react"
 import axios from "axios";
 import { FaStar } from "react-icons/fa";
 
-export default ({ trip }) => {
-  const [clientRating, setClientRating] = useState(null);
+const Trip = ({ trip, other, otherRating, otherID, wasRider }) => {
+   const [ratingVisible, setRatingVisible] = useState(false);
 
   useEffect(() => {
-    const url = "http://localhost:5000/user";
-    axios.post(url, { data: trip.clientID }).then((res) => {
-      setClientRating(res.data.user.rating)
-    })
-
+    if((wasRider &&  !trip.driverRating) || (!wasRider && !trip.riderRating)){
+      setRatingVisible(true)
+    }
   }, [])
+
+  const tripInfo = (wasRider) ? `${other} drove you` : `You drove ${other}`
+
+  const rateUser = (newRating) => {
+    axios.post('http://localhost:5000/rate', {
+      wasRider: wasRider,
+      userID: otherID,
+      tripID: trip._id,
+      rating: newRating,
+    })
+    setRatingVisible(false)
+  }
+
   return (
     <div>
-      {(trip.wasRider) ?
-        <div>
-          {trip.client} drove you
-          <div>
-            {(clientRating != null) ?
-              parseFloat(clientRating).toFixed(1)
-              :
-              '0'}
-            <FaStar size="30px" color="#ffc107" />
-          </div>
-          <StarRating id={trip.clientID} />
-        </div>
-        :
-        <div>
-
-        </div>}
+      {tripInfo}
+      <div>
+        {parseFloat(otherRating).toFixed(1)}
+        <FaStar size="30px" color="#ffc107" />
+      </div>
+      {ratingVisible && <StarRating id={otherID} rateUser={rateUser}/>}
     </div>
   )
 }
+
+export default Trip

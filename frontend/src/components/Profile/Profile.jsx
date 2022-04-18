@@ -30,7 +30,7 @@ const Profile = () => {
 			{(user == null) ? '' :
 				<div>
 					<p>email: {user.email}</p>
-					<TripList trips={user.trips} />
+					<TripList user={user} trips={user.trips} />
 				</div>
 			}
 		</div>

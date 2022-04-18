@@ -4,10 +4,12 @@ import Joi from "joi";
 import passwordComplexity from "joi-password-complexity";
 
 const tripSchema = new mongoose.Schema({
-	client: { type: String, required: true },
-	clientID: { type: String, required: true },
-	wasRider: { type: Boolean, required: true },
-	rated: {type: Boolean, required: true},
+	rider: { type: String, required: true },
+	riderID: { type: String, required: true },
+	driver: { type: String, required: true },
+	driverID: { type: String, required: true },
+	riderRating: {type: Boolean, required: true, default: false},
+	driverRating: {type: Boolean, required: true, default: false},
 });
 
 const userSchema = new mongoose.Schema({
@@ -15,9 +17,9 @@ const userSchema = new mongoose.Schema({
 	lastName: { type: String, required: true },
 	email: { type: String, required: true },
 	password: { type: String, required: true },
-	rating: { type: Number, required: false },
+	rating: { type: Number, required: true, default: 0},
 	numRatings: { type: Number, required: false },
-	trips: [tripSchema],
+	trips: [String],
 });
 
 userSchema.methods.generateAuthToken = function () {
@@ -29,6 +31,8 @@ userSchema.methods.generateAuthToken = function () {
 
 const User = mongoose.model("user", userSchema);
 
+const Trip = mongoose.model("trip", tripSchema)
+
 const validate = (data) => {
 	const schema = Joi.object({
 		firstName: Joi.string().required().label("First Name"),
@@ -39,4 +43,4 @@ const validate = (data) => {
 	return schema.validate(data);
 };
 
-export { User, validate };
+export { User, Trip, validate };

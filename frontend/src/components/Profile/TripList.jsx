@@ -1,15 +1,25 @@
 import { useEffect, useState } from "react"
 import Trip from "./Trip"
+import axios from "axios"
 
-export default ({ trips }) => {
-  const [tripList, setTripList] = useState(null)
+const TripList = ({ trips, user }) => {
+  const [tripList, setTripList] = useState([])
 
   useEffect(() => {
-    const myTrips = trips.map(trip =>
-      <li key={trip.clientID}>
-        <Trip trip={trip} />
-      </li>)
-    setTripList(myTrips)
+    trips.sort((a,b) => a._id < b._id)
+    trips.forEach( (t) =>{
+      axios.post("http://localhost:5000/trip", { data: t}).then((res) => {
+        //console.log(res.data.trip)
+        const trip = res.data.trip
+        const otherID = (user._id === trip.riderID) ? trip.driverID : user._id
+        const other = (user._id === trip.riderID) ? trip.driver : trip.rider
+        axios.post('http://localhost:5000/user', { data: otherID}).then((res) => {
+          const otherRating = res.data.user.rating
+          const newTrip = <Trip key={otherID} user={user} trip={trip} other={other} otherID={otherID} otherRating={otherRating} wasRider={user._id===trip.riderID}/>
+        setTripList((list) => [...list, newTrip])
+        })
+      })
+    })
   }, [])
 
   return (
@@ -19,3 +29,5 @@ export default ({ trips }) => {
     </div>
   )
 }
+
+export default TripList

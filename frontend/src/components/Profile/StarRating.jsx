@@ -1,17 +1,12 @@
 import React, { useState } from "react"
 import { FaStar } from "react-icons/fa"
 import axios from "axios"
-import "./StarRating.css"
+import "../../styles/StarRating.css"
 
-function StarRating({ id }) {
+function StarRating({ id, rateUser }) {
   const [rating, setRating] = useState(null)
   const [hover, setHover] = useState(null)
 
-  const rateUser = (id, newRating) => {
-    axios.post('http://localhost:5000/rate' + id, {
-      rating: newRating
-    })
-  }
   return (
     <div>
       {[...Array(5)].map((star, i) => {
@@ -23,7 +18,7 @@ function StarRating({ id }) {
               value={ratingValue}
               onClick={() => {
                 setRating(ratingValue)
-                rateUser(id, ratingValue)
+                rateUser(ratingValue)
               }}
 
             />
