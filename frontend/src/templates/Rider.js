@@ -21,19 +21,19 @@ function Rider() {
     <>
     <Navbar />
     <r-c join>
-        <main data-md2-3 class="main-content no-padding">
+        <main data-md2-3 className="main-content no-padding">
             <Map text='rider'/>
         </main>
-        <aside data-md1-3 data-md1 class="left-sidebar">
+        <aside data-md1-3 data-md1 className="left-sidebar">
             <Chat />
             <CostEstimation />
             <Rate />
-            <p class="requestButtonPositioning"><Button /></p>
+            <p className="requestButtonPositioning"><Button /></p>
         </aside>
     </r-c>
-    <footer data-r-c data-join class="footer">
+    <footer data-r-c data-join className="footer">
         <c1-1>
-            <ul class="menu-links">
+            <ul className="menu-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>

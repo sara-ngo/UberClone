@@ -19,7 +19,7 @@ function requestRide(socketId) {
   }
   // sort drivers by smallest distance
   driverDistanceArray.sort(function(a, b) {
-    return b.distance - a.distance;
+    return a.distance - b.distance;
   });
   // see if the closest driver exists
   if (!driverDistanceArray[0]) {
@@ -38,6 +38,7 @@ function requestRide(socketId) {
   data.timestamp = Date.now();
   data.socketId = driverDistanceArray[0].socketId;
   data.riderProfile = userObjRef;
+  console.log(driverDistanceArray);
   io.to(driverDistanceArray[0].socketId).emit('requestRideDriverConfirm', data);
   // tell the Rider
   var data = {};

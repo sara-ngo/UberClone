@@ -10,13 +10,13 @@ const handleLogout = () => {
 // https://getbootstrap.com/docs/4.0/components/navbar/
 function Navbar() {
   return (
-    <div class="container mb-1">
+    <div className="container mb-1">
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
+        <a className="navbar-brand" href="#">
           <strong>UBER</strong>
         </a>
         <button
-          class="navbar-toggler"
+          className="navbar-toggler"
           type="button"
           data-toggle="collapse"
           data-target="#navbarNav"
@@ -24,10 +24,10 @@ function Navbar() {
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          <span class="navbar-toggler-icon"></span>
+          <span className="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav">
           <li className="nav-item active">
               <Link to="/" className="nav-link">
                 Home

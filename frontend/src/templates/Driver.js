@@ -5,6 +5,7 @@ import Map from '../components/Map/Map'
 import MapInstructions from '../components/Map/MapInstructions'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
+import DriverConfirmTrip from '../components/DriverConfirmTrip/Element'
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
@@ -19,17 +20,18 @@ function Driver() {
     <>
     <Navbar />
     <r-c join>
-        <main data-md2-3 class="main-content no-padding">
+        <main data-md2-3 className="main-content no-padding">
             <Map text='driver'/>
         </main>
-        <aside data-md1-3 data-md1 class="left-sidebar">
+        <aside data-md1-3 data-md1 className="left-sidebar">
             <Chat />
             <MapInstructions />
+            <DriverConfirmTrip />
         </aside>
     </r-c>
-    <footer data-r-c data-join class="footer">
+    <footer data-r-c data-join className="footer">
         <c1-1>
-            <ul class="menu-links">
+            <ul className="menu-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
