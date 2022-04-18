@@ -58,6 +58,11 @@ function Navbar() {
                 Sign Up
               </Link>
             </li>
+            <li className="nav-item active">
+              <Link to="/DriverSignup" className="nav-link">
+                Become a Driver?
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>

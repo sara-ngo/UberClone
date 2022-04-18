@@ -3,6 +3,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
+import DriverSignup from "./components/DriverSignup";
 import './styles/App.css'
 
 import Home from './templates/Home';
@@ -21,6 +22,7 @@ function App() {
         <Route exact path='/Profile' element={<Profile/>} />
         <Route exact path='/Rider' element={<Rider/>} />
         <Route exact path='/Driver' element={<Driver/>} />
+        <Route exact path='/DriverSignup' element={<DriverSignup/>} />
     </Routes>
   );
 }
