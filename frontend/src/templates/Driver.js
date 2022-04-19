@@ -17,11 +17,13 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    TripServiceInit();
-
     this.state = {
       tripBlock: <p>Waiting for a rider to request you.</p>
     }
+  }
+
+  componentDidMount = () => {
+    TripServiceInit();
 
     TripService.on('requestRideDriverConfirm', (data) => {
       console.log("requestRideDriverConfirm Data Received:");
@@ -34,7 +36,7 @@ class App extends Component {
       console.log(data);
       this.setState({tripBlock: <p>Trip Started!</p>});
     });
-  }
+  };
 
   render() {
   return (
