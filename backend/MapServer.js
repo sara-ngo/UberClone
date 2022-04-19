@@ -179,7 +179,7 @@ function MapServer(app) {
   });
   httpServer.on('error', (err) => {
     console.log('server error:')
-    console.log(err)
+    console.log(err);
   });
 }
 
