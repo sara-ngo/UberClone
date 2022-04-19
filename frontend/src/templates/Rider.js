@@ -1,32 +1,64 @@
-import React from 'react'
+import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
+import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
 import CostEstimation from '../components/Map/CostEstimation'
+import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
+import Rate from '../components/Rate/Rate'
+import Button from '../components/RequestRideButton/Button'
+import TripService from '../components/TripService/emitter';
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
 import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
+class App extends Component {
+  constructor(props) {
+    super(props);
 
-function Rider() {
+    TripServiceInit();
+
+    this.state = {
+      tripBlock: <p>Select a map position as your destination.</p>
+    }
+
+    TripService.on('destinationSelected', (data) => {
+      console.log("destinationSelected Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <><CostEstimation /><p className="requestButtonPositioning"><Button /></p></>});
+    });
+
+    TripService.on('tripBeginRider', (data) => {
+      console.log("tripBeginRider Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <p>Trip Started!</p>});
+    });
+
+    TripService.on('tripEndRider', (data) => {
+      console.log("tripBeginRider Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <Rate />});
+    });
+  }
+
+  render() {
   return (
     <>
     <Navbar />
     <r-c join>
-        <main data-md2-3 class="main-content no-padding">
+        <main data-md2-3 className="main-content no-padding">
             <Map text='rider'/>
         </main>
-        <aside data-md1-3 data-md1 class="left-sidebar">
-            <h2>Left Sidebar</h2>
-            <p>You can put side navigation here or aside content.</p>
-            <CostEstimation />
+        <aside data-md1-3 data-md1 className="left-sidebar">
+            <Chat />
+            {this.state.tripBlock}
         </aside>
     </r-c>
-    <footer data-r-c data-join class="footer">
+    <footer data-r-c data-join className="footer">
         <c1-1>
-            <ul class="menu-links">
+            <ul className="menu-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
@@ -38,5 +70,6 @@ function Rider() {
     </>
   );
 }
+}
 
-export default Rider;
+export default App;
