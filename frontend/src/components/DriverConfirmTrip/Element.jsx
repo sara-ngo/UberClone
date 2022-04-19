@@ -10,18 +10,17 @@ class App extends Component {
       message: "No rider matched yet."
     }
 
+    TripService.on('requestRideDriverConfirm', (data) => {
+      console.log("requestRideDriverConfirm Data Received:");
+      console.log(data);
+      this.setState({message: data.message});
+    });
 
-      TripService.on('requestRideDriverConfirm', (data) => {
-        console.log("requestRideDriverConfirm Data Received:");
-        console.log(data);
-        this.setState({message: data.message});
-      });
-
-      TripService.on('confirmTripProgress', (data) => {
-        console.log("confirmTripProgress Data Received:");
-        console.log(data);
-        this.setState({message: data.message});
-      });
+    TripService.on('confirmTripProgress', (data) => {
+      console.log("confirmTripProgress Data Received:");
+      console.log(data);
+      this.setState({message: data.message});
+    });
 
   }
 

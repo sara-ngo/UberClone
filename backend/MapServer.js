@@ -31,15 +31,22 @@ function requestRide(socketId) {
     io.to(socketId).emit('requestRideProgress', data)
     return;
   }
-  // driver found. send them a confirmation
-  driverDistanceArray[0].socketId
+  // driver found.
+  // set variables
+  var driverSocketId = driverDistanceArray[0].socketId;
+  var driverObjRef = userMap.get(driverSocketId);
+  userObjRef.driver = {}
+  userObjRef.driver.socketId = driverSocketId;
+  driverObjRef.rider = {}
+  driverObjRef.rider.socketId = socketId;
+  // send driver a confirmation
   var data = {};
   data.message = "A rider has matched you for a ride!"
   data.timestamp = Date.now();
   data.socketId = driverDistanceArray[0].socketId;
   data.riderProfile = userObjRef;
   console.log(driverDistanceArray);
-  io.to(driverDistanceArray[0].socketId).emit('requestRideDriverConfirm', data);
+  io.to(driverSocketId).emit('requestRideDriverConfirm', data);
   // tell the Rider
   var data = {};
   data.message = "A driver was found! Waiting for them to confirm trip."
@@ -137,6 +144,33 @@ function MapServer(app) {
       data.timestamp = Date.now();
       data.socketId = socket.id;
       io.to(socket.id).emit('currentTripData', data)
+    });
+
+    socket.on('confirmTrip', () => {
+      var driverRes = {};
+      var riderRes = {};
+      if (userObjRef.tripDoing) {
+        driverRes.message = "You already have a trip in progress!"
+        driverRes.timestamp = Date.now();
+        driverRes.socketId = socket.id;
+        io.to(socket.id).emit('confirmTripProgress', driverRes);
+      } else if(!userObjRef.rider){
+        driverRes.message = "ERROR!"
+        driverRes.timestamp = Date.now();
+        driverRes.socketId = socket.id;
+        io.to(socket.id).emit('confirmTripProgress', driverRes);
+      } else {
+        userObjRef.tripDoing = true;
+        driverRes.message = "Trip started!"
+        driverRes.timestamp = Date.now();
+        driverRes.socketId = socket.id;
+        io.to(socket.id).emit('tripBeginDriver', driverRes);
+        riderRes.message = "Trip started!"
+        riderRes.timestamp = Date.now();
+        riderRes.socketId = userObjRef.rider.socketId;
+        io.to(userObjRef.rider.socketId).emit('tripBeginRider', riderRes);
+        console.log(socket.id + " and " + userObjRef.rider.socketId + " matched!");
+      }
     });
   })
 

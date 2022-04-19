@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
 import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
@@ -7,16 +7,43 @@ import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import Rate from '../components/Rate/Rate'
 import Button from '../components/RequestRideButton/Button'
+import TripService from '../components/TripService/emitter';
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
 import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
-function Rider() {
-  // initialize the TripService socket client
-  TripServiceInit();
+class App extends Component {
+  constructor(props) {
+    super(props);
 
+    TripServiceInit();
+
+    this.state = {
+      tripBlock: <p>Select a map position as your destination.</p>
+    }
+
+    TripService.on('destinationSelected', (data) => {
+      console.log("destinationSelected Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <><CostEstimation /><p className="requestButtonPositioning"><Button /></p></>});
+    });
+
+    TripService.on('tripBeginRider', (data) => {
+      console.log("tripBeginRider Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <p>Trip Started!</p>});
+    });
+
+    TripService.on('tripEndRider', (data) => {
+      console.log("tripBeginRider Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <Rate />});
+    });
+  }
+
+  render() {
   return (
     <>
     <Navbar />
@@ -26,9 +53,7 @@ function Rider() {
         </main>
         <aside data-md1-3 data-md1 className="left-sidebar">
             <Chat />
-            <CostEstimation />
-            <Rate />
-            <p className="requestButtonPositioning"><Button /></p>
+            {this.state.tripBlock}
         </aside>
     </r-c>
     <footer data-r-c data-join className="footer">
@@ -45,5 +70,6 @@ function Rider() {
     </>
   );
 }
+}
 
-export default Rider;
+export default App;
