@@ -156,6 +156,16 @@ const Map = (props) => {
         }
         calculateRoute(coords, start, map);
         getRoute(coords, start, map);
+
+        // emit for other components to use
+        var tripData = {};
+        tripData.start = {}
+        tripData.start.long = start[0];
+        tripData.start.lat = start[1];
+        tripData.end = {}
+        tripData.end.long = coords[0];
+        tripData.end.lat = coords[1];
+        TripService.emit("destinationSelected", tripData);
       });
     });
   };
@@ -204,8 +214,8 @@ const Map = (props) => {
 
 
     TripService.on("positionData", (data) => {
-      console.log("Position Data Received:");
-      console.log(data);
+      //console.log("Position Data Received:");
+      //console.log(data);
     });
   });
 

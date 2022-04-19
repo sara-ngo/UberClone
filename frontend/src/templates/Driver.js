@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
 import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
@@ -6,16 +6,37 @@ import MapInstructions from '../components/Map/MapInstructions'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import DriverConfirmTrip from '../components/DriverConfirmTrip/Element'
+import TripService from '../components/TripService/emitter';
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
 import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
-function Driver() {
-  // initialize the TripService socket client
-  TripServiceInit();
+class App extends Component {
+  constructor(props) {
+    super(props);
 
+    TripServiceInit();
+
+    this.state = {
+      tripBlock: <p>Waiting for a rider to request you.</p>
+    }
+
+    TripService.on('requestRideDriverConfirm', (data) => {
+      console.log("requestRideDriverConfirm Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <DriverConfirmTrip />});
+    });
+
+    TripService.on('tripBeginDriver', (data) => {
+      console.log("tripBeginRider Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <p>Trip Started!</p>});
+    });
+  }
+
+  render() {
   return (
     <>
     <Navbar />
@@ -24,9 +45,9 @@ function Driver() {
             <Map text='driver'/>
         </main>
         <aside data-md1-3 data-md1 className="left-sidebar">
-            <Chat />
-            <MapInstructions />
-            <DriverConfirmTrip />
+          <Chat />
+          <MapInstructions />
+          {this.state.tripBlock}
         </aside>
     </r-c>
     <footer data-r-c data-join className="footer">
@@ -43,5 +64,6 @@ function Driver() {
     </>
   );
 }
+}
 
-export default Driver;
+export default App;
