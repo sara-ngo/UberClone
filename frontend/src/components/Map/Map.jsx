@@ -5,7 +5,7 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "../../styles/Map.css";
 import "mapbox-gl/dist/mapbox-gl.css"; // for zoom and navigation control
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import calculateRoute from "./calculateRoute";
+import calculateCost from "./calculateCost";
 import getRoute from "./Navigation";
 import TripService from "../TripService/emitter";
 import loadRiderLocation from "./loadRiderLocation";
@@ -154,7 +154,7 @@ const Map = (props) => {
             },
           });
         }
-        calculateRoute(coords, start, map);
+        calculateCost(coords, start, map);
         getRoute(coords, start, map);
 
         // emit for other components to use
@@ -204,6 +204,7 @@ const Map = (props) => {
     addGeolocate(); //get current location
     route(); // generate route
 
+    // load other users location
     map.current.on("load", function () {
       if (props.text === "driver") {
         loadRiderLocation(map);

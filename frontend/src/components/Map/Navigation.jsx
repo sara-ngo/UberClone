@@ -48,6 +48,7 @@ async function getRoute(end, start, map) {
 
   let tripInstructions = "";
   var tripDuration = Math.floor(data.duration / 60);
+  var tripDistance = Math.floor(data.distance / 1000);
 
   for (const step of steps) {
     tripInstructions += `<li>${step.maneuver.instruction}</li>`;
@@ -55,6 +56,7 @@ async function getRoute(end, start, map) {
 
   instructions.innerHTML = `<div>
       <p><strong>Trip duration: ${tripDuration} minutes 🚴</strong></p>
+      <p><strong>Trip distance: ${tripDistance} miles</strong></p>
       <p><strong>Driving instructions:</strong></p>
       <ol>${tripInstructions}</ol>
     </div>`;

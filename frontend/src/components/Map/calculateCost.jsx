@@ -1,8 +1,13 @@
 import mapboxgl from 'mapbox-gl';
 
-const BASE_FEE = 0.9;
+const BASE_FEE = 2.0; 
+const BOOKING_FEE = 2.5;
+const TIME_FEE = 0.5;
+const RIDE_DISTANCE = 0.8;
+const MINIMUM_FARE = 16.0;
 
-async function calculateRoute(end, start, map) {
+
+async function calculateCost(end, start, map) {
     const query = await fetch(
       `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
       { method: 'GET' }
@@ -43,19 +48,20 @@ async function calculateRoute(end, start, map) {
       });
     }
 
-    // get the sidebar and add the instructions
     const costEst = document.getElementById('costEst');
 
     var tripDuration = Math.floor(data.duration / 60);
-    var baseFare = tripDuration * BASE_FEE;
-
+    var tripDistance = Math.floor(data.distance / 1000);
+    var tripCost = tripDuration*TIME_FEE + tripDistance*RIDE_DISTANCE + BASE_FEE + BOOKING_FEE;
 
     costEst.innerHTML =
     `<div>
         <p><strong>Trip duration: ${tripDuration} minutes</strong></p>
-        <p><strong>Estimated cost: $${baseFare} </strong></p>
+        <p><strong>Trip distance: ${tripDistance} miles</strong></p>
+        <p><strong>Estimated cost: $${tripCost} </strong></p>
+
     </div>`;
   }
 
 
-export default calculateRoute;
+export default calculateCost;
