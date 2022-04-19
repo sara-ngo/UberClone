@@ -9,7 +9,7 @@ const handleLogout = () => {
 
 // https://getbootstrap.com/docs/4.0/components/navbar/
 function Navbar() {
-  return (
+  return (  
     <div class="container mb-1">
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
