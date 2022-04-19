@@ -3,7 +3,6 @@ import TripService from './emitter';
 
 function TripServiceInit() {
   TripService.on("positionUpdate", (data) => {
-    //data.senderId = socket.id;
     socket.emit('positionUpdate', data);
   });
 
