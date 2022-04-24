@@ -1,38 +1,60 @@
-import React from "react";
-import picture from "./profilePicture.jpg"
-// import styles from "./styles.module.css";
+import React, {Component, useState} from "react";
+import styles from "./styles.module.css";
 
-// const handleLogout = () => {
-// 	localStorage.removeItem("token");
-// 	window.location.reload();
-// };
 
-const Profile = () => {
+const handleLogout = () => {
+	localStorage.removeItem("token");
+	window.location.reload();
+};
+
+export class Profile extends Component {
+	state={profilePic:'profilePicture.jpg'}
+	imageHandler = (e) => {
+		const reader = new FileReader();
+    reader.onload = () =>{
+      if(reader.readyState === 2){
+        this.setState({profileImg: reader.result})
+	}
+}
+
+reader.readAsDataURL(e.target.files[0])
+  };
+  render() {
+    const { profileImg} = this.state
 	return (
-		// <div className={styles.main_container}>
-		// 	<nav className={styles.navbar}>
-		// 		<h1>Uber</h1>
-		// 		<button className={styles.white_btn} onClick={handleLogout}>
-		// 			Logout
-		<div className="container emp-profile">
+		<div className={styles.main_container}>
+			<nav className={styles.navbar}>
+				<h1>Uber</h1>
+				<button className={styles.white_btn} onClick={handleLogout}>
+					Logout
+					</button>
+		</nav>
 			<form method="">
 				<div className="row">
-					<div className="col-md-4.5">
+					<div className="col-md-4">
 						<div className="profile-img">
-						<img src={picture} alt="profile" />
+						<img src={profileImg} alt="" id="img" className="img"  />
 						</div>
+						<input type="file" accept="image/*" name="image-upload" id="input" onChange={this.imageHandler} />
+					<div className="label">
+          <label className="image-upload" htmlFor="input">
+						Choose your Photo
+					</label>
+          </div>
 					</div>
 					<div className="col-md-6">
 						<div className="profile-head">
 							<h5>Profile</h5>
 							<h6>Rider</h6>
-							<p className="user-rating mt-3 mb-4">RATING: <span> 4.8/5 </span> </p>
 							<div className="row mt-3">
 							<div className="col-md-6">
 										<label>Name</label>
 									</div>
 									<div className="col-md-6">
-										<p>Ngan Nguyen</p>
+									<input
+							          type="text"
+							          name="name"
+							          onChange={handleLogout}/>	
 									</div>
 								</div>
 								<div className="row mt-3">
@@ -40,7 +62,10 @@ const Profile = () => {
 										<label>Email</label>
 									</div>
 									<div className="col-md-6">
-										<p>ngannpt9@gmail.com</p>
+									<input
+							          type="text"
+							          name="email"
+							          onChange={handleLogout}/>	
 									</div>
 								</div>
 								<div className="row mt-3">
@@ -48,15 +73,20 @@ const Profile = () => {
 										<label>Phone Number</label>
 									</div>
 									<div className="col-md-6">
-										<p>510-766-5900</p>
-									</div>
+									<input
+							          type="text"
+							          name="phoneNumber"
+							          onChange={handleLogout}/>								</div>
 								</div>
 								<div className="row mt-3">
 									<div className="col-md-6">
 										<label>Password</label>
 									</div>
 									<div className="col-md-6">
-										<p>*********</p>
+									<input
+							          type="text"
+							          name="password"
+							          onChange={handleLogout}/>	
 									</div>
 									</div>
 						</div>
@@ -67,7 +97,7 @@ const Profile = () => {
 					</div>
 			</form>
 		</div>
-	
-	)
+	);
+}
 }
 export default Profile
