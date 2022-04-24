@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Routes, Navigate } from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
-import Profile from "./components/Profile";
+import Profile from "./components/Profile/Profile";
 import DriverSignup from "./components/DriverSignup";
 import './styles/App.css'
 
