@@ -54,6 +54,7 @@ class App extends Component {
     return (
       <>
       <Navbar />
+      <r-c>Please select a destination</r-c>
       <r-c join>
           <main data-md2-3 className="main-content no-padding">
               <Map text='rider'/>

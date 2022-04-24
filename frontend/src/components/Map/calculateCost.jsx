@@ -1,10 +1,14 @@
 import mapboxgl from 'mapbox-gl';
+import '../../styles/calculateCost.css';
 
 const BASE_FEE = 2.0; 
-const BOOKING_FEE = 2.5;
-const TIME_FEE = 0.5;
-const RIDE_DISTANCE = 0.8;
+const BOOKING_FEE = 2.50;
+const TIME_FEE = 0.4;
+const RIDE_DISTANCE = 0.5;
 const MINIMUM_FARE = 16.0;
+const COMFORT_FEE = 8.0;
+const COMFORT_RATE = 1.35;
+const POOL_FEE = 5.0;
 
 
 async function calculateCost(end, start, map) {
@@ -47,19 +51,45 @@ async function calculateCost(end, start, map) {
         }
       });
     }
+    
+    // check if price meets minimum wages
+    const checkPrice = (price) => {
+      if (price <= MINIMUM_FARE) {
+        price = MINIMUM_FARE;
+        return price;
+      } else {
+        return price;
+      }
+    }
 
     const costEst = document.getElementById('costEst');
 
     var tripDuration = Math.floor(data.duration / 60);
     var tripDistance = Math.floor(data.distance / 1000);
     var tripCost = tripDuration*TIME_FEE + tripDistance*RIDE_DISTANCE + BASE_FEE + BOOKING_FEE;
+    tripCost = parseInt(checkPrice(tripCost));
+    
+    var comfortCost = (tripCost + COMFORT_FEE)*COMFORT_RATE;
+    var poolCost = tripCost/2 + POOL_FEE;
 
     costEst.innerHTML =
     `<div>
-        <p><strong>Trip duration: ${tripDuration} minutes</strong></p>
-        <p><strong>Trip distance: ${tripDistance} miles</strong></p>
-        <p><strong>Estimated cost: $${tripCost} </strong></p>
-
+        <p id="title">Trip duration: ${tripDuration} minutes</p>
+        <p id="title">Trip distance: ${tripDistance} miles</p>
+        <p id="title">Estimated cost: </p>
+        <ul id="chooseRide">
+          <li value="uberX">
+            <p>UberX: $${tripCost.toFixed(2)}</p>
+          </li>
+          <li value="comfort">
+            <p >Comfort: $${comfortCost.toFixed(2)}</p>
+            <p id="caption">Newer cars with extra legroom</p>
+          </li>
+          <li value="pool">
+            <p>Pool: $${poolCost.toFixed(2)}</p>
+            <p id="caption">Share the ride with 1 to 3 people</p>
+          </li>
+        </ul>
     </div>`;
   }
 

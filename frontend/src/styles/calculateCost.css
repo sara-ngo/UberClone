@@ -1,0 +1,16 @@
+li {
+    background-color: lightgrey;
+}
+
+li > p {
+    padding: 10px;
+    margin: 5px;
+}
+
+#caption {
+    font-size: 0.8em;
+}
+
+#title {
+    font-weight: bold;
+}
