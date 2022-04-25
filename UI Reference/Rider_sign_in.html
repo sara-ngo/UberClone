@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rider sign in</title>
+<style id="applicationStylesheet" type="text/css">
+	.mediaViewInfo {
+		--web-view-name: Rider sign in;
+		--web-view-id: Rider_sign_in;
+		--web-scale-on-resize: true;
+		--web-enable-deep-linking: true;
+	}
+	:root {
+		--web-view-ids: Rider_sign_in;
+	}
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+		border: none;
+	}
+	#Rider_sign_in {
+		position: absolute;
+		width: 1920px;
+		height: 1080px;
+		background-color: rgba(255,255,255,1);
+		overflow: hidden;
+		--web-view-name: Rider sign in;
+		--web-view-id: Rider_sign_in;
+		--web-scale-on-resize: true;
+		--web-enable-deep-linking: true;
+	}
+	@keyframes fadein {
+	
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	
+	}
+	#Path_2 {
+		fill: rgba(248,248,248,1);
+	}
+	.Path_2 {
+		overflow: visible;
+		position: absolute;
+		width: 1920px;
+		height: 1080px;
+		left: 0px;
+		top: 0px;
+		transform: matrix(1,0,0,1,0,0);
+	}
+	#Rectangle_1_e {
+		fill: rgba(0,0,0,1);
+	}
+	.Rectangle_1_e {
+		position: absolute;
+		overflow: visible;
+		width: 1920px;
+		height: 60px;
+		left: 0px;
+		top: 0px;
+	}
+	#Uber_Clone_e {
+		left: 300px;
+		top: 15px;
+		position: absolute;
+		overflow: visible;
+		width: 113px;
+		white-space: nowrap;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Passenger.html;
+		cursor: pointer;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: bold;
+		font-size: 22px;
+		color: rgba(255,255,255,1);
+	}
+	#Rectangle_5_e {
+		fill: rgba(242,242,242,1);
+	}
+	.Rectangle_5_e {
+		position: absolute;
+		overflow: visible;
+		width: 754px;
+		height: 715px;
+		left: 583px;
+		top: 183px;
+	}
+	#Rider_sign_in_e {
+		left: 644px;
+		top: 221px;
+		position: absolute;
+		overflow: visible;
+		width: 198px;
+		white-space: nowrap;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: normal;
+		font-size: 36px;
+		color: rgba(0,0,0,1);
+	}
+	#Rectangle_49_e {
+		fill: rgba(209,209,209,1);
+	}
+	.Rectangle_49_e {
+		position: absolute;
+		overflow: visible;
+		width: 625px;
+		height: 55px;
+		left: 644px;
+		top: 306px;
+	}
+	#Username_or_Email {
+		left: 664px;
+		top: 320px;
+		position: absolute;
+		overflow: visible;
+		width: 159px;
+		white-space: nowrap;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: lighter;
+		font-size: 20px;
+		color: rgba(68,68,68,1);
+	}
+	#Rectangle_50_e {
+		fill: rgba(209,209,209,1);
+	}
+	.Rectangle_50_e {
+		position: absolute;
+		overflow: visible;
+		width: 625px;
+		height: 55px;
+		left: 644px;
+		top: 384px;
+	}
+	#Password {
+		left: 664px;
+		top: 398px;
+		position: absolute;
+		overflow: visible;
+		width: 78px;
+		white-space: nowrap;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: lighter;
+		font-size: 20px;
+		color: rgba(68,68,68,1);
+	}
+	#Rectangle_55_e {
+		fill: rgba(0,0,0,1);
+	}
+	.Rectangle_55_e {
+		position: absolute;
+		overflow: visible;
+		width: 625px;
+		height: 55px;
+		left: 644px;
+		top: 462px;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Rider_logged_in.html;
+		cursor: pointer;
+	}
+	#Sign_in_e {
+		left: 925px;
+		top: 476px;
+		position: absolute;
+		overflow: visible;
+		width: 64px;
+		white-space: nowrap;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Rider_logged_in.html;
+		cursor: pointer;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: normal;
+		font-size: 21px;
+		color: rgba(255,255,255,1);
+	}
+	#Rectangle_56_fa {
+		fill: rgba(255,255,255,1);
+	}
+	.Rectangle_56_fa {
+		filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.161));
+		position: absolute;
+		overflow: visible;
+		width: 628px;
+		height: 58px;
+		left: 644px;
+		top: 541px;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Rider_logged_in.html;
+		cursor: pointer;
+	}
+	#Group_245_fb {
+		position: absolute;
+		width: 32.126px;
+		height: 32.126px;
+		left: 664px;
+		top: 554px;
+		overflow: visible;
+	}
+	#google_fc {
+		position: absolute;
+		width: 32.127px;
+		height: 32.127px;
+		left: 0px;
+		top: 0px;
+		overflow: visible;
+	}
+	#Path_164_fd {
+		fill: rgba(22,126,230,1);
+	}
+	.Path_164_fd {
+		overflow: visible;
+		position: absolute;
+		width: 15.365px;
+		height: 16.698px;
+		left: 16.762px;
+		top: 13.27px;
+		transform: matrix(1,0,0,1,0,0);
+	}
+	#Path_165_fe {
+		fill: rgba(18,179,71,1);
+	}
+	.Path_165_fe {
+		overflow: visible;
+		position: absolute;
+		width: 21.936px;
+		height: 11.179px;
+		left: 2.159px;
+		top: 20.948px;
+		transform: matrix(1,0,0,1,0,0);
+	}
+	#Path_166_ff {
+		fill: rgba(15,153,62,1);
+	}
+	.Path_166_ff {
+		overflow: visible;
+		position: absolute;
+		width: 8.032px;
+		height: 7.606px;
+		left: 16.063px;
+		top: 24.52px;
+		transform: matrix(1,0,0,1,0,0);
+	}
+	#Path_167_fg {
+		fill: rgba(255,213,0,1);
+	}
+	.Path_167_fg {
+		overflow: visible;
+		position: absolute;
+		width: 7.606px;
+		height: 16.048px;
+		left: 0px;
+		top: 8.039px;
+		transform: matrix(1,0,0,1,0,0);
+	}
+	#Path_168_fh {
+		fill: rgba(255,75,38,1);
+	}
+	.Path_168_fh {
+		overflow: visible;
+		position: absolute;
+		width: 24.789px;
+		height: 11.179px;
+		left: 2.159px;
+		top: 0px;
+		transform: matrix(1,0,0,1,0,0);
+	}
+	#Path_169_fi {
+		fill: rgba(217,63,33,1);
+	}
+	.Path_169_fi {
+		overflow: visible;
+		position: absolute;
+		width: 10.885px;
+		height: 8.756px;
+		left: 16.063px;
+		top: 0px;
+		transform: matrix(1,0,0,1,0,0);
+	}
+	#Sign_in_with_Google_fj {
+		left: 866px;
+		top: 554px;
+		position: absolute;
+		overflow: visible;
+		width: 182px;
+		white-space: nowrap;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Rider_logged_in.html;
+		cursor: pointer;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: normal;
+		font-size: 21px;
+		color: rgba(0,0,0,1);
+	}
+</style>
+<script id="applicationScript">
+///////////////////////////////////////
+// INITIALIZATION
+///////////////////////////////////////
+
+/**
+ * Functionality for scaling, showing by media query, and navigation between multiple pages on a single page. 
+ * Code subject to change.
+ **/
+
+if (window.console==null) { window["console"] = { log : function() {} } }; // some browsers do not set console
+
+var Application = function() {
+	// event constants
+	this.prefix = "--web-";
+	this.NAVIGATION_CHANGE = "viewChange";
+	this.VIEW_NOT_FOUND = "viewNotFound";
+	this.VIEW_CHANGE = "viewChange";
+	this.VIEW_CHANGING = "viewChanging";
+	this.STATE_NOT_FOUND = "stateNotFound";
+	this.APPLICATION_COMPLETE = "applicationComplete";
+	this.APPLICATION_RESIZE = "applicationResize";
+	this.SIZE_STATE_NAME = "data-is-view-scaled";
+	this.STATE_NAME = this.prefix + "state";
+
+	this.inclusionQuery = "(min-width: 0px)";
+	this.exclusionQuery = "none and (min-width: 99999px)";
+	this.LastModifiedDateLabelName = "LastModifiedDateLabel";
+	this.viewScaleSliderId = "ViewScaleSliderInput";
+	this.pageRefreshedName = "showPageRefreshedNotification";
+	this.mediaQueryDictionary = {};
+	this.viewsDictionary = {};
+	this.addedViews = [];
+	this.viewStates = [];
+	this.views = [];
+	this.viewIds = [];
+	this.viewQueries = {};
+	this.overlays = {};
+	this.overlayIds = [];
+	this.numberOfViews = 0;
+	this.verticalPadding = 0;
+	this.horizontalPadding = 0;
+	this.stateName = null;
+	this.viewScale = 1;
+	this.viewLeft = 0;
+	this.viewTop = 0;
+
+	var self = this;
+
+
+	///////////////////////////////////////
+	// NAVIGATION CONTROLS
+	///////////////////////////////////////
+
+	self.goToTargetView = function(event) {
+		var button = event.currentTarget;
+		var buttonComputedStyles = getComputedStyle(button);
+		var actionTargetValue = buttonComputedStyles.getPropertyValue(self.prefix+"action-target").trim();
+		var animation = buttonComputedStyles.getPropertyValue(self.prefix+"animation").trim();
+		var targetType = buttonComputedStyles.getPropertyValue(self.prefix+"action-type").trim();
+		var targetView = self.application ? null : self.getElement(actionTargetValue);
+		var targetState = targetView ? self.getStateNameByViewId(targetView.id) : null;
+		var actionTargetStyles = targetView ? targetView.style : null;
+		var state = self.viewsDictionary[actionTargetValue];
+		
+		// navigate to page
+		if (self.application==false || targetType=="page") {
+			document.location.href = "./" + actionTargetValue;
+			return;
+		}
+
+		// if view is found
+		if (targetView) {
+
+			if (self.currentOverlay) {
+				self.removeOverlay(false);
+			}
+
+			if (self.showByMediaQuery) {
+				var stateName = targetState;
+				
+				if (stateName==null || stateName=="") {
+					var initialView = self.getInitialView();
+					stateName = initialView ? self.getStateNameByViewId(initialView.id) : null;
+				}
+				self.showMediaQueryViewsByState(stateName, event);
+				return;
+			}
+
+			// add animation set in event target style declaration
+			if (animation && self.supportAnimations) {
+				self.crossFade(self.currentView, targetView, false, animation);
+			}
+			else {
+				self.setViewVariables(self.currentView);
+				self.hideViews();
+				self.enableMediaQuery(state.rule);
+				self.scaleViewIfNeeded(targetView);
+				self.centerView(targetView);
+				self.updateViewLabel();
+				self.updateURL();
+			}
+		}
+		else {
+			var stateEvent = new Event(self.STATE_NOT_FOUND);
+			self.stateName = name;
+			window.dispatchEvent(stateEvent);
+		}
+
+		event.stopImmediatePropagation();
+	}
+
+	self.getElement = function(id) {
+		id = id ? id.trim() : id;
+		var element = id ? document.getElementById(id) : null;
+
+		return element;
+	}
+
+	// initialize on load
+	// sometimes the body size is 0 so we call this now and again later
+	window.addEventListener("load", self.onloadHandler);
+	window.document.addEventListener("DOMContentLoaded", self.onloadHandler);
+}
+
+window.application = new Application();
+</script>
+</head>
+<body>
+<div id="Rider_sign_in">
+	<svg class="Path_2" viewBox="0 0 1920 1080">
+		<path id="Path_2" d="M 0 0 L 1920 0 L 1920 1080 L 0 1080 L 0 0 Z">
+		</path>
+	</svg>
+	<svg class="Rectangle_1_e">
+		<rect id="Rectangle_1_e" rx="0" ry="0" x="0" y="0" width="1920" height="60">
+		</rect>
+	</svg>
+	<div onclick="application.goToTargetView(event)" id="Uber_Clone_e">
+		<span>Uber Clone</span>
+	</div>
+	<svg class="Rectangle_5_e">
+		<rect id="Rectangle_5_e" rx="0" ry="0" x="0" y="0" width="754" height="715">
+		</rect>
+	</svg>
+	<div id="Rider_sign_in_e">
+		<span>Rider sign in</span>
+	</div>
+	<svg class="Rectangle_49_e">
+		<rect id="Rectangle_49_e" rx="0" ry="0" x="0" y="0" width="625" height="55">
+		</rect>
+	</svg>
+	<div id="Username_or_Email">
+		<input style="height:30px;width:585px;font-size:14pt;" name="Username_or_Email" value="" class="text-input" placeholder="Username or Email">
+	</div>
+	<svg class="Rectangle_50_e">
+		<rect id="Rectangle_50_e" rx="0" ry="0" x="0" y="0" width="625" height="55">
+		</rect>
+	</svg>
+	<div id="Password">
+		<input style="height:30px;width:585px;font-size:14pt;" name="Password" value="" class="text-input" placeholder="Password">
+	</div>
+	<svg class="Rectangle_55_e">
+		<rect onclick="application.goToTargetView(event)" id="Rectangle_55_e" rx="1" ry="1" x="0" y="0" width="625" height="55">
+		</rect>
+	</svg>
+	<div onclick="application.goToTargetView(event)" id="Sign_in_e">
+		<span>Sign in</span>
+	</div>
+	<svg class="Rectangle_56_fa">
+		<rect onclick="application.goToTargetView(event)" id="Rectangle_56_fa" rx="1" ry="1" x="0" y="0" width="625" height="55">
+		</rect>
+	</svg>
+	<div id="Group_245_fb">
+		<div id="google_fc">
+			<svg class="Path_164_fd" viewBox="267.131 211.479 15.365 16.698">
+				<path id="Path_164_fd" d="M 281.2828063964844 211.4796447753906 L 268.1787109375 211.47900390625 C 267.6000366210938 211.47900390625 267.1310424804688 211.947998046875 267.1310424804688 212.5266418457031 L 267.1310424804688 216.7127990722656 C 267.1310424804688 217.2913513183594 267.6000366210938 217.7604370117188 268.1786499023438 217.7604370117188 L 275.55810546875 217.7604370117188 C 274.7500305175781 219.8575134277344 273.2418518066406 221.6137390136719 271.317626953125 222.7296295166016 L 274.4642333984375 228.1766510009766 C 279.51171875 225.2574768066406 282.495849609375 220.1354827880859 282.495849609375 214.4017639160156 C 282.495849609375 213.5853729248047 282.4356689453125 213.0017700195312 282.3153076171875 212.3446044921875 C 282.2238159179688 211.8453369140625 281.7903747558594 211.4796447753906 281.2828063964844 211.4796447753906 Z">
+				</path>
+			</svg>
+			<svg class="Path_165_fe" viewBox="34.411 333.847 21.936 11.179">
+				<path id="Path_165_fe" d="M 48.31506729125977 338.7399291992188 C 44.70372009277344 338.7399291992188 41.55105590820312 336.7667846679688 39.85782241821289 333.8469848632812 L 34.41099548339844 336.9864501953125 C 37.1828498840332 341.79052734375 42.37542343139648 345.0255737304688 48.31506729125977 345.0255737304688 C 51.22885513305664 345.0255737304688 53.97824859619141 344.2410278320312 56.34669876098633 342.8738403320312 L 56.34669876098633 342.8663940429688 L 53.20011520385742 337.4193115234375 C 51.76082611083984 338.2540893554688 50.09526824951172 338.7399291992188 48.31506729125977 338.7399291992188 Z">
+				</path>
+			</svg>
+			<svg class="Path_166_ff" viewBox="256 390.779 8.032 7.606">
+				<path id="Path_166_ff" d="M 264.0316162109375 396.2335815429688 L 264.0316162109375 396.22607421875 L 260.8850708007812 390.7790222167969 C 259.4457702636719 391.6137390136719 257.7803344726562 392.0996704101562 256 392.0996704101562 L 256 398.3852844238281 C 258.913818359375 398.3852844238281 261.663330078125 397.6007690429688 264.0316162109375 396.2335815429688 Z">
+				</path>
+			</svg>
+			<svg class="Path_167_fg" viewBox="0 128.119 7.606 16.048">
+				<path id="Path_167_fg" d="M 6.285630226135254 136.1431579589844 C 6.285630226135254 134.3630981445312 6.771418571472168 132.6977233886719 7.60601806640625 131.2584838867188 L 2.159191370010376 128.1190032958984 C 0.7844644784927368 130.47998046875 0 133.221923828125 0 136.1431579589844 C 0 139.0644226074219 0.7844644784927368 141.8063507080078 2.159190893173218 144.1673278808594 L 7.606017589569092 141.0278472900391 C 6.771418571472168 139.5886077880859 6.285630226135254 137.9232482910156 6.285630226135254 136.1431579589844 Z">
+				</path>
+			</svg>
+			<svg class="Path_168_fh" viewBox="34.411 0 24.789 11.179">
+				<path id="Path_168_fh" d="M 48.31507110595703 6.285630226135254 C 50.67003631591797 6.285630226135254 52.83317565917969 7.122425556182861 54.52276611328125 8.514346122741699 C 54.93959808349609 8.857697486877441 55.54542541503906 8.832912445068359 55.92723846435547 8.451096534729004 L 58.89329528808594 5.485039710998535 C 59.32649993896484 5.051834106445312 59.29562377929688 4.342728614807129 58.83287048339844 3.941272497177124 C 56.00202941894531 1.48541259765625 52.31877899169922 0 48.31507110595703 0 C 42.37542724609375 0 37.18285369873047 3.235053062438965 34.4109992980957 8.039098739624023 L 39.85782623291016 11.17858791351318 C 41.55105590820312 8.25877571105957 44.70372009277344 6.285630226135254 48.31507110595703 6.285630226135254 Z">
+				</path>
+			</svg>
+			<svg class="Path_169_fi" viewBox="256 0 10.885 8.756">
+				<path id="Path_169_fi" d="M 262.2077026367188 8.514345169067383 C 262.6245422363281 8.857697486877441 263.2304077148438 8.832911491394043 263.6121826171875 8.451095581054688 L 266.5782470703125 5.485038757324219 C 267.0113830566406 5.051833152770996 266.9804992675781 4.342727661132812 266.517822265625 3.941271543502808 C 263.6869506835938 1.485349893569946 260.0037231445312 0 256 0 L 256 6.285630226135254 C 258.3549194335938 6.285630226135254 260.5181274414062 7.122425556182861 262.2077026367188 8.514345169067383 Z">
+				</path>
+			</svg>
+		</div>
+	</div>
+	<div onclick="application.goToTargetView(event)" id="Sign_in_with_Google_fj">
+		<span>Sign in with Google</span>
+	</div>
+</div>
+</body>
+</html>

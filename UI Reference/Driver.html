@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driver</title>
+<style id="applicationStylesheet" type="text/css">
+	.mediaViewInfo {
+		--web-view-name: Driver;
+		--web-view-id: Driver;
+		--web-enable-deep-linking: true;
+	}
+	:root {
+		--web-view-ids: Driver;
+	}
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+		border: none;
+	}
+	#Driver {
+		position: absolute;
+		width: 1920px;
+		height: 1080px;
+		background-color: rgba(255,255,255,1);
+		overflow: hidden;
+		--web-view-name: Driver;
+		--web-view-id: Driver;
+		--web-enable-deep-linking: true;
+	}
+	
+	#Group_1 {
+		position: absolute;
+		width: 1920px;
+		height: 1280px;
+		left: 0px;
+		top: 0px;
+		overflow: visible;
+	}
+	#driver {
+		position: absolute;
+		width: 1920px;
+		height: 1280px;
+		left: 0px;
+		top: 0px;
+		overflow: visible;
+	}
+	#Rectangle_1 {
+		fill: rgba(0,0,0,1);
+	}
+	.Rectangle_1 {
+		position: absolute;
+		overflow: visible;
+		width: 1920px;
+		height: 60px;
+		left: 0px;
+		top: 0px;
+	}
+	#Uber_Clone {
+		left: 300px;
+		top: 15px;
+		position: absolute;
+		overflow: visible;
+		width: 113px;
+		white-space: nowrap;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: bold;
+		font-size: 22px;
+		color: rgba(255,255,255,1);
+	}
+	#Drive {
+		left: 456px;
+		top: 20px;
+		position: absolute;
+		overflow: visible;
+		width: 39px;
+		white-space: nowrap;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: bold;
+		font-size: 16px;
+		color: rgba(255,255,255,1);
+	}
+	#Ride {
+		left: 538px;
+		top: 20px;
+		position: absolute;
+		overflow: visible;
+		width: 33px;
+		white-space: nowrap;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Passenger.html;
+		cursor: pointer;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: bold;
+		font-size: 16px;
+		color: rgba(255,255,255,1);
+	}
+	#Log-in {
+		position: absolute;
+		width: 17px;
+		height: 17px;
+		left: 1459px;
+		top: 22px;
+		overflow: visible;
+	}
+	#Conntainer {
+		fill: transparent;
+	}
+	.Conntainer {
+		position: absolute;
+		overflow: visible;
+		width: 17px;
+		height: 17px;
+		left: 0px;
+		top: 0px;
+	}
+	#Log-in_bs {
+		fill: rgba(255,255,255,1);
+	}
+	.Log-in_bs {
+		overflow: visible;
+		position: absolute;
+		width: 15px;
+		height: 17px;
+		left: 1px;
+		top: 0px;
+		transform: matrix(1,0,0,1,0,0);
+	}
+	#Log_in {
+		left: 1485px;
+		top: 20px;
+		position: absolute;
+		overflow: visible;
+		width: 46px;
+		white-space: nowrap;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Sign_in_choices.html;
+		cursor: pointer;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: bold;
+		font-size: 16px;
+		color: rgba(255,255,255,1);
+	}
+	#Sign_up {
+		left: 1560px;
+		top: 20px;
+		position: absolute;
+		overflow: visible;
+		width: 56px;
+		white-space: nowrap;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Sign_up_choices.html;
+		cursor: pointer;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: bold;
+		font-size: 16px;
+		color: rgba(255,255,255,1);
+	}
+	#Rectangle_2 {
+		fill: rgba(249,249,249,1);
+	}
+	.Rectangle_2 {
+		position: absolute;
+		overflow: visible;
+		width: 523px;
+		height: 335px;
+		left: 1232px;
+		top: 366px;
+	}
+	#Begin_driving___start_earning {
+		left: 1281px;
+		top: 392px;
+		position: absolute;
+		overflow: visible;
+		width: 381px;
+		white-space: nowrap;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: bold;
+		font-size: 56px;
+		color: rgba(0,0,0,1);
+	}
+	#Rectangle_3 {
+		fill: rgba(0,0,0,1);
+	}
+	.Rectangle_3 {
+		position: absolute;
+		overflow: visible;
+		width: 212px;
+		height: 51px;
+		left: 1281px;
+		top: 590px;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Driver_Sign_up.html;
+		cursor: pointer;
+	}
+	#Sign_up_to_drive {
+		left: 1311px;
+		top: 602px;
+		position: absolute;
+		overflow: visible;
+		width: 153px;
+		white-space: nowrap;
+		--web-animation: fadein 0.30000001192092896s ease-out;
+		--web-action-type: page;
+		--web-action-target: Driver_Sign_up.html;
+		cursor: pointer;
+		text-align: left;
+		font-family: Segoe UI;
+		font-style: normal;
+		font-weight: bold;
+		font-size: 21px;
+		color: rgba(255,255,255,1);
+	}
+</style>
+<script id="applicationScript">
+///////////////////////////////////////
+// INITIALIZATION
+///////////////////////////////////////
+
+/**
+ * Functionality for scaling, showing by media query, and navigation between multiple pages on a single page. 
+ * Code subject to change.
+ **/
+
+if (window.console==null) { window["console"] = { log : function() {} } }; // some browsers do not set console
+
+var Application = function() {
+	// event constants
+	this.prefix = "--web-";
+	this.NAVIGATION_CHANGE = "viewChange";
+	this.VIEW_NOT_FOUND = "viewNotFound";
+	this.VIEW_CHANGE = "viewChange";
+	this.VIEW_CHANGING = "viewChanging";
+	this.STATE_NOT_FOUND = "stateNotFound";
+	this.APPLICATION_COMPLETE = "applicationComplete";
+	this.APPLICATION_RESIZE = "applicationResize";
+	this.SIZE_STATE_NAME = "data-is-view-scaled";
+	this.STATE_NAME = this.prefix + "state";
+
+	this.inclusionQuery = "(min-width: 0px)";
+	this.exclusionQuery = "none and (min-width: 99999px)";
+	this.LastModifiedDateLabelName = "LastModifiedDateLabel";
+	this.viewScaleSliderId = "ViewScaleSliderInput";
+	this.pageRefreshedName = "showPageRefreshedNotification";
+	this.mediaQueryDictionary = {};
+	this.viewsDictionary = {};
+	this.addedViews = [];
+	this.viewStates = [];
+	this.views = [];
+	this.viewIds = [];
+	this.viewQueries = {};
+	this.overlays = {};
+	this.overlayIds = [];
+	this.numberOfViews = 0;
+	this.verticalPadding = 0;
+	this.horizontalPadding = 0;
+	this.stateName = null;
+	this.viewScale = 1;
+	this.viewLeft = 0;
+	this.viewTop = 0;
+
+	var self = this;
+
+
+	///////////////////////////////////////
+	// NAVIGATION CONTROLS
+	///////////////////////////////////////
+
+	self.goToTargetView = function(event) {
+		var button = event.currentTarget;
+		var buttonComputedStyles = getComputedStyle(button);
+		var actionTargetValue = buttonComputedStyles.getPropertyValue(self.prefix+"action-target").trim();
+		var animation = buttonComputedStyles.getPropertyValue(self.prefix+"animation").trim();
+		var targetType = buttonComputedStyles.getPropertyValue(self.prefix+"action-type").trim();
+		var targetView = self.application ? null : self.getElement(actionTargetValue);
+		var targetState = targetView ? self.getStateNameByViewId(targetView.id) : null;
+		var actionTargetStyles = targetView ? targetView.style : null;
+		var state = self.viewsDictionary[actionTargetValue];
+		
+		// navigate to page
+		if (self.application==false || targetType=="page") {
+			document.location.href = "./" + actionTargetValue;
+			return;
+		}
+
+		// if view is found
+		if (targetView) {
+
+			if (self.currentOverlay) {
+				self.removeOverlay(false);
+			}
+
+			if (self.showByMediaQuery) {
+				var stateName = targetState;
+				
+				if (stateName==null || stateName=="") {
+					var initialView = self.getInitialView();
+					stateName = initialView ? self.getStateNameByViewId(initialView.id) : null;
+				}
+				self.showMediaQueryViewsByState(stateName, event);
+				return;
+			}
+
+			// add animation set in event target style declaration
+			if (animation && self.supportAnimations) {
+				self.crossFade(self.currentView, targetView, false, animation);
+			}
+			else {
+				self.setViewVariables(self.currentView);
+				self.hideViews();
+				self.enableMediaQuery(state.rule);
+				self.scaleViewIfNeeded(targetView);
+				self.centerView(targetView);
+				self.updateViewLabel();
+				self.updateURL();
+			}
+		}
+		else {
+			var stateEvent = new Event(self.STATE_NOT_FOUND);
+			self.stateName = name;
+			window.dispatchEvent(stateEvent);
+		}
+
+		event.stopImmediatePropagation();
+	}
+
+	self.getElement = function(id) {
+		id = id ? id.trim() : id;
+		var element = id ? document.getElementById(id) : null;
+
+		return element;
+	}
+
+	// initialize on load
+	// sometimes the body size is 0 so we call this now and again later
+	window.addEventListener("load", self.onloadHandler);
+	window.document.addEventListener("DOMContentLoaded", self.onloadHandler);
+}
+
+window.application = new Application();
+</script>
+</head>
+<body>
+<div id="Driver">
+	<div id="Group_1">
+		<img id="driver" src="driver.png">
+			
+		<svg class="Rectangle_1">
+			<rect id="Rectangle_1" rx="0" ry="0" x="0" y="0" width="1920" height="60">
+			</rect>
+		</svg>
+		<div id="Uber_Clone">
+			<span>Uber Clone</span>
+		</div>
+		<div id="Drive">
+			<span>Drive</span>
+		</div>
+		<div onclick="application.goToTargetView(event)" id="Ride">
+			<span>Ride</span>
+		</div>
+		<div id="Log-in" class="Log_in">
+			<svg class="Conntainer">
+				<rect id="Conntainer" rx="0" ry="0" x="0" y="0" width="17" height="17">
+				</rect>
+			</svg>
+			<svg class="Log-in_bs" viewBox="16 10 15 17">
+				<path id="Log-in_bs" d="M 31.00000762939453 27.00000190734863 C 31.00000762939453 22.79143524169922 27.64239883422852 19.37911033630371 23.50000381469727 19.37911033630371 C 19.35761260986328 19.37911033630371 16 22.79164695739746 16 27.00000190734863 L 17.15404891967773 27.00000190734863 C 17.15404891967773 23.43892288208008 19.9953498840332 20.55189895629883 23.49991607666016 20.55189895629883 C 27.00448608398438 20.55189895629883 29.84579086303711 23.43892288208008 29.84579086303711 27.00000190734863 L 31.00000762939453 27.00000190734863 Z M 23.50000381469727 18.20696067810059 C 25.73000717163086 18.20696067810059 27.53870391845703 16.37000465393066 27.53870391845703 14.1031608581543 C 27.53870391845703 11.83705997467041 25.72994232177734 9.999998092651367 23.50000381469727 9.999998092651367 C 21.27007293701172 9.999998092651367 19.46130752563477 11.83695316314697 19.46130752563477 14.1031608581543 C 19.46130752563477 16.37010955810547 21.27007293701172 18.20696067810059 23.50000381469727 18.20696067810059 Z M 23.50000381469727 17.03406524658203 C 21.90694046020508 17.03406524658203 20.61521911621094 15.72253704071045 20.61521911621094 14.10305404663086 C 20.61521911621094 12.48439884185791 21.90682983398438 11.17204093933105 23.50000381469727 11.17204093933105 C 25.09318161010742 11.17204093933105 26.38478851318359 12.48439884185791 26.38478851318359 14.10305404663086 C 26.38478851318359 15.72253894805908 25.09318161010742 17.03406524658203 23.50000381469727 17.03406524658203 Z">
+				</path>
+			</svg>
+		</div>
+		<div onclick="application.goToTargetView(event)" id="Log_in">
+			<span>Log in</span>
+		</div>
+		<div onclick="application.goToTargetView(event)" id="Sign_up">
+			<span>Sign up</span>
+		</div>
+	</div>
+	<svg class="Rectangle_2">
+		<rect id="Rectangle_2" rx="3" ry="3" x="0" y="0" width="523" height="335">
+		</rect>
+	</svg>
+	<div id="Begin_driving___start_earning">
+		<span>Begin driving <br/>& start earning</span>
+	</div>
+	<svg class="Rectangle_3">
+		<rect onclick="application.goToTargetView(event)" id="Rectangle_3" rx="0" ry="0" x="0" y="0" width="212" height="51">
+		</rect>
+	</svg>
+	<div onclick="application.goToTargetView(event)" id="Sign_up_to_drive">
+		<span>Sign up to drive</span>
+	</div>
+</div>
+</body>
+</html>
