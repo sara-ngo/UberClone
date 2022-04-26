@@ -53,8 +53,8 @@ async function calculateCost(end, start, map) {
     }
     
     // check if price meets minimum wages
-    const checkPrice = (price) => {
-      if (price <= MINIMUM_FARE) {
+    const checkPrice = (price, minutes) => {
+      if (price <= MINIMUM_FARE && minutes <= 0.5) {
         price = MINIMUM_FARE;
         return price;
       } else {
@@ -66,8 +66,9 @@ async function calculateCost(end, start, map) {
 
     var tripDuration = Math.floor(data.duration / 60);
     var tripDistance = Math.floor(data.distance / 1000);
+
     var tripCost = tripDuration*TIME_FEE + tripDistance*RIDE_DISTANCE + BASE_FEE + BOOKING_FEE;
-    tripCost = parseInt(checkPrice(tripCost));
+    tripCost = parseInt(checkPrice(tripCost, tripDuration));
     
     var comfortCost = (tripCost + COMFORT_FEE)*COMFORT_RATE;
     var poolCost = tripCost/2 + POOL_FEE;
