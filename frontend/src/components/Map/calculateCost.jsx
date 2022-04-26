@@ -77,7 +77,7 @@ async function calculateCost(end, start, map) {
         <p id="title">Trip duration: ${tripDuration} minutes</p>
         <p id="title">Trip distance: ${tripDistance} miles</p>
         <p id="title">Estimated cost: </p>
-        <ul id="chooseRide">
+        <ul id="chooseRide"> 
           <li value="uberX">
             <p>UberX: $${tripCost.toFixed(2)}</p>
           </li>
