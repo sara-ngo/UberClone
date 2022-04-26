@@ -75,7 +75,7 @@ async function calculateCost(end, start, map) {
   const costEst = document.getElementById('costEst');
   document.getElementById('tripDuration').innerHTML = `Trip duration: ${tripDuration} minutes`;
   document.getElementById('tripDistance').innerHTML = `Trip distance: ${tripDistance} miles`;
-  document.getElementById('tripDistance').innerHTML = `UberX: $${tripCost.toFixed(2)}`;
+  document.getElementById('uberX').innerHTML = `UberX: $${tripCost.toFixed(2)}`;
   document.getElementById('comfort').innerHTML = `Comfort: $${comfortCost.toFixed(2)}`;
   document.getElementById('pool').innerHTML = `Pool: $${poolCost.toFixed(2)}`;
 }
