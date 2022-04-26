@@ -53,8 +53,8 @@ async function calculateCost(end, start, map) {
     }
     
     // check if price meets minimum wages
-    const checkPrice = (price, minutes) => {
-      if (price <= MINIMUM_FARE && minutes <= 0.5) {
+    const checkPrice = (price) => {
+      if (price <= MINIMUM_FARE) {
         price = MINIMUM_FARE;
         return price;
       } else {
@@ -66,9 +66,8 @@ async function calculateCost(end, start, map) {
 
     var tripDuration = Math.floor(data.duration / 60);
     var tripDistance = Math.floor(data.distance / 1000);
-
     var tripCost = tripDuration*TIME_FEE + tripDistance*RIDE_DISTANCE + BASE_FEE + BOOKING_FEE;
-    tripCost = parseInt(checkPrice(tripCost, tripDuration));
+    tripCost = parseInt(checkPrice(tripCost));
     
     var comfortCost = (tripCost + COMFORT_FEE)*COMFORT_RATE;
     var poolCost = tripCost/2 + POOL_FEE;
@@ -78,7 +77,7 @@ async function calculateCost(end, start, map) {
         <p id="title">Trip duration: ${tripDuration} minutes</p>
         <p id="title">Trip distance: ${tripDistance} miles</p>
         <p id="title">Estimated cost: </p>
-        <ul id="chooseRide"> 
+        <ul id="chooseRide">
           <li value="uberX">
             <p>UberX: $${tripCost.toFixed(2)}</p>
           </li>
