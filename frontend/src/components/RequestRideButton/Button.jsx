@@ -8,8 +8,7 @@ import TripService from '../TripService/emitter';
 import './button.css'
 
 function requestRide() {
-  TripService.emit('requestRide', {
-  });
+  TripService.emit('requestRide', {});
 }
 
 function Button() {

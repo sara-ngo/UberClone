@@ -28,10 +28,53 @@ async function calculateCost(end, start, map) {
       type: 'LineString',
       coordinates: route
     }
+<<<<<<< HEAD
   };
   // if the route already exists on the map, we'll reset it using setData
   if (map.current.getSource('route')) {
     map.current.getSource('route').setData(geojson);
+=======
+    
+    // check if price meets minimum wages
+    const checkPrice = (price) => {
+      if (price <= MINIMUM_FARE) {
+        price = MINIMUM_FARE;
+        return price;
+      } else {
+        return price;
+      }
+    }
+
+    const costEst = document.getElementById('costEst');
+
+    var tripDuration = Math.floor(data.duration / 60);
+    var tripDistance = Math.floor(data.distance / 1000);
+    var tripCost = tripDuration*TIME_FEE + tripDistance*RIDE_DISTANCE + BASE_FEE + BOOKING_FEE;
+    tripCost = parseInt(checkPrice(tripCost));
+    
+    var comfortCost = (tripCost + COMFORT_FEE)*COMFORT_RATE;
+    var poolCost = tripCost/2 + POOL_FEE;
+
+    costEst.innerHTML =
+    `<div>
+        <p id="title">Trip duration: ${tripDuration} minutes</p>
+        <p id="title">Trip distance: ${tripDistance} miles</p>
+        <p id="title">Estimated cost: </p>
+        <ul id="chooseRide">
+          <li value="uberX">
+            <p>UberX: $${tripCost.toFixed(2)}</p>
+          </li>
+          <li value="comfort">
+            <p >Comfort: $${comfortCost.toFixed(2)}</p>
+            <p id="caption">Newer cars with extra legroom</p>
+          </li>
+          <li value="pool">
+            <p>Pool: $${poolCost.toFixed(2)}</p>
+            <p id="caption">Share the ride with 1 to 3 people</p>
+          </li>
+        </ul>
+    </div>`;
+>>>>>>> parent of 4db74d8 (Merge branch 'sara-branch-4-18' of https://github.com/sara-ngo/UberClone into sara-branch-4-18)
   }
   // otherwise, we'll make a new request
   else {
