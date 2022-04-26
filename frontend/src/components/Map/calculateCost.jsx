@@ -73,6 +73,8 @@ async function calculateCost(end, start, map) {
   var poolCost = tripCost / 2 + POOL_FEE;
 
   const costEst = document.getElementById('costEst');
+
+  
   document.getElementById('tripDuration').innerHTML = `Trip duration: ${tripDuration} minutes`;
   document.getElementById('tripDistance').innerHTML = `Trip distance: ${tripDistance} miles`;
   document.getElementById('tripDistance').innerHTML = `UberX: $${tripCost.toFixed(2)}`;
