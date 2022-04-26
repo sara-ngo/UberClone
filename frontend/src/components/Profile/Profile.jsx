@@ -13,11 +13,11 @@ const Profile = () => {
 		})
 
 	}, [])
-
 	const handleLogout = () => {
 		localStorage.removeItem("token");
 		window.location.reload();
 	};
+
 
 	return (
 		<div className={styles.main_container}>
@@ -29,10 +29,23 @@ const Profile = () => {
 			</nav>
 			{(user == null) ? '' :
 				<div>
-					<p>email: {user.email}</p>
+					<h5>Profile</h5>
+					<p>Name: {user.firstName} {user.lastName}</p>
+					<p>Email: {user.email}</p>
 					<TripList user={user} trips={user.trips} />
 				</div>
 			}
+			<div>
+				<p>Phone Number:</p>
+			<input type="text" name="Phone Number"></input>
+			</div>
+			<div>
+				<p>New Password:</p>
+			<input type="text" name="Password"></input>
+			</div>
+			<div>
+			<input type="submit" value="Update Profile"></input>
+			</div>
 		</div>
 	);
 };
