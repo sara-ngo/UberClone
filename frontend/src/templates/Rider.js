@@ -14,6 +14,8 @@ import '../styles/matthewjamestaylor/r-c.css'
 import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
+export const MapContext = React.createContext();
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -30,7 +32,7 @@ class App extends Component {
       console.log("destinationSelected Data Received:");
       console.log(data);
       this.setState({
-        tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <Button/></p>
+        tripBlock: <> < CostEstimation  />< p className = "requestButtonPositioning" > <Button/></p>
       </>
       });
     });
