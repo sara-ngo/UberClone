@@ -2,11 +2,11 @@ import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
 import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
-import CostEstimation from '../components/Map/CostEstimation'
+import CostEstimation from '../components/CostEstimation/CostEstimation'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import Rate from '../components/Rate/Rate'
-import Button from '../components/RequestRideButton/Button'
+import RequestRideButton from '../components/RequestRideButton/Button'
 import TripService from '../components/TripService/emitter';
 
 import '../styles/matthewjamestaylor/column-styles.css'
@@ -32,7 +32,7 @@ class App extends Component {
       console.log("destinationSelected Data Received:");
       console.log(data);
       this.setState({
-        tripBlock: <> < CostEstimation  />< p className = "requestButtonPositioning" > <Button/></p>
+        tripBlock: <> < CostEstimation  />< p className = "requestButtonPositioning" > <RequestRideButton/></p>
       </>
       });
     });

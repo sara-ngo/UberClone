@@ -2,7 +2,7 @@ import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
 import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
-import MapInstructions from '../components/Map/MapInstructions'
+import DriverInstructions from '../components/DriverInstructions/DriverInstructions'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import DriverConfirmTrip from '../components/DriverConfirmTrip/Element'
@@ -48,7 +48,7 @@ class App extends Component {
         </main>
         <aside data-md1-3 data-md1 className="left-sidebar">
           <Chat />
-          <MapInstructions />
+          <DriverInstructions />
           {this.state.tripBlock}
         </aside>
     </r-c>
