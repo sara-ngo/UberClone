@@ -3,7 +3,11 @@ import {
   Server
 } from 'socket.io'
 
+import TripService from './components/TripService/emitter.js';
+import TripUtils from './components/TripUtils/tripUtils.js';
+
 var userMap = new Map();
+var tripMap = new Map();
 var driverPosArray = [];
 var io = {};
 var connectedUserLoopFlag = true;
@@ -45,7 +49,7 @@ function removeUserIfDisconnected(socketId) {
   } else if (!userObjRef.lastUpdate) {
     // delete if no update time
     deleteFlag = true;
-  } else if((userObjRef.lastUpdate + 30000) < Date.now()) {
+  } else if ((userObjRef.lastUpdate + 30000) < Date.now()) {
     // user did not update for awhile so we delete
     // Date.now() is in milliseconds
     deleteFlag = true;
@@ -65,6 +69,29 @@ function removeUserIfDisconnected(socketId) {
 
 async function requestRide(socketId) {
   var userObjRef = userMap.get(socketId);
+  // notify the rest of the system about the trip
+  let tripId = TripUtils.generateTripId(tripMap);
+  let tripData = {
+    "tripId": tripId,
+    "driverMatched": false,
+    "inProgress": false,
+    "completed": false,
+    "hasRiderRating": false,
+    "hasDriverRating": false,
+    "riderSocketId": socketId,
+    "riderId": 0,
+    "riderName": "",
+    "riderRating": 0,
+    "driverSocketId": 0,
+    "driverId": 0,
+    "driverName": "",
+    "driverRating": 0
+  }
+  tripMap.set(tripId, tripData);
+  TripService.emit("newTrip", tripData);
+  /*
+  Search for a match in a loop
+  */
   while (true) {
     var driverDistanceArray = []
     // calculate the distance between the rider and each driver
@@ -168,6 +195,7 @@ function MapServer(app) {
       userObjRef.long = data.long;
       userObjRef.lat = data.lat;
       userObjRef.type = data.type;
+      userObjRef.token = data.token;
       // console.log("position update from:", socket.id, "at", data.timestamp)
       // Add type==driver to the driverPosArray
       if (data.type == "driver") {

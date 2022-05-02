@@ -1,5 +1,5 @@
-
 import { User, Trip } from '../models/user.js'
+import TripService from './components/TripService/emitter.js';
 
 function DatabaseServer(app) {
   // routes
@@ -47,5 +47,11 @@ function DatabaseServer(app) {
       res.send({trip: data})
     })
   })
+
+  TripService.on("newTrip", (data) => {
+    // Handle adding a trip to the database
+    console.log("newTrip");
+    console.log(data);
+  });
 }
 export default DatabaseServer;

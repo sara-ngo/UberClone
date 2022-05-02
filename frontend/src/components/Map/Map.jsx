@@ -5,7 +5,6 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "../../styles/Map.css";
 import "mapbox-gl/dist/mapbox-gl.css"; // for zoom and navigation control
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import calculateCost from "./calculateCost";
 import getRoute from "./Navigation";
 import TripService from "../TripService/emitter";
 import loadRiderLocation from "./loadRiderLocation";
@@ -154,7 +153,6 @@ const Map = (props) => {
             },
           });
         }
-        calculateCost(coords, start, map);
         getRoute(coords, start, map);
 
         // emit for other components to use
@@ -223,22 +221,6 @@ const Map = (props) => {
   return (
     <>
       <div ref={mapContainer} className="map-container" />
-      <div>
-        {" "}
-        {(() => {
-          if (props.text === "rider") {
-            //return (
-            //   <div id="costEst" className="costEst"></div>
-            //)
-          } else if (props.text === "driver") {
-            //return (
-            //  <div id="instructions" className="instructions"></div>
-            //)
-          } else {
-            return <div>catch all </div>;
-          }
-        })()}{" "}
-      </div>{" "}
     </>
   );
 };
