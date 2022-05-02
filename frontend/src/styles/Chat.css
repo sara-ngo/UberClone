@@ -168,6 +168,8 @@ body {
 
 .chat .chat-footer button {
   border: 0;
+  margin: 0;
+  padding: 10px;
   display: grid;
   place-items: center;
   cursor: pointer;
