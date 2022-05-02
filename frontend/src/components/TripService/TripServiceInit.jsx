@@ -13,7 +13,7 @@ const TripServiceInit = () => {
 
   // These events are for the rider to request a trip
   TripService.on("requestRide", (data) => {
-    socket.emit('requestRide');
+    socket.emit('requestRide', data);
   });
 
   socket.on('requestRideProgress', (data) => {
@@ -34,53 +34,53 @@ const TripServiceInit = () => {
   });
 
   TripService.on("requestRideDone", (data) => {
-    socket.emit('requestRideDone');
+    socket.emit('requestRideDone', data);
   });
 
   // trip: driver to rider
   socket.on("tripDriverToRiderBegin", (data) => {
-    TripService.emit('tripDriverToRiderBegin');
+    TripService.emit('tripDriverToRiderBegin', data);
   });
 
   socket.on("tripDriverToRiderProgress", (data) => {
-    TripService.emit('tripDriverToRiderProgress');
+    TripService.emit('tripDriverToRiderProgress', data);
   });
 
   socket.on("tripDriverToRiderCancel", (data) => {
-    TripService.emit('tripDriverToRiderCancel');
+    TripService.emit('tripDriverToRiderCancel', data);
   });
 
   socket.on("tripDriverToRiderConfirm", (data) => {
-    TripService.emit('tripDriverToRiderConfirm');
+    TripService.emit('tripDriverToRiderConfirm', data);
   });
 
   socket.on("tripDriverToRiderConfirmProgress", (data) => {
-    TripService.emit('tripDriverToRiderConfirmProgress');
+    TripService.emit('tripDriverToRiderConfirmProgress', data);
   });
 
   TripService.on("tripDriverToRiderDone", (data) => {
-    socket.emit('tripDriverToRiderDone');
+    socket.emit('tripDriverToRiderDone', data);
   });
 
   // trip: driver and rider together
   socket.on("tripTogetherBegin", (data) => {
-    TripService.emit('tripTogetherBegin');
+    TripService.emit('tripTogetherBegin', data);
   });
 
   socket.on("tripTogetherProgress", (data) => {
-    TripService.emit('tripTogetherProgress');
+    TripService.emit('tripTogetherProgress', data);
   });
 
   socket.on("tripTogetherCancel", (data) => {
-    TripService.emit('tripTogetherCancel');
+    TripService.emit('tripTogetherCancel', data);
   });
 
   socket.on("tripTogetherConfirm", (data) => {
-    TripService.emit('tripTogetherConfirm');
+    TripService.emit('tripTogetherConfirm', data);
   });
 
   TripService.on("tripTogetherDone", (data) => {
-    socket.emit('tripTogetherDone');
+    socket.emit('tripTogetherDone', data);
   });
 }
 

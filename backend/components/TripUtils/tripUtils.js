@@ -108,6 +108,10 @@ class App {
   static getRiderDriverDistance(riderObjRef, driverObjRef) {
     return Math.hypot(riderObjRef.long - driverObjRef.long, riderObjRef.lat - driverObjRef.lat);
   }
+
+  static getRiderDestinationDistance(riderObjRef, tripObjRef) {
+    return Math.hypot(riderObjRef.long - tripObjRef.destLong, riderObjRef.lat - tripObjRef.destLat);
+  }
 }
 
 export default App;

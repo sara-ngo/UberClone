@@ -6,37 +6,43 @@ import './element.css'
 class App extends Component {
   constructor(props) {
     super(props);
+    this.tripId = props.tripId;
     this.state = {
       message: "No rider matched yet."
     }
-
-    TripService.on('requestRideDriverConfirm', (data) => {
-      console.log("requestRideDriverConfirm Data Received:");
-      console.log(data);
-      this.setState({message: data.message});
-    });
-
-    TripService.on('confirmTripProgress', (data) => {
-      console.log("confirmTripProgress Data Received:");
-      console.log(data);
-      this.setState({message: data.message});
-    });
-
   }
 
   confirmTrip = () => {
-    TripService.emit('confirmTrip', {});
+    TripService.emit('requestRideDone', {"tripId": this.tripId});
+  }
+
+  requestRideConfirm = (data) => {
+    console.log("requestRideConfirm Data Received:");
+    console.log(data);
+    this.setState({message: data.message});
+  }
+
+  requestRideConfirmProgress = (data) => {
+    console.log("requestRideConfirmProgress Data Received:");
+    console.log(data);
+    this.setState({message: data.message});
+  }
+
+  componentDidMount = () => {
+    TripService.on('requestRideConfirm', this.requestRideConfirm);
+    TripService.on('requestRideConfirmProgress', this.requestRideConfirmProgress);
+  };
+
+  componentWillUnmount = () => {
+    TripService.off('requestRideConfirm', this.requestRideConfirm);
+    TripService.off('requestRideConfirmProgress', this.requestRideConfirmProgress);
   }
 
   render() {
-    return (
-      <>
-        <div className="DriverConfirmTrip">
-          <span className="message">{this.state.message}</span>
-          <button className="button" onClick={this.confirmTrip}>Confirm Trip</button>
-        </div>
-      </>
-    )
+    return (<> < div className = "DriverConfirmTrip" > <span className="message">{this.state.message}</span>
+    <button className="button" onClick={this.confirmTrip}>Confirm Trip</button>
+  </div>
+</>)
   }
 }
 

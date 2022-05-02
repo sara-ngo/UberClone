@@ -6,12 +6,16 @@ import './button.css'
 let rideType = "";
 let rideCost = 0.0;
 let rideRequested = false;
+let destLat = 0.0;
+let destLong = 0.0;
 
 function buttonPress() {
   if (!rideRequested) {
     TripService.emit('requestRide', {
       "rideType": rideType,
-      "rideCost": rideCost
+      "rideCost": rideCost,
+      "destLat" : destLat,
+      "destLong" : destLong
     });
   } else {
     TripService.emit('cancelRide', {});
@@ -19,9 +23,11 @@ function buttonPress() {
 }
 
 class App extends Component {
-
   constructor(props) {
     super(props);
+
+    destLat = props.destLat;
+    destLong = props.destLong;
 
     this.state = {
       "className": "RequestRideButtonDisabled",
@@ -29,24 +35,27 @@ class App extends Component {
     }
   }
 
-  componentDidMount = () => {
-    TripService.on('requestRideProgress', (data) => {
-      console.log("requestRideProgress Data Received:");
-      console.log(data);
-      rideRequested = true;
-      this.setState({"className": "CancelRideButton", "buttonText": `${data.message} (CLICK TO CANCEL)`});
-    });
+  requestRideProgress = (data) => {
+    console.log("requestRideProgress Data Received:");
+    console.log(data);
+    rideRequested = true;
+    this.setState({"className": "CancelRideButton", "buttonText": `${data.message} (CLICK TO CANCEL)`});
+  }
 
-    TripService.on('chooseRideType', (data) => {
-      rideType = data.rideType;
-      rideCost = data.cost;
-      this.setState({"className": "RequestRideButton", "buttonText": `Request ${rideType} @ $${rideCost.toFixed(2)}`});
-    });
+  chooseRideType = (data) => {
+    rideType = data.rideType;
+    rideCost = data.cost;
+    this.setState({"className": "RequestRideButton", "buttonText": `Request ${rideType} @ $${rideCost.toFixed(2)}`});
+  }
+
+  componentDidMount = () => {
+    TripService.on('requestRideProgress', this.requestRideProgress);
+    TripService.on('chooseRideType', this.chooseRideType);
   };
 
   componentWillUnmount = () => {
-    TripService.off('requestRideProgress');
-    TripService.off('chooseRideType');
+    TripService.off('requestRideProgress', this.requestRideProgress);
+    TripService.off('chooseRideType', this.chooseRideType);
   }
 
   render = () => {
