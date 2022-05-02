@@ -1,6 +1,5 @@
 import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
-import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
 import DriverInstructions from '../components/DriverInstructions/DriverInstructions'
 import Chat from '../components/Chat/Chat'
@@ -23,18 +22,38 @@ class App extends Component {
   }
 
   componentDidMount = () => {
-    TripServiceInit();
-
-    TripService.on('requestRideDriverConfirm', (data) => {
-      console.log("requestRideDriverConfirm Data Received:");
+    TripService.on('requestRideConfirm', (data) => {
+      console.log("requestRideConfirm Data Received:");
       console.log(data);
       this.setState({tripBlock: <DriverConfirmTrip />});
     });
 
-    TripService.on('tripBeginDriver', (data) => {
-      console.log("tripBeginRider Data Received:");
+    TripService.on('tripDriverToRiderBegin', (data) => {
+      console.log("tripDriverToRiderBegin Data Received:");
       console.log(data);
-      this.setState({tripBlock: <p>Trip Started!</p>});
+      this.setState({tripBlock: <p>Drive to the rider's location to begin the trip.</p>});
+    });
+
+    TripService.on('tripDriverToRiderProgress', (data) => {
+      console.log("tripDriverToRiderProgress Data Received:");
+      console.log(data);
+    });
+
+    TripService.on('tripDriverToRiderCancel', (data) => {
+      console.log("tripDriverToRiderCancel Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <p>Ride was cancelled! Waiting for a rider to request you.</p>});
+    });
+
+    TripService.on('tripDriverToRiderConfirm', (data) => {
+      console.log("tripDriverToRiderConfirm Data Received:");
+      console.log(data);
+      this.setState({tripBlock: <p>Click the button to confirm you have picked up the rider</p>});
+    });
+
+    TripService.on('tripDriverToRiderConfirmProgress', (data) => {
+      console.log("tripDriverToRiderConfirmProgress Data Received:");
+      console.log(data);
     });
   };
 

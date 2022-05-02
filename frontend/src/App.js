@@ -4,6 +4,7 @@ import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Profile from "./components/Profile/Profile";
 import DriverSignup from "./components/DriverSignup";
+import TripServiceInit from './components/TripService/TripServiceInit';
 import './styles/App.css'
 
 import Home from './templates/Home';
@@ -11,6 +12,7 @@ import Rider from './templates/Rider'
 import Driver from './templates/Driver'
 
 function App() {
+  TripServiceInit();
   const user = localStorage.getItem("token");
   return (
     <Routes>

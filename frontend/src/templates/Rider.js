@@ -1,6 +1,5 @@
 import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
-import TripServiceInit from '../components/TripService/TripServiceInit';
 import Map from '../components/Map/Map'
 import CostEstimation from '../components/CostEstimation/CostEstimation'
 import Chat from '../components/Chat/Chat'
@@ -26,8 +25,6 @@ class App extends Component {
   }
 
   componentDidMount = () => {
-    TripServiceInit();
-
     TripService.on('destinationSelected', (data) => {
       console.log("destinationSelected Data Received:");
       console.log(data);
@@ -37,11 +34,53 @@ class App extends Component {
       });
     });
 
-    TripService.on('tripBeginRider', (data) => {
-      console.log("tripBeginRider Data Received:");
+    TripService.on('tripDriverToRiderBegin', (data) => {
+      console.log("tripDriverToRiderBegin Data Received:");
       console.log(data);
       this.setState({
-        tripBlock: <p>Trip Started!</p>
+        tripBlock: <p>Driver found! Driver is coming to pick you up!</p>
+      });
+    });
+
+    TripService.on('tripDriverToRiderProgress', (data) => {
+      console.log("tripDriverToRiderProgress Data Received:");
+      console.log(data);
+      this.setState({
+        tripBlock: <p>tripDriverToRiderProgress</p>
+      });
+    });
+
+    TripService.on('tripDriverToRiderCancel', (data) => {
+      console.log("tripDriverToRiderCancel Data Received:");
+      console.log(data);
+      this.setState({
+        tripBlock: <> < CostEstimation  />< p className = "requestButtonPositioning" > <RequestRideButton/></p>
+      </>
+      });
+    });
+
+    TripService.on('tripTogetherBegin', (data) => {
+      console.log("tripTogetherBegin Data Received:");
+      console.log(data);
+      this.setState({
+        tripBlock: <p>You have been picked up! Trip started to destination!</p>
+      });
+    });
+
+    TripService.on('tripTogetherProgress', (data) => {
+      console.log("tripTogetherProgress Data Received:");
+      console.log(data);
+      this.setState({
+        tripBlock: <p>tripTogetherProgress</p>
+      });
+    });
+
+    TripService.on('tripTogetherCancel', (data) => {
+      console.log("tripTogetherCancel Data Received:");
+      console.log(data);
+      this.setState({
+        tripBlock: <> < CostEstimation  />< p className = "requestButtonPositioning" > <RequestRideButton/></p>
+      </>
       });
     });
 
@@ -51,6 +90,17 @@ class App extends Component {
       this.setState({tripBlock: <Rate/>});
     });
   };
+
+  componentWillUnmount = () => {
+    TripService.off('destinationSelected');
+    TripService.off('tripDriverToRiderBegin');
+    TripService.off('tripDriverToRiderProgress');
+    TripService.off('tripDriverToRiderCancel');
+    TripService.off('tripTogetherBegin');
+    TripService.off('tripTogetherProgress');
+    TripService.off('tripTogetherCancel');
+    TripService.off('tripEndRider');
+  }
 
   render() {
     return (
