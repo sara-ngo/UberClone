@@ -7,7 +7,7 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
-import "../../styles/calculateCost.css";
+import "../../styles/CostEstimation.css";
 
 const BASE_FEE = 2.0;
 const BOOKING_FEE = 2.5;
@@ -100,8 +100,8 @@ class App extends Component {
   render = () => {
     return (
       <div id="costEst" className="costEst">
-        <p>{this.state.tripDuration}</p>
-        <p>{this.state.tripDistance}</p>
+        <p id="title">{this.state.tripDuration}</p>
+        <p id="title">{this.state.tripDistance}</p>
         <p>Estimated cost:</p>
 
         <FormControl id="chooseRide">

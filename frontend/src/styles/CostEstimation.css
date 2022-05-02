@@ -1,4 +1,9 @@
-.caption {
+#title {
+   font-weight: bold;
+   margin-top: 10px;
+}
+
+#caption {
     font-size: 0.8em;
 }
 
