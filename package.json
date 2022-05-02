@@ -26,7 +26,8 @@
     "mongoose": "^6.2.11",
     "socket.io": "^4.4.1",
     "uuid": "^8.3.2",
-    "validation": "^0.0.1"
+    "validation": "^0.0.1",
+    "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"

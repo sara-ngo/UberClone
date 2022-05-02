@@ -8,7 +8,7 @@ let rideCost = 0.0;
 let rideRequested = false;
 
 function buttonPress() {
-  if (rideRequested) {
+  if (!rideRequested) {
     TripService.emit('requestRide', {
       "rideType": rideType,
       "rideCost": rideCost
