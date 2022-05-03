@@ -107,8 +107,8 @@ async function requestRide(riderSocketId, requestData) {
     "driverRating": 0,
     "destLong": requestData.destLong,
     "destLat": requestData.destLat,
-    "type" : requestData.rideType,
-    "costEstimate" : requestData.rideCost
+    "type": requestData.rideType,
+    "costEstimate": requestData.rideCost
   }
   tripMap.set(tripId, tripData);
   riderSocketIdToTripMap.set(riderSocketId, tripId);
@@ -187,6 +187,7 @@ async function matchDriverToRider(tripId) {
       removeUserIfDisconnected(driverSocketId);
       continue;
     }
+    TripService.emit("driverRiderMatchedTrip", tripObjRef);
     TripService.emit("driverToRiderTrip", tripObjRef.tripId);
     break;
   }
@@ -347,6 +348,7 @@ async function togetherTrip(tripId) {
     TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
     console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") completed a trip!");
     // let them rate trip
+    TripService.emit("completeTrip", tripObjRef);
     TripService.emit("rateTrip", tripObjRef.tripId);
     break;
   }
@@ -362,7 +364,7 @@ function rateTrip(tripId) {
   let riderObjRef = userMap.get(riderSocketId);
   let driverObjRef = userMap.get(driverSocketId);
   // rider
-  if(riderObjRef){
+  if (riderObjRef) {
     let riderData = {};
     riderData.message = "Please rate your driver"
     riderData.timestamp = Date.now();
@@ -371,7 +373,7 @@ function rateTrip(tripId) {
     io.to(riderSocketId).emit('rateBegin', riderData);
   }
   // driver
-  if(driverObjRef){
+  if (driverObjRef) {
     let driverData = {};
     driverData.message = "Please rate your driver"
     driverData.timestamp = Date.now();
@@ -528,6 +530,47 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
   console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") together!");
 }
 
+function rateDone(socketId, tripId, data) {
+  let userObjRef = userMap.get(socketId);
+  // Does the trip ID exist?
+  let tripObjRef = tripMap.get(tripId);
+  if (tripObjRef === undefined || !tripObjRef) {
+    let driverData = {};
+    driverData.message = "ERROR: can't find trip!"
+    driverData.timestamp = Date.now();
+    driverData.socketId = socketId;
+    io.to(socketId).emit('rateProgress', driverData);
+    return;
+  }
+  // Is the driver involved with this trip?
+  if ((userObjRef.type == "driver" && tripObjRef.driverSocketId != socketId) || (userObjRef.type == "rider" && tripObjRef.riderSocketId != socketId)) {
+    let driverData = {};
+    driverData.message = "ERROR: you are not assigned to this trip!"
+    driverData.timestamp = Date.now();
+    driverData.socketId = socketId;
+    io.to(socketId).emit('rateProgress', driverData);
+    return;
+  }
+  // rate conditions are satisfied
+  // Set flags
+  if (userObjRef.type == "driver") {
+    tripObjRef.hasDriverRating = true;
+    tripObjRef.driverRating = data.score;
+  } else if(userObjRef.type == "rider"){
+    tripObjRef.hasRiderRating = true;
+    tripObjRef.riderRating = data.score;
+  }
+  // emit messages
+  let driverData = {};
+  driverData.message = "Trip rated!"
+  driverData.timestamp = Date.now();
+  driverData.socketId = socketId;
+  driverData.score = data.score;
+  io.to(socketId).emit('rateDone', driverData);
+  console.log(socketId + "(" + userObjRef.firstName + ") rated trip ID:", tripId, "with a score:", data.score);
+  TripService.emit("rateTrip", tripObjRef);
+}
+
 const MapServer = (app) => {
   const httpServer = http.createServer(app)
   io = new Server(httpServer, {
@@ -667,6 +710,18 @@ const MapServer = (app) => {
     socket.on('tripDriverToRiderConfirmDone', (data) => {
       let driverSocketId = socket.id;
       tripDriverToRiderConfirmDone(driverSocketId);
+    });
+
+    socket.on('rateDone', (data) => {
+      if (data === undefined) {
+        console.log("rateDone ERROR no data");
+        return;
+      }
+      if (data.tripId === undefined) {
+        console.log("rateDone ERROR no tripId");
+        return;
+      }
+      rateDone(socket.id, data.tripId, data);
     });
   });
 

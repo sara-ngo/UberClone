@@ -26,6 +26,12 @@ class App extends Component {
     }
   }
 
+  initialState = () => {
+    this.setState({
+      "messageBlock": "", "chatBlock": "", "tripBlock": <p>Waiting for a rider to request you.</p>
+    });
+  }
+
   requestRideConfirm = (data) => {
     console.log("requestRideConfirm Data Received:");
     console.log(data);
@@ -53,9 +59,7 @@ class App extends Component {
   tripDriverToRiderStop = (data) => {
     console.log("tripDriverToRiderStop Data Received:");
     console.log(data);
-    this.setState({
-      tripBlock: <p>Ride was cancelled! Waiting for a rider to request you.</p>
-    });
+    this.initialState();
   }
 
   tripDriverToRiderConfirm = (data) => {
@@ -90,8 +94,14 @@ class App extends Component {
     console.log("rateBegin Data Received:");
     console.log(data);
     this.setState({
-      messageBlock: data.message, chatBlock: "", tripBlock: <><p> Rate your rider: </p><Rate/></>
+      messageBlock: data.message, chatBlock: "", tripBlock: <><p> Rate your rider: </p><Rate tripId={data.tripId}/></>
     });
+  }
+
+  rateDone = (data) => {
+    console.log("rateBegin Data Received:");
+    console.log(data);
+    this.initialState();
   }
 
   componentDidMount = () => {
@@ -103,6 +113,7 @@ class App extends Component {
     TripService.on('tripDriverToRiderConfirmProgress', this.tripDriverToRiderConfirmProgress);
     TripService.on('tripTogetherBegin', this.tripTogetherBegin);
     TripService.on('rateBegin', this.rateBegin);
+    TripService.on('rateDone', this.rateDone);
   };
 
   componentWillUnmount = () => {
@@ -114,6 +125,7 @@ class App extends Component {
     TripService.off('tripDriverToRiderConfirmProgress', this.tripDriverToRiderConfirmProgress);
     TripService.off('tripTogetherBegin', this.tripTogetherBegin);
     TripService.off('rateBegin', this.rateBegin);
+    TripService.off('rateDone', this.rateDone);
   }
 
   render() {

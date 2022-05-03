@@ -3,31 +3,15 @@ import TripService from '../TripService/emitter';
 
 import './button.css'
 
-let rideType = "";
-let rideCost = 0.0;
-let rideRequested = false;
-let destLat = 0.0;
-let destLong = 0.0;
-
-function buttonPress() {
-  if (!rideRequested) {
-    TripService.emit('requestRide', {
-      "rideType": rideType,
-      "rideCost": rideCost,
-      "destLat" : destLat,
-      "destLong" : destLong
-    });
-  } else {
-    TripService.emit('cancelRide', {});
-  }
-}
-
 class App extends Component {
   constructor(props) {
     super(props);
 
-    destLat = props.destLat;
-    destLong = props.destLong;
+    this.rideType = "";
+    this.rideCost = 0.0;
+    this.rideRequested = false;
+    this.destLat = props.destLat;
+    this.destLong = props.destLong;
 
     this.state = {
       "className": "RequestRideButtonDisabled",
@@ -35,20 +19,34 @@ class App extends Component {
     }
   }
 
+buttonPress  = () => {
+  if (!this.rideRequested) {
+    TripService.emit('requestRide', {
+      "rideType": this.rideType,
+      "rideCost": this.rideCost,
+      "destLat" : this.destLat,
+      "destLong" : this.destLong
+    });
+    this.rideRequested = true;
+  } else {
+    TripService.emit('requestRideCancel', {});
+  }
+}
+
   requestRideProgress = (data) => {
     console.log("requestRideProgress Data Received:");
     console.log(data);
-    rideRequested = true;
     this.setState({"className": "CancelRideButton", "buttonText": `${data.message} (CLICK TO CANCEL)`});
   }
 
   chooseRideType = (data) => {
-    rideType = data.rideType;
-    rideCost = data.cost;
-    this.setState({"className": "RequestRideButton", "buttonText": `Request ${rideType} @ $${rideCost.toFixed(2)}`});
+    this.rideType = data.rideType;
+    this.rideCost = data.cost;
+    this.setState({"className": "RequestRideButton", "buttonText": `Request ${this.rideType} @ $${this.rideCost.toFixed(2)}`});
   }
 
   componentDidMount = () => {
+    this.rideRequested = false;
     TripService.on('requestRideProgress', this.requestRideProgress);
     TripService.on('chooseRideType', this.chooseRideType);
   };
@@ -63,7 +61,7 @@ class App extends Component {
       this.state.className
     }
     onClick = {
-      buttonPress
+      this.buttonPress
     } > {
       this.state.buttonText
     }</button> < />)
