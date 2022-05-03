@@ -22,7 +22,7 @@ class App {
       data.message = "You were removed from the matching system for being inactive!"
       data.timestamp = Date.now();
       data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('requestRideCancel', data);
+      io.to(userObjRef.socketId).emit('requestRideStop', data);
       return false;
     }
     return true;
@@ -34,7 +34,7 @@ class App {
       data.message = "Your trip has been cancelled!"
       data.timestamp = Date.now();
       data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('requestRideCancel', data);
+      io.to(userObjRef.socketId).emit('requestRideStop', data);
     }
   }
 
@@ -46,7 +46,7 @@ class App {
       data.message = "Your trip has been cancelled due to inactivity!"
       data.timestamp = Date.now();
       data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('tripDriverToRiderCancel', data);
+      io.to(userObjRef.socketId).emit('tripDriverToRiderStop', data);
       return false;
     }
     return true;
@@ -58,7 +58,7 @@ class App {
       data.message = "Your trip has been cancelled!"
       data.timestamp = Date.now();
       data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('tripDriverToRiderCancel', data);
+      io.to(userObjRef.socketId).emit('tripDriverToRiderStop', data);
     }
   }
 
@@ -70,7 +70,7 @@ class App {
       data.message = "Your trip has been cancelled due to inactivity!"
       data.timestamp = Date.now();
       data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('tripTogetherCancel', data);
+      io.to(userObjRef.socketId).emit('tripTogetherStop', data);
       return false;
     }
     return true;
@@ -82,7 +82,7 @@ class App {
       data.message = "Your trip has been cancelled!"
       data.timestamp = Date.now();
       data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('tripTogetherCancel', data);
+      io.to(userObjRef.socketId).emit('tripTogetherStop', data);
     }
   }
 
@@ -111,6 +111,12 @@ class App {
 
   static getRiderDestinationDistance(riderObjRef, tripObjRef) {
     return Math.hypot(riderObjRef.long - tripObjRef.destLong, riderObjRef.lat - tripObjRef.destLat);
+  }
+
+  static userStopTrip(userObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap){
+    userObjRef.tripDoing = false;
+    riderSocketIdToTripMap.delete(userObjRef.socketId);
+    driverSocketIdToTripMap.delete(userObjRef.socketId);
   }
 }
 

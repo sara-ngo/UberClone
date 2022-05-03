@@ -42,8 +42,8 @@ class App extends Component {
     });
   }
 
-  requestRideCancel = (data) => {
-    console.log("requestRideCancel Data Received:");
+  requestRideStop = (data) => {
+    console.log("requestRideStop Data Received:");
     console.log(data);
     this.setState({
       messageBlock: data.message,
@@ -69,8 +69,8 @@ class App extends Component {
     });
   }
 
-  tripDriverToRiderCancel = (data) => {
-    console.log("tripDriverToRiderCancel Data Received:");
+  tripDriverToRiderStop = (data) => {
+    console.log("tripDriverToRiderStop Data Received:");
     console.log(data);
     this.setState({
       messageBlock: data.message,
@@ -97,8 +97,8 @@ class App extends Component {
     });
   }
 
-  tripTogetherCancel = (data) => {
-    console.log("tripTogetherCancel Data Received:");
+  tripTogetherStop = (data) => {
+    console.log("tripTogetherStop Data Received:");
     console.log(data);
     this.setState({
       messageBlock: data.message,
@@ -113,30 +113,38 @@ class App extends Component {
     this.setState({tripBlock: <Rate/>});
   }
 
+  rateBegin = (data) => {
+    console.log("rateBegin Data Received:");
+    console.log(data);
+    this.setState({
+      messageBlock: data.message, chatBlock: "", tripBlock: <><p> Rate your driver: </p><Rate/></>
+    });
+  }
+
   componentDidMount = () => {
     TripService.on('destinationSelected', this.destinationSelected);
     TripService.on('requestRideProgress', this.requestRideProgress);
-    TripService.on('requestRideCancel', this.requestRideCancel);
+    TripService.on('requestRideStop', this.requestRideStop);
     TripService.on('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
     TripService.on('tripDriverToRiderProgress', this.tripDriverToRiderProgress);
-    TripService.on('tripDriverToRiderCancel', this.tripDriverToRiderCancel);
+    TripService.on('tripDriverToRiderStop', this.tripDriverToRiderStop);
     TripService.on('tripTogetherBegin', this.tripTogetherBegin);
     TripService.on('tripTogetherProgress', this.tripTogetherProgress);
-    TripService.on('tripTogetherCancel', this.tripTogetherCancel);
-    TripService.on('tripEndRider', this.tripEndRider);
+    TripService.on('tripTogetherStop', this.tripTogetherStop);
+    TripService.on('rateBegin', this.rateBegin);
   };
 
   componentWillUnmount = () => {
     TripService.off('destinationSelected', this.destinationSelected);
     TripService.off('requestRideProgress', this.requestRideProgress);
-    TripService.off('requestRideCancel', this.requestRideCancel);
+    TripService.off('requestRideStop', this.requestRideStop);
     TripService.off('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
     TripService.off('tripDriverToRiderProgress', this.tripDriverToRiderProgress);
-    TripService.off('tripDriverToRiderCancel', this.tripDriverToRiderCancel);
+    TripService.off('tripDriverToRiderStop', this.tripDriverToRiderStop);
     TripService.off('tripTogetherBegin', this.tripTogetherBegin);
     TripService.off('tripTogetherProgress', this.tripTogetherProgress);
-    TripService.off('tripTogetherCancel', this.tripTogetherCancel);
-    TripService.off('tripEndRider', this.tripEndRider);
+    TripService.off('tripTogetherStop', this.tripTogetherStop);
+    TripService.off('rateBegin', this.rateBegin);
   }
 
   render() {
