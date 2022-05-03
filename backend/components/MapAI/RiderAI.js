@@ -35,8 +35,8 @@ class App {
     this.socket.emit("requestRide", {
       "rideType": "UberX",
       "rideCost": 20,
-      "destLat" : 37.3335675106991,
-      "destLong" : -121.88175427152902
+      "destLat" : this.lat,
+      "destLong" : this.long
     });
   }
   async positionUpdate(){
