@@ -12,13 +12,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
     "@mapbox/mapbox-gl-geocoder": "^5.0.0",
+    "@mui/material": "^5.6.3",
     "axios": "^0.26.1",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
+    "eventemitter3": "^4.0.7",
     "express": "^4.17.3",
     "joi": "^17.6.0",
     "joi-password-complexity": "^5.1.0",
@@ -27,8 +31,7 @@
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.5.0",
     "uuid": "^8.3.2",
-    "validation": "^0.0.1",
-    "eventemitter3": "^4.0.7"
+    "validation": "^0.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
