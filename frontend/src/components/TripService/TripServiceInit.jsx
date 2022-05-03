@@ -104,6 +104,14 @@ const TripServiceInit = () => {
     TripService.emit('rateBegin', data);
   });
 
+  socket.on("rateProgress", (data) => {
+    TripService.emit('rateStop', data);
+  });
+
+  socket.on("rateStop", (data) => {
+    TripService.emit('rateStop', data);
+  });
+
   TripService.on("rateDone", (data) => {
     socket.emit('rateDone', data);
   });

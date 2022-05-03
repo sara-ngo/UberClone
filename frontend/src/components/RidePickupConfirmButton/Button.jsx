@@ -3,10 +3,6 @@ import TripService from '../TripService/emitter';
 
 import './button.css'
 
-let rideType = "";
-let rideCost = 0.0;
-let rideRequested = false;
-
 function buttonPress() {
   TripService.emit('tripDriverToRiderConfirmDone', {});
 }

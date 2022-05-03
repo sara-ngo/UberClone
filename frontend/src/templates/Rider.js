@@ -22,6 +22,13 @@ class App extends Component {
     this.state = {
       tripBlock: <p>Select a map position as your destination.</p>
     }
+
+  }
+
+  initialState = () => {
+    this.setState({
+      "messageBlock": "", "chatBlock": "", "tripBlock": <p>Select a map position as your destination.</p>
+    });
   }
 
   destinationSelected = (data) => {
@@ -37,25 +44,20 @@ class App extends Component {
   requestRideProgress = (data) => {
     console.log("requestRideProgress Data Received:");
     console.log(data);
-    this.setState({
-      messageBlock: data.message,
-    });
+    this.setState({messageBlock: data.message});
   }
 
   requestRideStop = (data) => {
     console.log("requestRideStop Data Received:");
     console.log(data);
-    this.setState({
-      messageBlock: data.message,
-    });
+    this.setState({messageBlock: data.message});
   }
 
   tripDriverToRiderBegin = (data) => {
     console.log("tripDriverToRiderBegin Data Received:");
     console.log(data);
     this.setState({
-      messageBlock: data.message,
-      tripBlock: <p>Driver found! Driver is coming to pick you up!</p>,
+      messageBlock: data.message, tripBlock: <p>Driver found! Driver is coming to pick you up!</p>,
       chatBlock: <Chat/>
     });
   }
@@ -64,8 +66,7 @@ class App extends Component {
     console.log("tripDriverToRiderProgress Data Received:");
     console.log(data);
     this.setState({
-      messageBlock: data.message,
-      tripBlock: <p>tripDriverToRiderProgress</p>
+      messageBlock: data.message, tripBlock: <p>tripDriverToRiderProgress</p>
     });
   }
 
@@ -83,8 +84,7 @@ class App extends Component {
     console.log("tripTogetherBegin Data Received:");
     console.log(data);
     this.setState({
-      messageBlock: data.message,
-      tripBlock: <p>You have been picked up! Trip started to destination!</p>
+      messageBlock: data.message, tripBlock: <p>You have been picked up! Trip started to destination!</p>
     });
   }
 
@@ -92,19 +92,14 @@ class App extends Component {
     console.log("tripTogetherProgress Data Received:");
     console.log(data);
     this.setState({
-      messageBlock: data.message,
-      tripBlock: <p>tripTogetherProgress</p>
+      messageBlock: data.message, tripBlock: <p>tripTogetherProgress</p>
     });
   }
 
   tripTogetherStop = (data) => {
     console.log("tripTogetherStop Data Received:");
     console.log(data);
-    this.setState({
-      messageBlock: data.message,
-      tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <RequestRideButton/></p>
-    </>
-    });
+    this.initialState();
   }
 
   tripEndRider = (data) => {
@@ -117,8 +112,14 @@ class App extends Component {
     console.log("rateBegin Data Received:");
     console.log(data);
     this.setState({
-      messageBlock: data.message, chatBlock: "", tripBlock: <><p> Rate your driver: </p><Rate/></>
+      messageBlock: data.message, chatBlock: "", tripBlock: <><p> Rate your driver: </p><Rate tripId={data.tripId}/></>
     });
+  }
+
+  rateDone = (data) => {
+    console.log("rateBegin Data Received:");
+    console.log(data);
+    this.initialState();
   }
 
   componentDidMount = () => {
@@ -132,6 +133,7 @@ class App extends Component {
     TripService.on('tripTogetherProgress', this.tripTogetherProgress);
     TripService.on('tripTogetherStop', this.tripTogetherStop);
     TripService.on('rateBegin', this.rateBegin);
+    TripService.on('rateDone', this.rateDone);
   };
 
   componentWillUnmount = () => {
@@ -145,11 +147,11 @@ class App extends Component {
     TripService.off('tripTogetherProgress', this.tripTogetherProgress);
     TripService.off('tripTogetherStop', this.tripTogetherStop);
     TripService.off('rateBegin', this.rateBegin);
+    TripService.off('rateDone', this.rateDone);
   }
 
   render() {
-    return (<> < Navbar />
-    <r-c join="join">
+    return (<> < Navbar /> <r-c join="join">
       <main data-md2-3="data-md2-3" className="main-content no-padding">
         <Map text='rider'/>
       </main>

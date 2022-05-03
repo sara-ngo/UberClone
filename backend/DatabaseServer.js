@@ -48,27 +48,55 @@ function DatabaseServer(app) {
     })
   })
 
+  /*
+  let tripData = {
+    "tripId": tripId,
+    "driverMatched": false,
+    "driverMatchedConfirm": false,
+    "inProgress": false,
+    "completed": false,
+    "hasRiderRating": false,
+    "hasDriverRating": false,
+    "riderSocketId": 0,
+    "riderId": "",
+    "riderName": "",
+    "riderRating": 0,
+    "driverSocketId": 0,
+    "driverId": "",
+    "driverName": "",
+    "driverRating": 0,
+    "destLong": 0.0,
+    "destLat": 0.0,
+    "type": "UberX",
+    "costEstimate": "16.00"
+  }
+  */
+
   TripService.on("newTrip", (data) => {
     // TODO: Handle adding a trip to the database
-    /*
-    let tripData = {
-      "tripId": tripId,
-      "driverMatched": false,
-      "inProgress": false,
-      "completed": false,
-      "hasRiderRating": false,
-      "hasDriverRating": false,
-      "riderSocketId": socketId,
-      "riderId": 0,
-      "riderName": "",
-      "riderRating": 0,
-      "driverSocketId": 0,
-      "driverId": 0,
-      "driverName": "",
-      "driverRating": 0
-    }
-    */
+    // Triggers when request a ride button is pressed by rider
     //console.log("newTrip data:");
+    //console.log(data);
+  });
+
+  TripService.on("driverRiderMatchedTrip", (data) => {
+    // TODO: Handle adding a trip to the database
+    // Triggers when driver and rider are matched successfully
+    //console.log("driverRiderMatchedTrip data:");
+    //console.log(data);
+  });
+
+  TripService.on("completeTrip", (data) => {
+    // TODO: Handle adding a trip to the database
+    // Triggers when the trip is completed successfully
+    //console.log("completeTrip data:");
+    //console.log(data);
+  });
+
+  TripService.on("rateTrip", (data) => {
+    // TODO: Handle adding a trip to the database
+    // Triggers when either the driver or rider rate the trip
+    //console.log("rateTrip data:");
     //console.log(data);
   });
 }
