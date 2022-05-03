@@ -63,7 +63,7 @@ const Map = (props) => {
       setLng(position.coords.longitude);
       setLat(position.coords.latitude);
       start = [position.coords.longitude, position.coords.latitude];
-      var positionData = {};
+      let positionData = {};
       positionData.long = position.coords.longitude;
       positionData.lat = position.coords.latitude;
       if (props.text === "driver") {

@@ -6,6 +6,8 @@ import {
 import TripService from './components/TripService/emitter.js';
 import TripUtils from './components/TripUtils/tripUtils.js';
 import UserUtils from './components/UserUtils/UserUtils.js';
+import RiderAI from './components/MapAI/RiderAI.js';
+import DriverAI from './components/MapAI/DriverAI.js';
 
 var userMap = new Map();
 var tripMap = new Map();
@@ -222,7 +224,7 @@ async function driverToRiderTrip(tripId) {
     // calculate the distance between the rider and driver
     let distance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
-    if (distance > 0.0001) {
+    if (distance > 0.0002) {
       // tell rider
       let riderData = {};
       riderData.message = "Driver hasn't arrived yet!"
@@ -295,7 +297,7 @@ async function togetherTrip(tripId) {
     // calculate the distance between the rider and driver
     let riderDriverDistance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
-    if (riderDriverDistance > 0.0001) {
+    if (riderDriverDistance > 0.0002) {
       let riderData = {};
       riderData.message = "You've separated from the driver!"
       riderData.timestamp = Date.now();
@@ -312,7 +314,7 @@ async function togetherTrip(tripId) {
     // calculate the distance between the rider and destination
     let riderDestinationDistance = TripUtils.getRiderDestinationDistance(riderObjRef, tripObjRef);
     // see if the driver is within proximity
-    if (riderDestinationDistance > 0.0001) {
+    if (riderDestinationDistance > 0.0002) {
       let riderData = {};
       riderData.message = "Still on the way to destination!"
       riderData.timestamp = Date.now();
@@ -444,16 +446,20 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
   driverData.message = "Matched to a rider!"
   driverData.timestamp = Date.now();
   driverData.socketId = driverSocketId;
+  driverData.riderSocketId = riderSocketId;
   driverData.riderFirstName = riderObjRef.firstName;
   driverData.riderLastName = riderObjRef.lastName;
   driverData.riderLong = riderObjRef.long;
   driverData.riderLat = riderObjRef.lat;
+  driverData.destLat = tripObjRef.destLat;
+  driverData.destLong = tripObjRef.destLong;
   io.to(driverSocketId).emit('tripDriverToRiderBegin', driverData);
   let riderData = {};
   riderData.message = "Matched to a driver!"
   riderData.timestamp = Date.now();
   riderData.socketId = riderSocketId;
-  riderData.driverLastName = driverObjRef.firstName;
+  riderData.driverSocketId = driverSocketId;
+  riderData.driverFirstName = driverObjRef.firstName;
   riderData.driverLastName = driverObjRef.lastName;
   io.to(riderSocketId).emit('tripDriverToRiderBegin', riderData);
   console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") matched!");
@@ -522,7 +528,8 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
   riderData.message = "Trip together begins!"
   riderData.timestamp = Date.now();
   riderData.socketId = riderSocketId;
-  riderData.driverLastName = driverObjRef.firstName;
+  riderData.driverSocketId = driverSocketId;
+  riderData.driverFirstName = driverObjRef.firstName;
   riderData.driverLastName = driverObjRef.lastName;
   riderData.destLong = tripObjRef.destLong;
   riderData.destLat = tripObjRef.destLat;
@@ -556,7 +563,7 @@ function rateDone(socketId, tripId, data) {
   if (userObjRef.type == "driver") {
     tripObjRef.hasDriverRating = true;
     tripObjRef.driverRating = data.score;
-  } else if(userObjRef.type == "rider"){
+  } else if (userObjRef.type == "rider") {
     tripObjRef.hasRiderRating = true;
     tripObjRef.riderRating = data.score;
   }
@@ -739,6 +746,25 @@ const MapServer = (app) => {
   });
 
   connectedUserLoop();
+  // Create AI
+  let driverArray = [];
+  driverArray.push(new DriverAI(37.293447, -121.904626));
+  driverArray.push(new DriverAI(37.315431, -121.861966));
+  driverArray.push(new DriverAI(37.339592, -121.842453));
+  driverArray.push(new DriverAI(37.391607, -121.889225));
+  driverArray.push(new DriverAI(37.34996, -121.825282));
+  let riderArray = [];
+  riderArray.push(new RiderAI(37.334789, -121.888138));
+  riderArray.push(new RiderAI(37.33171, -121.93034));
+  riderArray.push(new RiderAI(37.413738, -121.899117));
+  riderArray.push(new RiderAI(37.362517, -121.925567));
+  riderArray.push(new RiderAI(37.313938, -121.927011));
+  for (const driver of driverArray) {
+    driver.start();
+  }
+  for (const rider of riderArray) {
+    rider.start();
+  }
 }
 
 export default MapServer;
