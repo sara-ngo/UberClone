@@ -1,0 +1,20 @@
+.RidePickupConfirmButton {
+  fill: rgba(255, 255, 255, 1);
+  stroke: rgba(21, 21, 21, 1);
+  stroke-width: 1px;
+  stroke-linejoin: miter;
+  stroke-linecap: butt;
+  stroke-miterlimit: 4;
+  shape-rendering: auto;
+  color: #000000;
+}
+.RidePickupConfirmButtonDisable {
+  fill: rgba(100, 100, 100, 1);
+  stroke: rgba(21, 21, 21, 1);
+  stroke-width: 1px;
+  stroke-linejoin: miter;
+  stroke-linecap: butt;
+  stroke-miterlimit: 4;
+  shape-rendering: auto;
+  color: #000000;
+}

@@ -10,6 +10,10 @@ import Home from './templates/Home';
 import Rider from './templates/Rider'
 import Driver from './templates/Driver'
 
+import TripServiceInit from './components/TripService/TripServiceInit';
+
+TripServiceInit();
+
 function App() {
   const user = localStorage.getItem("token");
   return (

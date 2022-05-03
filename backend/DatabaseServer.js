@@ -49,9 +49,27 @@ function DatabaseServer(app) {
   })
 
   TripService.on("newTrip", (data) => {
-    // Handle adding a trip to the database
-    console.log("newTrip");
-    console.log(data);
+    // TODO: Handle adding a trip to the database
+    /*
+    let tripData = {
+      "tripId": tripId,
+      "driverMatched": false,
+      "inProgress": false,
+      "completed": false,
+      "hasRiderRating": false,
+      "hasDriverRating": false,
+      "riderSocketId": socketId,
+      "riderId": 0,
+      "riderName": "",
+      "riderRating": 0,
+      "driverSocketId": 0,
+      "driverId": 0,
+      "driverName": "",
+      "driverRating": 0
+    }
+    */
+    //console.log("newTrip data:");
+    //console.log(data);
   });
 }
 export default DatabaseServer;

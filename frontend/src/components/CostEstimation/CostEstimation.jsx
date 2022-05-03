@@ -72,30 +72,36 @@ class App extends Component {
     };
   }
 
-  componentDidMount = () => {
-    TripService.on("tripEstimateData", (data) => {
-      tripEstimateData = data.data;
-      var tripDuration = Math.floor(tripEstimateData.duration / 60);
-      var tripDistance = Math.floor(tripEstimateData.distance / 1000);
-      var tripCost =
-        tripDuration * TIME_FEE +
-        tripDistance * RIDE_DISTANCE +
-        BASE_FEE +
-        BOOKING_FEE;
+  tripEstimateData = (data) => {
+    tripEstimateData = data.data;
+    var tripDuration = Math.floor(tripEstimateData.duration / 60);
+    var tripDistance = Math.floor(tripEstimateData.distance / 1000);
+    var tripCost =
+      tripDuration * TIME_FEE +
+      tripDistance * RIDE_DISTANCE +
+      BASE_FEE +
+      BOOKING_FEE;
 
-      costType_UberX = parseInt(checkPrice(tripCost));
-      costType_Comfort = (tripCost + COMFORT_FEE) * COMFORT_RATE;
-      costType_Pool = tripCost / 2 + POOL_FEE;
+    costType_UberX = parseInt(checkPrice(tripCost));
+    costType_Comfort = (tripCost + COMFORT_FEE) * COMFORT_RATE;
+    costType_Pool = tripCost / 2 + POOL_FEE;
 
-      this.setState({
-        tripDuration: `Trip duration: ${tripDuration} minutes`,
-        tripDistance: `Trip distance: ${tripDistance} miles`,
-        uberX_Text: `UberX: $${costType_UberX.toFixed(2)}`,
-        comfort_Text: `Comfort: $${costType_Comfort.toFixed(2)}`,
-        pool_Text: `Pool: $${costType_Pool.toFixed(2)}`,
-      });
+    this.setState({
+      tripDuration: `Trip duration: ${tripDuration} minutes`,
+      tripDistance: `Trip distance: ${tripDistance} miles`,
+      uberX_Text: `UberX: $${costType_UberX.toFixed(2)}`,
+      comfort_Text: `Comfort: $${costType_Comfort.toFixed(2)}`,
+      pool_Text: `Pool: $${costType_Pool.toFixed(2)}`,
     });
+  }
+
+  componentDidMount = () => {
+    TripService.on("tripEstimateData", this.tripEstimateData);
   };
+
+  componentWillUnmount = () => {
+    TripService.off("tripEstimateData", this.tripEstimateData);
+  }
 
   render = () => {
     return (
