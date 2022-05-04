@@ -9,13 +9,18 @@ import UserUtils from './components/UserUtils/UserUtils.js';
 import RiderAI from './components/MapAI/RiderAI.js';
 import DriverAI from './components/MapAI/DriverAI.js';
 
-var userMap = new Map();
-var tripMap = new Map();
-var riderSocketIdToTripMap = new Map();
-var driverSocketIdToTripMap = new Map();
-var driverPosArray = [];
-var io = {};
-var connectedUserLoopFlag = true;
+let userMap = new Map();
+let tripMap = new Map();
+let riderSocketIdToTripMap = new Map();
+let driverSocketIdToTripMap = new Map();
+let driverPosArray = [];
+let io = {};
+let connectedUserLoopFlag = true;
+
+let userCheckDisconnectMS = 8000;
+let userDisconnectThresholdMS = 20000;
+let driverToRiderProximity = 0.0002;
+let riderDestinationProximity = 0.0002;
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -25,7 +30,7 @@ function sleep(ms) {
 
 async function connectedUserLoop() {
   while (connectedUserLoopFlag) {
-    await sleep(8000);
+    await sleep(userCheckDisconnectMS);
     // Remove disconnected users
     for (let [key, value] of userMap) {
       removeUserIfDisconnected(key);
@@ -55,7 +60,7 @@ function removeUserIfDisconnected(socketId) {
   } else if (userObjRef.lastUpdate === undefined) {
     // delete if no update time
     deleteFlag = true;
-  } else if ((userObjRef.lastUpdate + 30000) < Date.now()) {
+  } else if ((userObjRef.lastUpdate + userDisconnectThresholdMS) < Date.now()) {
     // user did not update for awhile so we delete
     // Date.now() is in milliseconds
     deleteFlag = true;
@@ -224,7 +229,7 @@ async function driverToRiderTrip(tripId) {
     // calculate the distance between the rider and driver
     let distance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
-    if (distance > 0.0002) {
+    if (distance > driverToRiderProximity) {
       // tell rider
       let riderData = {};
       riderData.message = "Driver hasn't arrived yet!"
@@ -297,7 +302,7 @@ async function togetherTrip(tripId) {
     // calculate the distance between the rider and driver
     let riderDriverDistance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
-    if (riderDriverDistance > 0.0002) {
+    if (riderDriverDistance > driverToRiderProximity) {
       let riderData = {};
       riderData.message = "You've separated from the driver!"
       riderData.timestamp = Date.now();
@@ -314,20 +319,20 @@ async function togetherTrip(tripId) {
     // calculate the distance between the rider and destination
     let riderDestinationDistance = TripUtils.getRiderDestinationDistance(riderObjRef, tripObjRef);
     // see if the driver is within proximity
-    if (riderDestinationDistance > 0.0002) {
+    if (riderDestinationDistance > riderDestinationProximity) {
       let riderData = {};
       riderData.message = "Still on the way to destination!"
       riderData.timestamp = Date.now();
       riderData.socketId = riderSocketId;
       riderData.destDistance = riderDestinationDistance;
-      riderData.destDistanceThresh = 0.0001;
+      riderData.destDistanceThresh = riderDestinationProximity;
       io.to(riderSocketId).emit('tripTogetherProgress', riderData);
       let driverData = {};
       driverData.message = "Still on the way to destination!"
       driverData.timestamp = Date.now();
       driverData.socketId = driverSocketId;
       driverData.destDistance = riderDestinationDistance;
-      driverData.destDistanceThresh = 0.0001;
+      driverData.destDistanceThresh = riderDestinationProximity;
       io.to(driverSocketId).emit('tripTogetherProgress', driverData);
       await sleep(5000);
       continue;

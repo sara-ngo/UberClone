@@ -2,57 +2,45 @@ import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
 import Map from '../components/Map/Map'
 import DriverInstructions from '../components/DriverInstructions/DriverInstructions'
+import CostEstimation from '../components/CostEstimation/CostEstimation'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
+import Rate from '../components/Rate/Rate'
 import DriverConfirmTrip from '../components/DriverConfirmTrip/Element'
 import RidePickupConfirmButton from '../components/RidePickupConfirmButton/Button'
+import RequestRideButton from '../components/RequestRideButton/Button'
 import TripService from '../components/TripService/emitter';
-import Rate from '../components/Rate/Rate'
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
 import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
+export const MapContext = React.createContext();
+
 class App extends Component {
   constructor(props) {
     super(props);
-
-    this.destLong = 0.0;
-    this.destLat = 0.0;
-
-    this.state = {
-      tripBlock: <p>Waiting for a rider to request you.</p>
-    }
   }
 
-  initialState = () => {
-    this.setState({
-      "messageBlock": "", "chatBlock": "", "tripBlock": <p>Waiting for a rider to request you.</p>
-    });
-  }
-
-  requestRideConfirm = (data) => {
-    console.log("requestRideConfirm Data Received:");
+  destinationSelected = (data) => {
+    console.log("destinationSelected Data Received:");
     console.log(data);
-    if (data.tripId === undefined) {
-      console.log("requestRideConfirm ERROR");
-      return;
-    }
-    this.setState({tripBlock: <DriverConfirmTrip tripId={data.tripId}/>});
+  }
+
+  requestRideProgress = (data) => {
+    console.log("requestRideProgress Data Received:");
+    console.log(data);
+  }
+
+  requestRideStop = (data) => {
+    console.log("requestRideStop Data Received:");
+    console.log(data);
   }
 
   tripDriverToRiderBegin = (data) => {
     console.log("tripDriverToRiderBegin Data Received:");
     console.log(data);
-    TripService.emit('setDestination', {
-      "routeEndLong": data.riderLong,
-      "routeEndLat": data.riderLat
-    });
-    this.setState({
-      chatBlock: <Chat/>,
-      tripBlock: <p>Drive to the rider's location to begin the trip.</p>
-    });
   }
 
   tripDriverToRiderProgress = (data) => {
@@ -63,75 +51,62 @@ class App extends Component {
   tripDriverToRiderStop = (data) => {
     console.log("tripDriverToRiderStop Data Received:");
     console.log(data);
-    this.initialState();
-  }
-
-  tripDriverToRiderConfirm = (data) => {
-    console.log("tripDriverToRiderConfirm Data Received:");
-    console.log(data);
-    this.setState({
-      tripBlock: <p className="RidePickupConfirmButtonPositioning">
-          <RidePickupConfirmButton/></p>
-    });
-  }
-
-  tripDriverToRiderConfirmProgress = (data) => {
-    console.log("tripDriverToRiderConfirmProgress Data Received:");
-    console.log(data);
-    this.setState({messageBlock: data.message});
   }
 
   tripTogetherBegin = (data) => {
     console.log("tripTogetherBegin Data Received:");
     console.log(data);
-    this.destLong = data.destLong;
-    this.destLat = data.destLat;
-    TripService.emit('setDestination', {
-      "routeEndLong": this.destLong,
-      "routeEndLat": this.destLat
-    });
-    this.setState({
-      messageBlock: data.message,
-      tripBlock: <><DriverInstructions/><p> Drive to the destination at({
-        this.destLat
-      }, {this.destLong})</p></>
-    });
+  }
+
+  tripTogetherProgress = (data) => {
+    console.log("tripTogetherProgress Data Received:");
+    console.log(data);
+  }
+
+  tripTogetherStop = (data) => {
+    console.log("tripTogetherStop Data Received:");
+    console.log(data);
+  }
+
+  tripEndRider = (data) => {
+    console.log("tripBeginRider Data Received:");
+    console.log(data);
   }
 
   rateBegin = (data) => {
     console.log("rateBegin Data Received:");
     console.log(data);
-    this.setState({
-      messageBlock: data.message, chatBlock: "", tripBlock: <><p> Rate your rider: </p><Rate tripId={data.tripId}/></>
-    });
   }
 
   rateDone = (data) => {
     console.log("rateBegin Data Received:");
     console.log(data);
-    this.initialState();
   }
 
   componentDidMount = () => {
-    TripService.on('requestRideConfirm', this.requestRideConfirm);
+    TripService.on('destinationSelected', this.destinationSelected);
+    TripService.on('requestRideProgress', this.requestRideProgress);
+    TripService.on('requestRideStop', this.requestRideStop);
     TripService.on('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
     TripService.on('tripDriverToRiderProgress', this.tripDriverToRiderProgress);
     TripService.on('tripDriverToRiderStop', this.tripDriverToRiderStop);
-    TripService.on('tripDriverToRiderConfirm', this.tripDriverToRiderConfirm);
-    TripService.on('tripDriverToRiderConfirmProgress', this.tripDriverToRiderConfirmProgress);
     TripService.on('tripTogetherBegin', this.tripTogetherBegin);
+    TripService.on('tripTogetherProgress', this.tripTogetherProgress);
+    TripService.on('tripTogetherStop', this.tripTogetherStop);
     TripService.on('rateBegin', this.rateBegin);
     TripService.on('rateDone', this.rateDone);
   };
 
   componentWillUnmount = () => {
-    TripService.off('requestRideConfirm', this.requestRideConfirm);
+    TripService.off('destinationSelected', this.destinationSelected);
+    TripService.off('requestRideProgress', this.requestRideProgress);
+    TripService.off('requestRideStop', this.requestRideStop);
     TripService.off('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
     TripService.off('tripDriverToRiderProgress', this.tripDriverToRiderProgress);
     TripService.off('tripDriverToRiderStop', this.tripDriverToRiderStop);
-    TripService.off('tripDriverToRiderConfirm', this.tripDriverToRiderConfirm);
-    TripService.off('tripDriverToRiderConfirmProgress', this.tripDriverToRiderConfirmProgress);
     TripService.off('tripTogetherBegin', this.tripTogetherBegin);
+    TripService.off('tripTogetherProgress', this.tripTogetherProgress);
+    TripService.off('tripTogetherStop', this.tripTogetherStop);
     TripService.off('rateBegin', this.rateBegin);
     TripService.off('rateDone', this.rateDone);
   }
@@ -139,11 +114,23 @@ class App extends Component {
   render() {
     return (<> < Navbar /> <r-c join="join">
       <main data-md2-3="data-md2-3" className="main-content no-padding">
-        <Map userType='driver'/>
+        <Map userType='rider'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
-        {this.state.messageBlock}{this.state.chatBlock}
-        {this.state.tripBlock}
+        <p>CostEstimation:</p>
+        <CostEstimation/>
+        <p>RequestRideButton:</p>
+        <RequestRideButton destLong="0" destLat="0"/>
+        <p>DriverConfirmTrip:</p>
+        <DriverConfirmTrip tripId="0"/>
+        <p>DriverInstructions:</p>
+        <DriverInstructions/>
+        <p>RidePickupConfirmButton:</p>
+        <RidePickupConfirmButton/>
+        <p>Chat:</p>
+        <Chat/>
+        <p>Rate:</p>
+        <Rate tripId="0"/>
       </aside>
     </r-c>
     <footer data-r-c="data-r-c" data-join="data-join" className="footer">

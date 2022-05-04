@@ -9,6 +9,7 @@ import './styles/App.css'
 import Home from './templates/Home';
 import Rider from './templates/Rider'
 import Driver from './templates/Driver'
+import ComponentTesting from './templates/ComponentTesting.js'
 
 import TripServiceInit from './components/TripService/TripServiceInit';
 
@@ -27,6 +28,7 @@ function App() {
         <Route exact path='/Rider' element={<Rider/>} />
         <Route exact path='/Driver' element={<Driver/>} />
         <Route exact path='/DriverSignup' element={<DriverSignup/>} />
+        <Route exact path='/ComponentTesting' element={<ComponentTesting/>} />
     </Routes>
   );
 }
