@@ -32,8 +32,8 @@ class App extends Component {
   }
 
   destinationSelected = (data) => {
-    console.log("destinationSelected Data Received:");
-    console.log(data);
+    // console.log("destinationSelected Data Received:");
+    // console.log(data);
     this.setState({
       messageBlock: data.message,
       tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <RequestRideButton destLong={data.routeEndLong} destLat={data.routeEndLat}/></p>

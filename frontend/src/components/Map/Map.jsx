@@ -188,6 +188,7 @@ class App extends Component {
     });
 
     TripService.on("positionData", this.onPositionData);
+    TripService.on("setDestination", this.setDestination);
     this.mapboxObj.on("click", this.onClick);
 
     // centers the map on your current location
@@ -203,25 +204,33 @@ class App extends Component {
   };
 
   onClick = (event) => {
+    // drivers to not set the route
+    if (this.userType == "driver") {
+      return;
+    }
     // console.log(event);
-    this.setDestination(event.lngLat.lng, event.lngLat.lat);
+    this.setDestination({"routeEndLong": event.lngLat.lng, "routeEndLat": event.lngLat.lat});
   }
 
   /* MapboxGeocoder
 Fired when input is set */
   onGeocoderResult = (e) => {
-    console.log(e);
+    //console.log(e);
     if (!e) {
       return;
     }
+    // drivers to not set the route
+    if (this.userType == "driver") {
+      return;
+    }
     // set variables
-    this.setDestination(e.result.center[0], e.result.center[1]);
+    this.setDestination({"routeEndLong": e.result.center[0], "routeEndLat": e.result.center[1]});
   }
 
-  setDestination = (long_, lat_) => {
+  setDestination = (data) => {
     // set variables
-    this.routeEndLong = long_;
-    this.routeEndLat = lat_;
+    this.routeEndLong = data.routeEndLong;
+    this.routeEndLat = data.routeEndLat;
     // update UI with end position marker
     const endFeatures = {
       type: "FeatureCollection",
@@ -338,8 +347,9 @@ Fired when input is set */
     this.mapboxObj.off("locationfound", this.onLocationFound);
     this.geolocate.off("geolocate", this.onGeolocate);
     this.geocoder.off('result', this.onGeocoderResult);
-    if(this.mapLoadedFlag){
+    if (this.mapLoadedFlag) {
       TripService.off("positionData", this.onPositionData);
+      TripService.off("setDestination", this.setDestination);
       this.mapboxObj.off("click", this.onClick);
     }
   }

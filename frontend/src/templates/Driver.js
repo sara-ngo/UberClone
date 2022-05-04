@@ -82,6 +82,10 @@ class App extends Component {
     console.log(data);
     this.destLong = data.destLong;
     this.destLat = data.destLat;
+    TripService.emit('setDestination', {
+      "routeEndLong": this.destLong,
+      "routeEndLat": this.destLat
+    });
     this.setState({
       messageBlock: data.message,
       tripBlock: <><DriverInstructions/><p> Drive to the destination at({
