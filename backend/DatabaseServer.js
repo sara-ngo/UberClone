@@ -1,13 +1,18 @@
-import { User, Trip } from '../models/user.js'
+import {
+  User,
+  Trip
+} from '../models/user.js'
 import TripService from './components/TripService/emitter.js';
 
 function DatabaseServer(app) {
   // routes
-  app.post('/rate', function (request, response) {
+  app.post('/rate', function(request, response) {
     const id = request.body.otherID
     const tripID = request.body.tripID
     const rating = request.body.rating
     const ratingForDriver = request.body.wasRider
+    let userUpdateMessage = "nothing";
+    let tripUpdateMessage = "nothing";
     User.findById(id, (err, user) => {
       // calculate the new rating
       if (user) {
@@ -19,32 +24,42 @@ function DatabaseServer(app) {
           user.numRatings = 1
         }
         user.save()
+        userUpdateMessage = "User updated!";
       }
     })
     Trip.findById(tripID, (err, trip) => {
-      if(trip) {
+      if (trip) {
         console.log(ratingForDriver)
-        if(ratingForDriver){
+        if (ratingForDriver) {
           trip.driverRating = true
-        } else{
+        } else {
           trip.riderRating = true
         }
         trip.save()
+        tripUpdateMessage = "Trip updated!";
       }
     })
-  })
-
-  app.post('/user', function (req, res) {
-    const id = req.body.data
-    User.findById(id, (err, data) => {
-      res.send({user: data})
+    response.send({
+      "userUpdateMessage": userUpdateMessage,
+      "tripUpdateMessage": tripUpdateMessage
     })
   })
 
-  app.post('/trip', function (req, res) {
+  app.post('/user', function(req, res) {
+    const id = req.body.data
+    User.findById(id, (err, data) => {
+      res.send({
+        user: data
+      })
+    })
+  })
+
+  app.post('/trip', function(req, res) {
     const id = req.body.data
     Trip.findById(id, (err, data) => {
-      res.send({trip: data})
+      res.send({
+        trip: data
+      })
     })
   })
 

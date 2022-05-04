@@ -1,15 +1,17 @@
 import React, {Component, useEffect} from 'react';
-import '../styles/App.css'
+import axios from "axios";
 import Map from '../components/Map/Map'
 import DriverInstructions from '../components/DriverInstructions/DriverInstructions'
 import CostEstimation from '../components/CostEstimation/CostEstimation'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import Rate from '../components/Rate/Rate'
+import StarRating from '../components/StarRating/StarRating'
 import DriverConfirmTrip from '../components/DriverConfirmTrip/Element'
 import RidePickupConfirmButton from '../components/RidePickupConfirmButton/Button'
 import RequestRideButton from '../components/RequestRideButton/Button'
 import TripService from '../components/TripService/emitter';
+import * as Constants from "../constants.js"
 
 import '../styles/matthewjamestaylor/column-styles.css'
 import '../styles/matthewjamestaylor/r-c.css'
@@ -18,6 +20,9 @@ import '../styles/matthewjamestaylor/site-styles.css'
 
 export const MapContext = React.createContext();
 
+/*
+BRAD: This page is for testing all the components available
+*/
 class App extends Component {
   constructor(props) {
     super(props);
@@ -83,6 +88,19 @@ class App extends Component {
     console.log(data);
   }
 
+  rateUser = (newRating) => {
+    console.log("rateUser", newRating);
+    axios.post(Constants.AUTHENTICATION_SERVER + "/rate", {
+      wasRider: true,
+      userID: 0,
+      tripID: 0,
+      rating: newRating
+    }).then((res) => {
+      console.log("rateUser Data Received:");
+      console.log(res.data);
+    });
+  }
+
   componentDidMount = () => {
     TripService.on('destinationSelected', this.destinationSelected);
     TripService.on('requestRideProgress', this.requestRideProgress);
@@ -131,6 +149,8 @@ class App extends Component {
         <Chat/>
         <p>Rate:</p>
         <Rate tripId="0"/>
+        <p>StarRating:</p>
+        <StarRating id="0" rateUser={this.rateUser}/>
       </aside>
     </r-c>
     <footer data-r-c="data-r-c" data-join="data-join" className="footer">

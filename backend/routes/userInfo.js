@@ -8,7 +8,15 @@ import {
 from "../../models/user.js";
 
 router.post("/", (req, res) => {
-  const item = jwt.decode(req.body.data)
+  if(!req.body.data){
+    res.send({errorMessage:"Invalid Token"})
+    return;
+  }
+  const item = jwt.decode(req.body.data);
+  if(!item._id){
+    res.send({errorMessage:"Invalid Decoded Token"})
+    return;
+  }
   User.findById(item._id, (err, user) => {
     res.send({newUser:user})
   })
