@@ -1,18 +1,21 @@
 import React from 'react'
 import { Route, Routes, Navigate } from "react-router-dom";
-import Signup from "./components/Signup";
-import Login from "./components/Login";
-import Profile from "./components/Profile/Profile";
-import DriverSignup from "./components/DriverSignup";
-import './styles/App.css'
 
+import Signup from "./templates/Signup";
+import Login from "./templates/Login";
+import Profile from "./templates/Profile";
+import DriverSignup from "./templates/DriverSignup";
 import Home from './templates/Home';
 import Rider from './templates/Rider'
 import Driver from './templates/Driver'
 import ComponentTesting from './templates/ComponentTesting.js'
 
+import './styles/App.css'
+
 import TripServiceInit from './components/TripService/TripServiceInit';
 
+// Initialize the trip service only once!
+// It also imports the trip socket and makes a connection to the server!
 TripServiceInit();
 
 function App() {
