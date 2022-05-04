@@ -36,7 +36,7 @@ class App extends Component {
     console.log(data);
     this.setState({
       messageBlock: data.message,
-      tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <RequestRideButton destLong={data.end.long} destLat={data.end.lat}/></p>
+      tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <RequestRideButton destLong={data.routeEndLong} destLat={data.routeEndLat}/></p>
     </>
     });
   }
@@ -153,7 +153,7 @@ class App extends Component {
   render() {
     return (<> < Navbar /> <r-c join="join">
       <main data-md2-3="data-md2-3" className="main-content no-padding">
-        <Map text='rider'/>
+        <Map userType='rider'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
         {this.state.messageBlock}{this.state.chatBlock}
