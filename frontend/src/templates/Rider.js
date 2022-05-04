@@ -170,7 +170,7 @@ class App extends Component {
             <a href="#">About</a>
           </li>
           <li>
-            <a href="#">Contact</a>
+            <a href="/ComponentTesting">Testing</a>
           </li>
           <li>
             <a href="#">Privacy</a>
