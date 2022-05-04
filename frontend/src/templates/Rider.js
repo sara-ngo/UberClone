@@ -1,7 +1,7 @@
 import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
 import Map from '../components/Map/Map'
-import CostEstimation from '../components/CostEstimation/CostEstimation'
+import RideTypeSelection from '../components/RideTypeSelection/RideTypeSelection'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import Rate from '../components/Rate/Rate'
@@ -36,9 +36,23 @@ class App extends Component {
     // console.log(data);
     this.setState({
       messageBlock: data.message,
-      tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <RequestRideButton destLong={data.routeEndLong} destLat={data.routeEndLat}/></p>
+      tripBlock: <> < p > Trip Stats: </p>
+      <p>
+        {
+        this.state.tripDuration
+      } < br /> {
+        this.state.tripDistance
+      }</p><p> Select Ride Type: </p> < RideTypeSelection />< p className = "requestButtonPositioning" > <RequestRideButton destLong={data.routeEndLong} destLat={data.routeEndLat}/></p>
     </>
     });
+  }
+
+  tripEstimateData = (data) => {
+    this.tripEstimateData = data.data;
+    let tripDuration = Math.floor(this.tripEstimateData.duration / 60);
+    let tripDistance = Math.floor(this.tripEstimateData.distance / 1000);
+
+    this.setState({tripDuration: `Trip duration: ${tripDuration} minutes`, tripDistance: `Trip distance: ${tripDistance} miles`});
   }
 
   requestRideProgress = (data) => {
@@ -75,7 +89,7 @@ class App extends Component {
     console.log(data);
     this.setState({
       messageBlock: data.message,
-      tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <RequestRideButton/></p>
+      tripBlock: <> < RideTypeSelection />< p className = "requestButtonPositioning" > <RequestRideButton/></p>
     </>
     });
   }
@@ -124,6 +138,7 @@ class App extends Component {
 
   componentDidMount = () => {
     TripService.on('destinationSelected', this.destinationSelected);
+    TripService.on("tripEstimateData", this.tripEstimateData);
     TripService.on('requestRideProgress', this.requestRideProgress);
     TripService.on('requestRideStop', this.requestRideStop);
     TripService.on('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
@@ -138,6 +153,7 @@ class App extends Component {
 
   componentWillUnmount = () => {
     TripService.off('destinationSelected', this.destinationSelected);
+    TripService.off("tripEstimateData", this.tripEstimateData);
     TripService.off('requestRideProgress', this.requestRideProgress);
     TripService.off('requestRideStop', this.requestRideStop);
     TripService.off('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
