@@ -18,8 +18,8 @@ class App {
     this.riderSocketId = "";
     this.riderLat = 0.0;
     this.riderLong = 0.0;
-    this.destLat = 0.0;
-    this.destLong = 0.0;
+    this.endLat = 0.0;
+    this.endLong = 0.0;
   }
   async start() {
     this.socket = io(Constants.MAP_SERVER, {
@@ -36,6 +36,7 @@ class App {
     this.socket.on('tripDriverToRiderBegin', this.tripDriverToRiderBegin.bind(this));
     this.socket.on('tripDriverToRiderConfirm', this.tripDriverToRiderConfirm.bind(this));
     this.socket.on('tripTogetherBegin', this.tripTogetherBegin.bind(this));
+    this.socket.on('tripTogetherSuccess', this.tripTogetherSuccess.bind(this));
     this.socket.on('rateBegin', this.rateBegin.bind(this));
   }
   async positionUpdate() {
@@ -71,12 +72,10 @@ class App {
   }
 
   async tripDriverToRiderBegin(data) {
-    //console.log("tripTogetherBegin Data Received:");
+    //console.log("tripDriverToRiderBegin Data Received:");
     //console.log(data);
     this.riderLat = data.riderLat;
     this.riderLong = data.riderLong;
-    this.destLat = data.destLat;
-    this.destLong = data.destLong;
     this.riderSocketId = data.riderSocketId;
     // change location to rider
     this.lat = this.riderLat;
@@ -95,9 +94,16 @@ class App {
   async tripTogetherBegin(data) {
     //console.log("tripTogetherBegin Data Received:");
     //console.log(data);
+    this.endLat = data.endLat;
+    this.endLong = data.endLong;
     // change location to destination
-    this.lat = this.destLat;
-    this.long = this.destLong;
+    this.lat = this.endLat;
+    this.long = this.endLong;
+  }
+
+  async tripTogetherSuccess(data) {
+    //console.log("tripTogetherSuccess Data Received:");
+    //console.log(data);
   }
 
   async rateBegin(data) {

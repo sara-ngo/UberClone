@@ -30,6 +30,8 @@ class App {
     this.socket.on('requestRideProgress', this.requestRideProgress.bind(this));
     this.socket.on('positionData', this.positionData.bind(this));
     this.socket.on('tripTogetherBegin', this.tripTogetherBegin.bind(this));
+    this.socket.on('tripTogetherStop', this.tripTogetherStop.bind(this));
+    this.socket.on('tripTogetherSuccess', this.tripTogetherSuccess.bind(this));
     // wait before requesting a ride
     await sleep(3000);
     this.socket.emit("requestRide", {
@@ -40,7 +42,7 @@ class App {
       "endLat" : this.lat,
       "endLong" : this.long,
       "distance": 0,
-      "duration": 0 
+      "duration": 0
     });
   }
   async positionUpdate(){
@@ -72,10 +74,22 @@ class App {
   }
 
   tripTogetherBegin(data){
-    this.inProgressTogether = true;
-    this.driverSocketId = data.driverSocketId;
     //console.log("tripTogetherBegin Data Received:");
     //console.log(data);
+    this.inProgressTogether = true;
+    this.driverSocketId = data.driverSocketId;
+  }
+
+  tripTogetherStop(data){
+    //console.log("tripTogetherStop Data Received:");
+    //console.log(data);
+    this.inProgressTogether = false;
+  }
+
+  tripTogetherSuccess(data){
+    //console.log("tripTogetherSuccess Data Received:");
+    //console.log(data);
+    this.inProgressTogether = false;
   }
 }
 
