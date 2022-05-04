@@ -80,10 +80,14 @@ function DatabaseServer(app) {
     "driverId": "",
     "driverName": "",
     "driverRating": 0,
-    "destLong": 0.0,
-    "destLat": 0.0,
+    "startLat": 0.0,
+    "startLong": 0.0,
+    "endLat": 0.0,
+    "endLong": 0.0,
     "type": "UberX",
-    "costEstimate": "16.00"
+    "distanceEstimate": 0,
+    "durationEstimate": 0,
+    "costEstimate": 0.0
   }
   */
 

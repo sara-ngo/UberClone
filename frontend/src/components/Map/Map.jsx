@@ -246,15 +246,15 @@ Fired when input is set */
       ]
     };
     this.mapboxObj.getSource("routeEndPoint").setData(endFeatures);
-    // get route information from API
-    let returnStatus = getRoute(this.mapboxObj, {
+    // emit for other components to use
+    TripService.emit("destinationSelected", {
       "routeStartLong": this.routeStartLong,
       "routeStartLat": this.routeStartLat,
       "routeEndLong": this.routeEndLong,
       "routeEndLat": this.routeEndLat
     });
-    // emit for other components to use
-    TripService.emit("destinationSelected", {
+    // get route information from API
+    let returnStatus = getRoute(this.mapboxObj, {
       "routeStartLong": this.routeStartLong,
       "routeStartLat": this.routeStartLat,
       "routeEndLong": this.routeEndLong,

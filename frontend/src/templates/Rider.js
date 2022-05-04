@@ -20,6 +20,7 @@ class App extends Component {
     super(props);
 
     this.state = {
+      tripStatsBlock: "",
       tripBlock: <p>Select a map position as your destination.</p>
     }
 
@@ -35,24 +36,25 @@ class App extends Component {
     // console.log("destinationSelected Data Received:");
     // console.log(data);
     this.setState({
-      messageBlock: data.message,
-      tripBlock: <> < p > Trip Stats: </p>
-      <p>
-        {
-        this.state.tripDuration
-      } < br /> {
-        this.state.tripDistance
-      }</p><p> Select Ride Type: </p> < RideTypeSelection />< p className = "requestButtonPositioning" > <RequestRideButton destLong={data.routeEndLong} destLat={data.routeEndLat}/></p>
+      messageBlock: data.message, tripBlock: <><p> Select Ride Type: </p> < RideTypeSelection />< p className = "requestButtonPositioning" > <RequestRideButton routeStartLat={data.routeStartLat} routeStartLong={data.routeStartLong} routeEndLat={data.routeEndLat} routeEndLong={data.routeEndLong}/></p>
     </>
     });
   }
 
   tripEstimateData = (data) => {
-    this.tripEstimateData = data.data;
-    let tripDuration = Math.floor(this.tripEstimateData.duration / 60);
-    let tripDistance = Math.floor(this.tripEstimateData.distance / 1000);
-
-    this.setState({tripDuration: `Trip duration: ${tripDuration} minutes`, tripDistance: `Trip distance: ${tripDistance} miles`});
+    this.tripDuration = Math.floor(data.data.duration / 60);
+    this.tripDistance = Math.floor(data.data.distance / 1000);
+    this.setState({
+      messageBlock: data.message,
+      tripStatsBlock: <> < p > Trip Stats: </p>
+    <p>Trip duration: {
+        this.tripDuration
+      }
+      minutes < br /> Trip distance: {
+        this.tripDistance
+      }
+      miles < /p> < / >
+    });
   }
 
   requestRideProgress = (data) => {
@@ -71,7 +73,7 @@ class App extends Component {
     console.log("tripDriverToRiderBegin Data Received:");
     console.log(data);
     this.setState({
-      messageBlock: data.message, tripBlock: <p>Driver found! Driver is coming to pick you up!</p>,
+      messageBlock: data.message, tripBlock: <p>Driver found! Driver is coming to pick you up!</p >,
       chatBlock: <Chat/>
     });
   }
@@ -173,7 +175,7 @@ class App extends Component {
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
         {this.state.messageBlock}{this.state.chatBlock}
-        {this.state.tripBlock}
+        {this.state.tripStatsBlock}{this.state.tripBlock}
       </aside>
     </r-c>
     <footer data-r-c="data-r-c" data-join="data-join" className="footer">

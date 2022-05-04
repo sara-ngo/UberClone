@@ -18,11 +18,6 @@ class App {
     if (userObjRef === undefined) {
       return false;
     } else if (userObjRef.isActive === undefined || !userObjRef.isActive) {
-      let data = {};
-      data.message = "You were removed from the matching system for being inactive!"
-      data.timestamp = Date.now();
-      data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('requestRideStop', data);
       return false;
     }
     return true;
@@ -42,11 +37,6 @@ class App {
     if (userObjRef === undefined) {
       return false;
     } else if (userObjRef.isActive === undefined || !userObjRef.isActive) {
-      let data = {};
-      data.message = "Your trip has been cancelled due to inactivity!"
-      data.timestamp = Date.now();
-      data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('tripDriverToRiderStop', data);
       return false;
     }
     return true;
@@ -66,11 +56,6 @@ class App {
     if (userObjRef === undefined) {
       return false;
     } else if (userObjRef.isActive === undefined || !userObjRef.isActive) {
-      let data = {};
-      data.message = "Your trip has been cancelled due to inactivity!"
-      data.timestamp = Date.now();
-      data.socketId = userObjRef.socketId;
-      io.to(userObjRef.socketId).emit('tripTogetherStop', data);
       return false;
     }
     return true;
@@ -86,13 +71,25 @@ class App {
     }
   }
 
-  static getClosestDriver(driverPosArray, riderObjRef) {
+  static getClosestDriver(userMap, riderObjRef) {
     // calculate the distance between the rider and each driver
-    let driverDistanceArray = []
-    for (const element of driverPosArray) {
+    let driverDistanceArray = [];
+    for (let [key, driverObjRef] of userMap) {
+      // Don't match non-drivers
+      if(driverObjRef.type != "driver"){
+        continue;
+      }
+      // Don't match inactive drivers
+      if(!driverObjRef.isActive){
+        continue;
+      }
+      // Don't match currently matching drivers and busy drivers
+      if(driverObjRef.tripMatching || driverObjRef.tripDoing){
+        continue;
+      }
       driverDistanceArray.push({
-        distance: Math.hypot(riderObjRef.long - element.long, riderObjRef.lat - element.lat),
-        socketId: element.socketId
+        distance: Math.hypot(riderObjRef.long - driverObjRef.long, riderObjRef.lat - driverObjRef.lat),
+        socketId: driverObjRef.socketId
       });
     }
     // sort drivers by smallest distance
@@ -114,6 +111,7 @@ class App {
   }
 
   static userStopTrip(userObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap){
+    userObjRef.tripMatching = false;
     userObjRef.tripDoing = false;
     riderSocketIdToTripMap.delete(userObjRef.socketId);
     driverSocketIdToTripMap.delete(userObjRef.socketId);
