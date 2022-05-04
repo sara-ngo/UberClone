@@ -107,7 +107,7 @@ class App {
   }
 
   static getRiderDestinationDistance(riderObjRef, tripObjRef) {
-    return Math.hypot(riderObjRef.long - tripObjRef.destLong, riderObjRef.lat - tripObjRef.destLat);
+    return Math.hypot(riderObjRef.long - tripObjRef.endLong, riderObjRef.lat - tripObjRef.endLat);
   }
 
   static userStopTrip(userObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap){

@@ -83,12 +83,18 @@ const TripServiceInit = () => {
     TripService.emit('tripTogetherStop', data);
   });
 
+  // UNUSED: for the rider to confirm they have been dropped off
   socket.on("tripTogetherConfirm", (data) => {
     TripService.emit('tripTogetherConfirm', data);
   });
 
+  // UNUSED: for the driver to be updated on riders drop off confirmation
   socket.on("tripTogetherConfirmProgress", (data) => {
     TripService.emit('tripTogetherConfirmProgress', data);
+  });
+
+  socket.on("tripTogetherSuccess", (data) => {
+    TripService.emit('tripTogetherConfirm', data);
   });
 
   TripService.on("tripTogetherCancel", (data) => {

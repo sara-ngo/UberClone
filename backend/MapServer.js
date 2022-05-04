@@ -8,6 +8,7 @@ import TripUtils from './components/TripUtils/tripUtils.js';
 import UserUtils from './components/UserUtils/UserUtils.js';
 import RiderAI from './components/MapAI/RiderAI.js';
 import DriverAI from './components/MapAI/DriverAI.js';
+import * as Constants from "../constants.js"
 
 let userMap = new Map();
 let tripMap = new Map();
@@ -351,19 +352,20 @@ async function togetherTrip(tripId) {
     riderData.message = "You've arrived at your destination!"
     riderData.timestamp = Date.now();
     riderData.socketId = riderSocketId;
-    io.to(riderSocketId).emit('tripTogetherProgress', riderData);
+    io.to(riderSocketId).emit('tripTogetherSuccess', riderData);
     // tell the Rider
     let driverData = {};
     driverData.message = "You've arrived at your destination!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('tripTogetherConfirm', driverData);
+    io.to(driverSocketId).emit('tripTogetherSuccess', driverData);
     // set the trip complete flags
     tripObjRef.completed = true;
     TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
     TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
     console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") completed a trip!");
     // let them rate trip
+    // both local only
     TripService.emit("completeTrip", tripObjRef);
     TripService.emit("rateTrip", tripObjRef.tripId);
     break;
@@ -465,8 +467,6 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
   driverData.riderLastName = riderObjRef.lastName;
   driverData.riderLong = riderObjRef.long;
   driverData.riderLat = riderObjRef.lat;
-  driverData.destLat = tripObjRef.destLat;
-  driverData.destLong = tripObjRef.destLong;
   io.to(driverSocketId).emit('tripDriverToRiderBegin', driverData);
   let riderData = {};
   riderData.message = "Matched to a driver!"
@@ -533,10 +533,11 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
   driverData.message = "Trip together begins!"
   driverData.timestamp = Date.now();
   driverData.socketId = driverSocketId;
+  driverData.riderSocketId = riderSocketId;
   driverData.riderFirstName = riderObjRef.firstName;
   driverData.riderLastName = riderObjRef.lastName;
-  driverData.destLong = tripObjRef.destLong;
-  driverData.destLat = tripObjRef.destLat;
+  driverData.endLong = tripObjRef.endLong;
+  driverData.endLat = tripObjRef.endLat;
   io.to(driverSocketId).emit('tripTogetherBegin', driverData);
   let riderData = {};
   riderData.message = "Trip together begins!"
@@ -545,8 +546,8 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
   riderData.driverSocketId = driverSocketId;
   riderData.driverFirstName = driverObjRef.firstName;
   riderData.driverLastName = driverObjRef.lastName;
-  riderData.destLong = tripObjRef.destLong;
-  riderData.destLat = tripObjRef.destLat;
+  riderData.endLong = tripObjRef.endLong;
+  riderData.endLat = tripObjRef.endLat;
   io.to(riderSocketId).emit('tripTogetherBegin', riderData);
   console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") together!");
 }
@@ -740,17 +741,21 @@ const MapServer = (app) => {
   connectedUserLoop();
   // Create AI
   let driverArray = [];
-  driverArray.push(new DriverAI(37.293447, -121.904626));
-  driverArray.push(new DriverAI(37.315431, -121.861966));
-  driverArray.push(new DriverAI(37.339592, -121.842453));
-  driverArray.push(new DriverAI(37.391607, -121.889225));
-  driverArray.push(new DriverAI(37.34996, -121.825282));
+  if (Constants.FLAG_AI_DRIVERS) {
+    driverArray.push(new DriverAI(37.293447, -121.904626));
+    driverArray.push(new DriverAI(37.315431, -121.861966));
+    driverArray.push(new DriverAI(37.339592, -121.842453));
+    driverArray.push(new DriverAI(37.391607, -121.889225));
+    driverArray.push(new DriverAI(37.34996, -121.825282));
+  }
   let riderArray = [];
-  riderArray.push(new RiderAI(37.334789, -121.888138));
-  riderArray.push(new RiderAI(37.33171, -121.93034));
-  riderArray.push(new RiderAI(37.413738, -121.899117));
-  riderArray.push(new RiderAI(37.362517, -121.925567));
-  riderArray.push(new RiderAI(37.313938, -121.927011));
+  if (Constants.FLAG_AI_RIDERS) {
+    riderArray.push(new RiderAI(37.334789, -121.888138));
+    riderArray.push(new RiderAI(37.33171, -121.93034));
+    riderArray.push(new RiderAI(37.413738, -121.899117));
+    riderArray.push(new RiderAI(37.362517, -121.925567));
+    riderArray.push(new RiderAI(37.313938, -121.927011));
+  }
   for (const driver of driverArray) {
     driver.start();
   }
