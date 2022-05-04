@@ -33,10 +33,14 @@ class App {
     // wait before requesting a ride
     await sleep(3000);
     this.socket.emit("requestRide", {
-      "rideType": "UberX",
-      "rideCost": 20,
-      "destLat" : this.lat,
-      "destLong" : this.long
+      "type": "UberX",
+      "cost": 20,
+      "startLat" : this.lat,
+      "startLong" : this.long,
+      "endLat" : this.lat,
+      "endLong" : this.long,
+      "distance": 0,
+      "duration": 0 
     });
   }
   async positionUpdate(){

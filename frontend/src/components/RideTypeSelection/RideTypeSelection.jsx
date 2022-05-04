@@ -105,11 +105,7 @@ class App extends Component {
 
   render = () => {
     return (
-      <div id="costEst" className="costEst">
-        <p id="title">{this.state.tripDuration}</p>
-        <p id="title">{this.state.tripDistance}</p>
-        <p>Estimated cost:</p>
-
+      <div className="costEst">
         <FormControl id="chooseRide">
           <RadioGroup
             aria-labelledby="demo-radio-buttons-group-label"

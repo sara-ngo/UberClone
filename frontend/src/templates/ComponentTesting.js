@@ -2,7 +2,7 @@ import React, {Component, useEffect} from 'react';
 import axios from "axios";
 import Map from '../components/Map/Map'
 import DriverInstructions from '../components/DriverInstructions/DriverInstructions'
-import CostEstimation from '../components/CostEstimation/CostEstimation'
+import RideTypeSelection from '../components/RideTypeSelection/RideTypeSelection'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import Rate from '../components/Rate/Rate'
@@ -20,17 +20,28 @@ import '../styles/matthewjamestaylor/site-styles.css'
 
 export const MapContext = React.createContext();
 
-/*
-BRAD: This page is for testing all the components available
-*/
+/* BRAD: This page is for testing all the components available */
 class App extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      "tripDuration": "",
+      "tripDistance": ""
+    }
   }
 
   destinationSelected = (data) => {
     console.log("destinationSelected Data Received:");
     console.log(data);
+  }
+
+  tripEstimateData = (data) => {
+    this.tripEstimateData = data.data;
+    let tripDuration = Math.floor(this.tripEstimateData.duration / 60);
+    let tripDistance = Math.floor(this.tripEstimateData.distance / 1000);
+
+    this.setState({"tripDuration": `Trip duration: ${tripDuration} minutes`, "tripDistance": `Trip distance: ${tripDistance} miles`});
   }
 
   requestRideProgress = (data) => {
@@ -103,6 +114,7 @@ class App extends Component {
 
   componentDidMount = () => {
     TripService.on('destinationSelected', this.destinationSelected);
+    TripService.on("tripEstimateData", this.tripEstimateData);
     TripService.on('requestRideProgress', this.requestRideProgress);
     TripService.on('requestRideStop', this.requestRideStop);
     TripService.on('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
@@ -117,6 +129,7 @@ class App extends Component {
 
   componentWillUnmount = () => {
     TripService.off('destinationSelected', this.destinationSelected);
+    TripService.off("tripEstimateData", this.tripEstimateData);
     TripService.off('requestRideProgress', this.requestRideProgress);
     TripService.off('requestRideStop', this.requestRideStop);
     TripService.off('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
@@ -135,8 +148,14 @@ class App extends Component {
         <Map userType='rider'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
-        <p>CostEstimation:</p>
-        <CostEstimation/>
+        < p >
+          Trip Stats:
+        </p>
+        <p>
+          {this.state.tripDuration}
+          < br/> {this.state.tripDistance}</p>
+        <p>RideTypeSelection:</p>
+        <RideTypeSelection/>
         <p>RequestRideButton:</p>
         <RequestRideButton destLong="0" destLat="0"/>
         <p>DriverConfirmTrip:</p>
