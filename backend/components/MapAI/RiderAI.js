@@ -95,7 +95,7 @@ class App {
     let y1 = this.lat;
     let distance = Math.hypot(x1 - x2, y1 - y2);
     let frac = 0.0;
-    let speed = 0.003; // distance/second
+    let speed = Constants.RIDER_AI_SPEED; // distance/second
     let time = distance / speed * 1000; // milliseconds
     let timeQuanta = 400; // milliseconds
     let fracIncrement = timeQuanta / time;
@@ -109,13 +109,13 @@ class App {
       frac += fracIncrement;
       await sleep(timeQuanta);
       loopCheck = this.moveMap.get(currentCounter);
+      if (!loopCheck) {
+        return;
+      }
     }
     // on last step, set to exact point
-    loopCheck = this.moveMap.get(currentCounter);
-    if (loopCheck) {
-      this.long = x2;
-      this.lat = y2;
-    }
+    this.long = x2;
+    this.lat = y2;
   }
 
   requestRideProgress(data) {

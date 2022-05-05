@@ -14,15 +14,43 @@ import '../styles/matthewjamestaylor/r-c.css'
 import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
 
+    this.abort = false;
+    this.userLong = 0.0;
+    this.userLat = 0.0;
     this.endLong = 0.0;
     this.endLat = 0.0;
+    this.type = "driver";
 
     this.state = {
       tripBlock: <p>Waiting for a rider to request you.</p>
+    }
+
+    this.positionUpdateLoop();
+  }
+
+  positionUpdate = () => {
+    TripService.emit("positionUpdate", {
+      "long": this.userLong,
+      "lat": this.userLat,
+      "type": this.type,
+      "token": localStorage.getItem("token")
+    });
+  }
+
+  async positionUpdateLoop() {
+    while (this.abort === false) {
+      this.positionUpdate();
+      await sleep(3000);
     }
   }
 
@@ -30,6 +58,12 @@ class App extends Component {
     this.setState({
       "messageBlock": "", "chatBlock": "", "tripBlock": <p>Waiting for a rider to request you.</p>
     });
+  }
+
+  onGeolocatePositionUpdate = (data) => {
+    this.userLong = data.long;
+    this.userLat = data.lat;
+    this.positionUpdate();
   }
 
   requestRideConfirm = (data) => {
@@ -124,6 +158,8 @@ class App extends Component {
   }
 
   componentDidMount = () => {
+    this.abort = false;
+    TripService.on('onGeolocatePositionUpdate', this.onGeolocatePositionUpdate);
     TripService.on('requestRideConfirm', this.requestRideConfirm);
     TripService.on('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
     TripService.on('tripDriverToRiderProgress', this.tripDriverToRiderProgress);
@@ -138,6 +174,8 @@ class App extends Component {
   };
 
   componentWillUnmount = () => {
+    this.abort = true;
+    TripService.off('onGeolocatePositionUpdate', this.onGeolocatePositionUpdate);
     TripService.off('requestRideConfirm', this.requestRideConfirm);
     TripService.off('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
     TripService.off('tripDriverToRiderProgress', this.tripDriverToRiderProgress);

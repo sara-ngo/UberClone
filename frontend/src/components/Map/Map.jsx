@@ -13,6 +13,12 @@ import TripService from "../TripService/emitter";
 const ACCESS_TOKEN = "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
 mapboxgl.accessToken = ACCESS_TOKEN;
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 class App extends Component {
 
   constructor(props) {
@@ -35,6 +41,7 @@ class App extends Component {
     this.routeEndLat = 0.0;
     this.locationMap = new Map();
     this.mapLoadedFlag = false;
+    this.abort = false;
 
     this.state = {
       "className": "RequestRideButtonDisabled",
@@ -81,6 +88,13 @@ class App extends Component {
     this.mapboxObj.getSource("driverPoints").setData(driverFeatures);
     this.mapboxObj.getSource("riderPoints").setData(riderFeatures);
   };
+
+  async positionUpdateLoop() {
+    while (this.abort === false) {
+      this.refreshMarkers(this.mapboxObj);
+      await sleep(200);
+    }
+  }
 
   mapLoaded = () => {
     // Add driver symbol layer
@@ -194,13 +208,15 @@ class App extends Component {
     // centers the map on your current location
     this.geolocate.trigger();
     this.mapLoaded = true;
+
+    // begin loop
+    this.positionUpdateLoop();
   }
 
   onPositionData = (data) => {
     //console.log("Position Data Received:");
     //console.log(data);
     this.locationMap.set(data.socketId, data);
-    this.refreshMarkers(this.mapboxObj);
   };
 
   onClick = (event) => {
@@ -268,16 +284,11 @@ Fired when input is set */
     this.userLat = position.coords.latitude;
     this.routeStartLong = this.userLong;
     this.routeStartLat = this.userLat;
-    //
+    // emit user location
     let positionData = {};
     positionData.long = position.coords.longitude;
     positionData.lat = position.coords.latitude;
-    if (this.userType === "driver") {
-      positionData.type = "driver";
-    } else {
-      positionData.type = "rider";
-    }
-    TripService.emit("positionUpdate", positionData);
+    TripService.emit("onGeolocatePositionUpdate", positionData);
   }
 
   onMapMove = (data) => {
@@ -342,6 +353,7 @@ Fired when input is set */
   };
 
   componentWillUnmount = () => {
+    this.abort = true;
     this.mapboxObj.off("load", this.mapLoaded);
     this.mapboxObj.off("move", this.onMapMove);
     this.mapboxObj.off("locationfound", this.onLocationFound);
