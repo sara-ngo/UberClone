@@ -6,14 +6,21 @@ import {
 import TripService from './components/TripService/emitter.js';
 import TripUtils from './components/TripUtils/tripUtils.js';
 import UserUtils from './components/UserUtils/UserUtils.js';
+import RiderAI from './components/MapAI/RiderAI.js';
+import DriverAI from './components/MapAI/DriverAI.js';
+import * as Constants from "../constants.js"
 
-var userMap = new Map();
-var tripMap = new Map();
-var riderSocketIdToTripMap = new Map();
-var driverSocketIdToTripMap = new Map();
-var driverPosArray = [];
-var io = {};
-var connectedUserLoopFlag = true;
+let userMap = new Map();
+let tripMap = new Map();
+let riderSocketIdToTripMap = new Map();
+let driverSocketIdToTripMap = new Map();
+let io = {};
+let connectedUserLoopFlag = true;
+
+let userCheckDisconnectMS = 8000;
+let userDisconnectThresholdMS = 20000;
+let driverToRiderProximity = 0.0002;
+let riderDestinationProximity = 0.0002;
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -23,7 +30,7 @@ function sleep(ms) {
 
 async function connectedUserLoop() {
   while (connectedUserLoopFlag) {
-    await sleep(8000);
+    await sleep(userCheckDisconnectMS);
     // Remove disconnected users
     for (let [key, value] of userMap) {
       removeUserIfDisconnected(key);
@@ -53,18 +60,10 @@ function removeUserIfDisconnected(socketId) {
   } else if (userObjRef.lastUpdate === undefined) {
     // delete if no update time
     deleteFlag = true;
-  } else if ((userObjRef.lastUpdate + 30000) < Date.now()) {
+  } else if ((userObjRef.lastUpdate + userDisconnectThresholdMS) < Date.now()) {
     // user did not update for awhile so we delete
     // Date.now() is in milliseconds
     deleteFlag = true;
-  }
-  if (deleteFlag) {
-    var index = driverPosArray.findIndex(obj => {
-      return obj.socketId == socketId;
-    });
-    if (index > -1) {
-      driverPosArray.splice(index, 1);
-    }
   }
   if (userObjRef && deleteFlag) {
     userObjRef.isActive = false;
@@ -105,13 +104,19 @@ async function requestRide(riderSocketId, requestData) {
     "driverId": 0,
     "driverName": "",
     "driverRating": 0,
-    "destLong": requestData.destLong,
-    "destLat": requestData.destLat,
-    "type": requestData.rideType,
-    "costEstimate": requestData.rideCost
+    "startLat": requestData.startLat,
+    "startLong": requestData.startLong,
+    "endLat": requestData.endLat,
+    "endLong": requestData.endLong,
+    "type": requestData.type,
+    "distanceEstimate": requestData.distance,
+    "durationEstimate": requestData.duration,
+    "costEstimate": requestData.cost
   }
   tripMap.set(tripId, tripData);
   riderSocketIdToTripMap.set(riderSocketId, tripId);
+  // set flags
+  riderObjRef.tripMatching = true;
   // notify the rest of the system about the trip
   TripService.emit("newTrip", tripData);
   TripService.emit("matchRiderDriverTrip", tripId);
@@ -130,18 +135,16 @@ async function matchDriverToRider(tripId) {
   while (true) {
     // Is rider still active?
     if (!TripUtils.matchDriverToRiderActiveCheck(io, riderObjRef)) {
+      TripUtils.matchDriverToRiderCancel(io, riderObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
     }
-    // keep alive
-    riderObjRef.lastUpdate = Date.now();
     // calculate the distance between the rider and each driver
-    let query = TripUtils.getClosestDriver(driverPosArray, riderObjRef);
+    let query = TripUtils.getClosestDriver(userMap, riderObjRef);
     // see if the closest driver exists
     if (!query) {
-      riderObjRef.tripMatching = false;
       var data = {};
-      data.message = "No drivers were found!"
+      data.message = "No drivers were found! Search continuing..."
       data.timestamp = Date.now();
       data.socketId = riderSocketId;
       io.to(riderSocketId).emit('requestRideProgress', data)
@@ -160,6 +163,8 @@ async function matchDriverToRider(tripId) {
       await sleep(1000);
       continue;
     }
+    // set user flags
+    driverObjRef.tripMatching = true;
     // set trip properties
     tripObjRef.riderSocketId = riderSocketId;
     tripObjRef.driverSocketId = driverSocketId;
@@ -182,8 +187,9 @@ async function matchDriverToRider(tripId) {
     riderData.tripId = tripId;
     io.to(riderSocketId).emit('requestRideProgress', riderData);
     await sleep(5000);
-    // If driver did not accept, then stop break out of loop to stop searching
+    // If driver did not accept, then continue the loop and keep searching
     if (!tripObjRef.driverMatchedConfirm) {
+      driverObjRef.tripMatching = false;
       removeUserIfDisconnected(driverSocketId);
       continue;
     }
@@ -205,24 +211,28 @@ async function driverToRiderTrip(tripId) {
   while (true) {
     // Is rider still active?
     if (!TripUtils.driverToRiderActiveCheck(io, riderObjRef)) {
+      TripUtils.driverToRiderCancel(io, riderObjRef);
       TripUtils.driverToRiderCancel(io, driverObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
     }
+    // Is driver still active?
     if (!TripUtils.driverToRiderActiveCheck(io, driverObjRef)) {
       TripUtils.driverToRiderCancel(io, riderObjRef);
+      TripUtils.driverToRiderCancel(io, driverObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
     }
+    // BRAD: 5/4/2022 removed because it defeats the purpose of the active checks above
     // keep alive
-    riderObjRef.lastUpdate = Date.now();
-    driverObjRef.lastUpdate = Date.now();
+    //riderObjRef.lastUpdate = Date.now();
+    //driverObjRef.lastUpdate = Date.now();
     // calculate the distance between the rider and driver
     let distance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
-    if (distance > 0.0001) {
+    if (distance > driverToRiderProximity) {
       // tell rider
       let riderData = {};
       riderData.message = "Driver hasn't arrived yet!"
@@ -278,6 +288,7 @@ async function togetherTrip(tripId) {
   while (true) {
     // Is rider still active?
     if (!TripUtils.togetherActiveCheck(io, riderObjRef)) {
+      TripUtils.togetherCancel(io, riderObjRef);
       TripUtils.togetherCancel(io, driverObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
@@ -285,6 +296,7 @@ async function togetherTrip(tripId) {
     }
     if (!TripUtils.togetherActiveCheck(io, driverObjRef)) {
       TripUtils.togetherCancel(io, riderObjRef);
+      TripUtils.togetherCancel(io, driverObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
@@ -295,7 +307,7 @@ async function togetherTrip(tripId) {
     // calculate the distance between the rider and driver
     let riderDriverDistance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
-    if (riderDriverDistance > 0.0001) {
+    if (riderDriverDistance > driverToRiderProximity) {
       let riderData = {};
       riderData.message = "You've separated from the driver!"
       riderData.timestamp = Date.now();
@@ -312,42 +324,48 @@ async function togetherTrip(tripId) {
     // calculate the distance between the rider and destination
     let riderDestinationDistance = TripUtils.getRiderDestinationDistance(riderObjRef, tripObjRef);
     // see if the driver is within proximity
-    if (riderDestinationDistance > 0.0001) {
+    if (riderDestinationDistance > riderDestinationProximity) {
       let riderData = {};
       riderData.message = "Still on the way to destination!"
       riderData.timestamp = Date.now();
       riderData.socketId = riderSocketId;
       riderData.destDistance = riderDestinationDistance;
-      riderData.destDistanceThresh = 0.0001;
+      riderData.destDistanceThresh = riderDestinationProximity;
       io.to(riderSocketId).emit('tripTogetherProgress', riderData);
       let driverData = {};
       driverData.message = "Still on the way to destination!"
       driverData.timestamp = Date.now();
       driverData.socketId = driverSocketId;
       driverData.destDistance = riderDestinationDistance;
-      driverData.destDistanceThresh = 0.0001;
+      driverData.destDistanceThresh = riderDestinationProximity;
       io.to(driverSocketId).emit('tripTogetherProgress', driverData);
       await sleep(5000);
       continue;
     }
+    // set user flags
+    riderObjRef.tripMatching = false;
+    riderObjRef.tripDoing = false;
+    driverObjRef.tripMatching = false;
+    driverObjRef.tripDoing = false;
     // send driver a confirmation
     let riderData = {};
     riderData.message = "You've arrived at your destination!"
     riderData.timestamp = Date.now();
     riderData.socketId = riderSocketId;
-    io.to(riderSocketId).emit('tripTogetherProgress', riderData);
+    io.to(riderSocketId).emit('tripTogetherSuccess', riderData);
     // tell the Rider
     let driverData = {};
     driverData.message = "You've arrived at your destination!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('tripTogetherConfirm', driverData);
+    io.to(driverSocketId).emit('tripTogetherSuccess', driverData);
     // set the trip complete flags
     tripObjRef.completed = true;
     TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
     TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
     console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") completed a trip!");
     // let them rate trip
+    // both local only
     TripService.emit("completeTrip", tripObjRef);
     TripService.emit("rateTrip", tripObjRef.tripId);
     break;
@@ -444,6 +462,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
   driverData.message = "Matched to a rider!"
   driverData.timestamp = Date.now();
   driverData.socketId = driverSocketId;
+  driverData.riderSocketId = riderSocketId;
   driverData.riderFirstName = riderObjRef.firstName;
   driverData.riderLastName = riderObjRef.lastName;
   driverData.riderLong = riderObjRef.long;
@@ -453,7 +472,8 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
   riderData.message = "Matched to a driver!"
   riderData.timestamp = Date.now();
   riderData.socketId = riderSocketId;
-  riderData.driverLastName = driverObjRef.firstName;
+  riderData.driverSocketId = driverSocketId;
+  riderData.driverFirstName = driverObjRef.firstName;
   riderData.driverLastName = driverObjRef.lastName;
   io.to(riderSocketId).emit('tripDriverToRiderBegin', riderData);
   console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") matched!");
@@ -513,19 +533,21 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
   driverData.message = "Trip together begins!"
   driverData.timestamp = Date.now();
   driverData.socketId = driverSocketId;
+  driverData.riderSocketId = riderSocketId;
   driverData.riderFirstName = riderObjRef.firstName;
   driverData.riderLastName = riderObjRef.lastName;
-  driverData.destLong = tripObjRef.destLong;
-  driverData.destLat = tripObjRef.destLat;
+  driverData.endLong = tripObjRef.endLong;
+  driverData.endLat = tripObjRef.endLat;
   io.to(driverSocketId).emit('tripTogetherBegin', driverData);
   let riderData = {};
   riderData.message = "Trip together begins!"
   riderData.timestamp = Date.now();
   riderData.socketId = riderSocketId;
-  riderData.driverLastName = driverObjRef.firstName;
+  riderData.driverSocketId = driverSocketId;
+  riderData.driverFirstName = driverObjRef.firstName;
   riderData.driverLastName = driverObjRef.lastName;
-  riderData.destLong = tripObjRef.destLong;
-  riderData.destLat = tripObjRef.destLat;
+  riderData.endLong = tripObjRef.endLong;
+  riderData.endLat = tripObjRef.endLat;
   io.to(riderSocketId).emit('tripTogetherBegin', riderData);
   console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") together!");
 }
@@ -556,7 +578,7 @@ function rateDone(socketId, tripId, data) {
   if (userObjRef.type == "driver") {
     tripObjRef.hasDriverRating = true;
     tripObjRef.driverRating = data.score;
-  } else if(userObjRef.type == "rider"){
+  } else if (userObjRef.type == "rider") {
     tripObjRef.hasRiderRating = true;
     tripObjRef.riderRating = data.score;
   }
@@ -623,26 +645,6 @@ const MapServer = (app) => {
         }
       }
       // console.log("position update from:", socket.id, "at", data.timestamp)
-      // Add type==driver to the driverPosArray
-      if (data.type == "driver") {
-        var result = driverPosArray.find(obj => {
-          return obj.socketId == socket.id;
-        });
-        if (!result) {
-          // Does not exist, so create a new entry
-          //console.log("driver position added:", socket.id, "at", data.timestamp)
-          driverPosArray.push({
-            long: data.long,
-            lat: data.lat,
-            socketId: socket.id
-          });
-        } else {
-          // Update Driver position
-          result.long = data.long;
-          result.lat = data.lat;
-          result.socketId = socket.id;
-        }
-      }
       io.sockets.emit('positionData', data);
     })
 
@@ -661,7 +663,7 @@ const MapServer = (app) => {
         riderData.socketId = socket.id;
         io.to(socket.id).emit('requestRideProgress', riderData);
       }
-      if (data.rideType === undefined || data.rideCost === undefined || data.destLat === undefined || data.destLong === undefined) {
+      if (data.type === undefined || data.cost === undefined || data.endLat === undefined || data.endLong === undefined) {
         let riderData = {};
         riderData.message = "ERROR: data not complete"
         riderData.timestamp = Date.now();
@@ -673,8 +675,6 @@ const MapServer = (app) => {
       riderData.timestamp = Date.now();
       riderData.socketId = socket.id;
       io.to(socket.id).emit('requestRideProgress', riderData);
-      // set flags
-      userObjRef.tripMatching = true;
       requestRide(socket.id, data);
     });
 
@@ -739,6 +739,29 @@ const MapServer = (app) => {
   });
 
   connectedUserLoop();
+  // Create AI
+  let driverArray = [];
+  if (Constants.FLAG_AI_DRIVERS) {
+    driverArray.push(new DriverAI(37.293447, -121.904626));
+    driverArray.push(new DriverAI(37.315431, -121.861966));
+    driverArray.push(new DriverAI(37.339592, -121.842453));
+    driverArray.push(new DriverAI(37.391607, -121.889225));
+    driverArray.push(new DriverAI(37.34996, -121.825282));
+  }
+  let riderArray = [];
+  if (Constants.FLAG_AI_RIDERS) {
+    riderArray.push(new RiderAI(37.334789, -121.888138));
+    riderArray.push(new RiderAI(37.33171, -121.93034));
+    riderArray.push(new RiderAI(37.413738, -121.899117));
+    riderArray.push(new RiderAI(37.362517, -121.925567));
+    riderArray.push(new RiderAI(37.313938, -121.927011));
+  }
+  for (const driver of driverArray) {
+    driver.start();
+  }
+  for (const rider of riderArray) {
+    rider.start();
+  }
 }
 
 export default MapServer;

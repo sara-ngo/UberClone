@@ -18,8 +18,8 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.destLong = 0.0;
-    this.destLat = 0.0;
+    this.endLong = 0.0;
+    this.endLat = 0.0;
 
     this.state = {
       tripBlock: <p>Waiting for a rider to request you.</p>
@@ -45,6 +45,10 @@ class App extends Component {
   tripDriverToRiderBegin = (data) => {
     console.log("tripDriverToRiderBegin Data Received:");
     console.log(data);
+    TripService.emit('setDestination', {
+      "routeEndLong": data.riderLong,
+      "routeEndLat": data.riderLat
+    });
     this.setState({
       chatBlock: <Chat/>,
       tripBlock: <p>Drive to the rider's location to begin the trip.</p>
@@ -80,14 +84,23 @@ class App extends Component {
   tripTogetherBegin = (data) => {
     console.log("tripTogetherBegin Data Received:");
     console.log(data);
-    this.destLong = data.destLong;
-    this.destLat = data.destLat;
+    this.endLong = data.endLong;
+    this.endLat = data.endLat;
+    TripService.emit('setDestination', {
+      "routeEndLong": this.endLong,
+      "routeEndLat": this.endLat
+    });
     this.setState({
       messageBlock: data.message,
       tripBlock: <><DriverInstructions/><p> Drive to the destination at({
-        this.destLat
-      }, {this.destLong})</p></>
+        this.endLat
+      }, {this.endLong})</p></>
     });
+  }
+
+  tripTogetherProgress = (data) => {
+    console.log("tripTogetherProgress Data Received:");
+    console.log(data);
   }
 
   rateBegin = (data) => {
@@ -112,6 +125,7 @@ class App extends Component {
     TripService.on('tripDriverToRiderConfirm', this.tripDriverToRiderConfirm);
     TripService.on('tripDriverToRiderConfirmProgress', this.tripDriverToRiderConfirmProgress);
     TripService.on('tripTogetherBegin', this.tripTogetherBegin);
+    TripService.on('tripTogetherProgress', this.tripTogetherProgress);
     TripService.on('rateBegin', this.rateBegin);
     TripService.on('rateDone', this.rateDone);
   };
@@ -124,6 +138,7 @@ class App extends Component {
     TripService.off('tripDriverToRiderConfirm', this.tripDriverToRiderConfirm);
     TripService.off('tripDriverToRiderConfirmProgress', this.tripDriverToRiderConfirmProgress);
     TripService.off('tripTogetherBegin', this.tripTogetherBegin);
+    TripService.off('tripTogetherProgress', this.tripTogetherProgress);
     TripService.off('rateBegin', this.rateBegin);
     TripService.off('rateDone', this.rateDone);
   }
@@ -131,7 +146,7 @@ class App extends Component {
   render() {
     return (<> < Navbar /> <r-c join="join">
       <main data-md2-3="data-md2-3" className="main-content no-padding">
-        <Map text='driver'/>
+        <Map userType='driver'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
         {this.state.messageBlock}{this.state.chatBlock}
@@ -148,7 +163,7 @@ class App extends Component {
             <a href="#">About</a>
           </li>
           <li>
-            <a href="#">Contact</a>
+            <a href="/ComponentTesting">Testing</a>
           </li>
           <li>
             <a href="#">Privacy</a>

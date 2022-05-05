@@ -5,11 +5,17 @@ import TripService from '../TripService/emitter';
 Brad: calculateCost and getRoute have been merged
 They pretty much did the same thing to begin with
 */
-async function getRoute(end, start, map) {
-  const query = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`, {method: "GET"});
+async function getRoute(mapboxObj, data) {
+  const query = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${data.routeStartLong},${data.routeStartLat};${data.routeEndLong},${data.routeEndLat}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`, {method: "GET"});
   const json = await query.json();
-  const data = json.routes[0];
-  const route = data.geometry.coordinates;
+  if(!json.routes){
+    return false;
+  }
+  if(json.routes.length == 0){
+    return false;
+  }
+  const directionData = json.routes[0];
+  const route = directionData.geometry.coordinates;
   const geojson = {
     type: "Feature",
     properties: {},
@@ -19,11 +25,11 @@ async function getRoute(end, start, map) {
     }
   };
   // if the route already exists on the map, we'll reset it using setData
-  if (map.current.getSource("route")) {
-    map.current.getSource("route").setData(geojson);
+  if (mapboxObj.getSource("route")) {
+    mapboxObj.getSource("route").setData(geojson);
   } else {
     // otherwise, we'll make a new request
-    map.current.addLayer({
+    mapboxObj.addLayer({
       id: "route",
       type: "line",
       source: {
@@ -47,7 +53,7 @@ async function getRoute(end, start, map) {
   Estimated cost into the CostEstimation component:
   components/CostEstimation/CostEstimation */
   TripService.emit("tripEstimateData", {
-    "data": data
+    "data": directionData
   });
 }
 

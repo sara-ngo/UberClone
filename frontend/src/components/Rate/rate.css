@@ -1,16 +1,14 @@
-#Rate {
-  position: absolute;
-  width: 1920px;
-  height: 1080px;
-  background-color: rgba(255, 255, 255, 1);
-  overflow: hidden;
-  --web-view-name: Rate;
-  --web-view-id: Rate;
-  --web-scale-on-resize: true;
-  --web-enable-deep-linking: true;
+.RateBox {
+  position: relative;
+  overflow: visible;
+  width: auto;
+  height: 117px;
+  margin-top: 30px;
+  margin-left: 0px;
+  background-color: rgba(242, 242, 242, 1);
 }
 
-#icon-star {
+.icon_star {
   position: relative;
   width: 25px;
   height: 24px;
@@ -18,7 +16,7 @@
   display: inline-block;
 }
 
-#Star {
+.Star path {
   fill: rgba(255, 255, 255, 1);
   stroke: rgba(21, 21, 21, 1);
   stroke-width: 1px;
@@ -36,15 +34,6 @@
   left: 0px;
   top: 0px;
   transform: matrix(1, 0, 0, 1, 0, 0);
-}
-
-.RateBox {
-  position: relative;
-  width: auto;
-  height: 117px;
-  margin-top: 30px;
-  margin-left: 0;
-  background-color: rgba(242, 242, 242, 1);
 }
 
 .RateBox .text {

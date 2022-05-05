@@ -1,7 +1,7 @@
 import React, {Component, useEffect} from 'react';
 import '../styles/App.css'
 import Map from '../components/Map/Map'
-import CostEstimation from '../components/CostEstimation/CostEstimation'
+import RideTypeSelection from '../components/RideTypeSelection/RideTypeSelection'
 import Chat from '../components/Chat/Chat'
 import Navbar from '../components/Navbar/Navbar'
 import Rate from '../components/Rate/Rate'
@@ -20,6 +20,7 @@ class App extends Component {
     super(props);
 
     this.state = {
+      tripStatsBlock: "",
       tripBlock: <p>Select a map position as your destination.</p>
     }
 
@@ -32,12 +33,27 @@ class App extends Component {
   }
 
   destinationSelected = (data) => {
-    console.log("destinationSelected Data Received:");
-    console.log(data);
+    // console.log("destinationSelected Data Received:");
+    // console.log(data);
+    this.setState({
+      messageBlock: data.message, tripBlock: <><p> Select Ride Type: </p> < RideTypeSelection />< p className = "requestButtonPositioning" > <RequestRideButton routeStartLat={data.routeStartLat} routeStartLong={data.routeStartLong} routeEndLat={data.routeEndLat} routeEndLong={data.routeEndLong}/></p>
+    </>
+    });
+  }
+
+  tripEstimateData = (data) => {
+    this.tripDuration = Math.floor(data.data.duration / 60);
+    this.tripDistance = Math.floor(data.data.distance / 1000);
     this.setState({
       messageBlock: data.message,
-      tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <RequestRideButton destLong={data.end.long} destLat={data.end.lat}/></p>
-    </>
+      tripStatsBlock: <> < p > Trip Stats: </p>
+    <p>Trip duration: {
+        this.tripDuration
+      }
+      minutes < br /> Trip distance: {
+        this.tripDistance
+      }
+      miles < /p> < / >
     });
   }
 
@@ -57,7 +73,7 @@ class App extends Component {
     console.log("tripDriverToRiderBegin Data Received:");
     console.log(data);
     this.setState({
-      messageBlock: data.message, tripBlock: <p>Driver found! Driver is coming to pick you up!</p>,
+      messageBlock: data.message, tripBlock: <p>Driver found! Driver is coming to pick you up!</p >,
       chatBlock: <Chat/>
     });
   }
@@ -75,7 +91,7 @@ class App extends Component {
     console.log(data);
     this.setState({
       messageBlock: data.message,
-      tripBlock: <> < CostEstimation />< p className = "requestButtonPositioning" > <RequestRideButton/></p>
+      tripBlock: <> < RideTypeSelection />< p className = "requestButtonPositioning" > <RequestRideButton/></p>
     </>
     });
   }
@@ -124,6 +140,7 @@ class App extends Component {
 
   componentDidMount = () => {
     TripService.on('destinationSelected', this.destinationSelected);
+    TripService.on("tripEstimateData", this.tripEstimateData);
     TripService.on('requestRideProgress', this.requestRideProgress);
     TripService.on('requestRideStop', this.requestRideStop);
     TripService.on('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
@@ -138,6 +155,7 @@ class App extends Component {
 
   componentWillUnmount = () => {
     TripService.off('destinationSelected', this.destinationSelected);
+    TripService.off("tripEstimateData", this.tripEstimateData);
     TripService.off('requestRideProgress', this.requestRideProgress);
     TripService.off('requestRideStop', this.requestRideStop);
     TripService.off('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
@@ -153,11 +171,11 @@ class App extends Component {
   render() {
     return (<> < Navbar /> <r-c join="join">
       <main data-md2-3="data-md2-3" className="main-content no-padding">
-        <Map text='rider'/>
+        <Map userType='rider'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
         {this.state.messageBlock}{this.state.chatBlock}
-        {this.state.tripBlock}
+        {this.state.tripStatsBlock}{this.state.tripBlock}
       </aside>
     </r-c>
     <footer data-r-c="data-r-c" data-join="data-join" className="footer">
@@ -170,7 +188,7 @@ class App extends Component {
             <a href="#">About</a>
           </li>
           <li>
-            <a href="#">Contact</a>
+            <a href="/ComponentTesting">Testing</a>
           </li>
           <li>
             <a href="#">Privacy</a>
