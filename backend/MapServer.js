@@ -95,6 +95,7 @@ async function requestRide(riderSocketId, requestData) {
     riderData.timestamp = Date.now();
     riderData.socketId = riderSocketId;
     io.to(riderSocketId).emit('requestRideStop', riderData);
+    return;
   }
   // Create a trip
   let tripId = TripUtils.generateTripId(tripMap);
