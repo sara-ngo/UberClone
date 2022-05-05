@@ -115,7 +115,7 @@ class App extends Component {
             defaultValue="uberX"
             name="radio-buttons-group"
           >
-            <Card value="uberX" onClick={chooseUberX}>
+            <Card value="uberX" onClick={chooseUberX} >
               <CardActionArea>
                 <CardContent>
                   <FormControlLabel
@@ -125,10 +125,11 @@ class App extends Component {
                   />
                   <img src={car1} alt="car1" 
                   style={{width: 250, top: this.props.top, left: this.props.left}}/>
+                  <p id="caption">UberX</p>
                 </CardContent>
               </CardActionArea>
             </Card>
-            
+
             <Card value="confort" onClick={chooseComfort}>
               <CardActionArea>
                 <CardContent>
