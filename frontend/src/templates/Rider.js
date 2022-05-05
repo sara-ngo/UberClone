@@ -13,23 +13,55 @@ import '../styles/matthewjamestaylor/r-c.css'
 import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
-export const MapContext = React.createContext();
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 class App extends Component {
   constructor(props) {
     super(props);
+
+    this.abort = false;
+    this.userLong = 0.0;
+    this.userLat = 0.0;
+    this.type = "rider";
 
     this.state = {
       tripStatsBlock: "",
       tripBlock: <p>Select a map position as your destination.</p>
     }
 
+    this.positionUpdateLoop();
+  }
+
+  positionUpdate = () => {
+    TripService.emit("positionUpdate", {
+      "long": this.userLong,
+      "lat": this.userLat,
+      "type": this.type,
+      "token": localStorage.getItem("token")
+    });
+  }
+
+  async positionUpdateLoop() {
+    while (this.abort === false) {
+      this.positionUpdate();
+      await sleep(3000);
+    }
   }
 
   initialState = () => {
     this.setState({
       "messageBlock": "", "chatBlock": "", "tripBlock": <p>Select a map position as your destination.</p>
     });
+  }
+
+  onGeolocatePositionUpdate = (data) => {
+    this.userLong = data.long;
+    this.userLat = data.lat;
+    this.positionUpdate();
   }
 
   destinationSelected = (data) => {
@@ -139,6 +171,8 @@ class App extends Component {
   }
 
   componentDidMount = () => {
+    this.abort = false;
+    TripService.on('onGeolocatePositionUpdate', this.onGeolocatePositionUpdate);
     TripService.on('destinationSelected', this.destinationSelected);
     TripService.on("tripEstimateData", this.tripEstimateData);
     TripService.on('requestRideProgress', this.requestRideProgress);
@@ -154,6 +188,8 @@ class App extends Component {
   };
 
   componentWillUnmount = () => {
+    this.abort = true;
+    TripService.off('onGeolocatePositionUpdate', this.onGeolocatePositionUpdate);
     TripService.off('destinationSelected', this.destinationSelected);
     TripService.off("tripEstimateData", this.tripEstimateData);
     TripService.off('requestRideProgress', this.requestRideProgress);

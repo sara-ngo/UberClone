@@ -3,7 +3,6 @@ import TripService from './emitter';
 
 const TripServiceInit = () => {
   TripService.on("positionUpdate", (data) => {
-    data.token = localStorage.getItem("token");
     socket.emit('positionUpdate', data);
   });
 
