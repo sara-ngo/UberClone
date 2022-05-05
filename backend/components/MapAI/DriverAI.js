@@ -7,6 +7,18 @@ function sleep(ms) {
   });
 }
 
+// from stackoverflow lol
+function getPositionAlongALine(x1, y1, x2, y2, percentage) {
+  return {
+    x: x1 * (1.0 - percentage) + x2 * percentage,
+    y: y1 * (1.0 - percentage) + y2 * percentage
+  };
+}
+
+function generateRandomDecimal(min, max) {
+  return Math.random() * (max - min) + min;
+};
+
 class App {
   constructor(lat_, long_) {
     this.lat = lat_;
@@ -20,6 +32,8 @@ class App {
     this.riderLong = 0.0;
     this.endLat = 0.0;
     this.endLong = 0.0;
+    this.moveMap = new Map();
+    this.moveCounter = 0;
   }
   async start() {
     this.socket = io(Constants.MAP_SERVER, {
@@ -29,7 +43,7 @@ class App {
         credentials: false
       }
     });
-    this.positionUpdate();
+    this.positionUpdateLoop();
     // listen to server broadcasts
     this.socket.on('requestRideConfirm', this.requestRideConfirm.bind(this));
     this.socket.on('positionData', this.positionData.bind(this));
@@ -39,15 +53,55 @@ class App {
     this.socket.on('tripTogetherSuccess', this.tripTogetherSuccess.bind(this));
     this.socket.on('rateBegin', this.rateBegin.bind(this));
   }
-  async positionUpdate() {
+
+  positionUpdate() {
+    this.socket.emit("positionUpdate", {
+      "long": this.long,
+      "lat": this.lat,
+      "type": this.type,
+      "token": 0
+    });
+  }
+
+  async positionUpdateLoop() {
     while (this.abort === false) {
-      this.socket.emit("positionUpdate", {
-        "long": this.long,
-        "lat": this.lat,
-        "type": this.type,
-        "token": 0
-      });
-      await sleep(8000);
+      this.positionUpdate();
+      await sleep(5000);
+    }
+  }
+
+  async moveTo(x2, y2) {
+    let currentCounter = this.moveCounter;
+    this.moveMap.set(currentCounter, true);
+    if (currentCounter > 0) {
+      this.moveMap.set(currentCounter - 1, false);
+    }
+    this.moveCounter++;
+    this.moveInProgress = true;
+    let x1 = this.long;
+    let y1 = this.lat;
+    let distance = Math.hypot(x1 - x2, y1 - y2);
+    let frac = 0.0;
+    let speed = 0.003; // distance/second
+    let time = distance / speed * 1000; // milliseconds
+    let timeQuanta = 400; // milliseconds
+    let fracIncrement = timeQuanta / time;
+    let loopCheck = true;
+    while (loopCheck && frac < 1) {
+      var xy = getPositionAlongALine(x1, y1, x2, y2, frac);
+      this.long = xy.x;
+      this.lat = xy.y;
+      //console.log(xy.x, xy.y, frac);
+      this.positionUpdate();
+      frac += fracIncrement;
+      await sleep(timeQuanta);
+      loopCheck = this.moveMap.get(currentCounter);
+    }
+    // on last step, set to exact point
+    loopCheck = this.moveMap.get(currentCounter);
+    if (loopCheck) {
+      this.long = x2;
+      this.lat = y2;
     }
   }
 
@@ -78,8 +132,7 @@ class App {
     this.riderLong = data.riderLong;
     this.riderSocketId = data.riderSocketId;
     // change location to rider
-    this.lat = this.riderLat;
-    this.long = this.riderLong;
+    this.moveTo(this.riderLong, this.riderLat);
   }
 
   async tripDriverToRiderConfirm(data) {
@@ -97,8 +150,7 @@ class App {
     this.endLat = data.endLat;
     this.endLong = data.endLong;
     // change location to destination
-    this.lat = this.endLat;
-    this.long = this.endLong;
+    this.moveTo(this.endLong, this.endLat);
   }
 
   async tripTogetherSuccess(data) {

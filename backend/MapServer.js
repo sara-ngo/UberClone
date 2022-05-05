@@ -86,6 +86,16 @@ async function requestRide(riderSocketId, requestData) {
     io.to(riderSocketId).emit('requestRideProgress', riderData);
     return;
   }
+  // Checking to see if user exists
+  if (!riderObjRef) {
+    console.log("SERVER ERROR: Rider does not exist!");
+    console.log(riderObjRef);
+    let riderData = {};
+    riderData.message = "SERVER ERROR: Rider does not exist!"
+    riderData.timestamp = Date.now();
+    riderData.socketId = riderSocketId;
+    io.to(riderSocketId).emit('requestRideStop', riderData);
+  }
   // Create a trip
   let tripId = TripUtils.generateTripId(tripMap);
   let tripData = {
@@ -301,9 +311,6 @@ async function togetherTrip(tripId) {
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
     }
-    // keep alive
-    riderObjRef.lastUpdate = Date.now();
-    driverObjRef.lastUpdate = Date.now();
     // calculate the distance between the rider and driver
     let riderDriverDistance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
@@ -636,6 +643,12 @@ const MapServer = (app) => {
       */
       if (userObjRef.token != data.token) {
         userObjRef.token = data.token;
+        // defaults
+        userObjRef.userId = -1;
+        userObjRef.firstName = "FIRST_NAME";
+        userObjRef.lastName = "LAST_NAME";
+        userObjRef.email = "EMAIL@EMAIL.COM";
+        // get user info
         let userInfo = await UserUtils.getUserInfoByTokenId(userObjRef.token);
         if (userInfo) {
           userObjRef.userId = userInfo._id;
@@ -654,21 +667,21 @@ const MapServer = (app) => {
         riderData.message = "User is already being matched!"
         riderData.timestamp = Date.now();
         riderData.socketId = socket.id;
-        io.to(socket.id).emit('requestRideProgress', riderData);
+        io.to(socket.id).emit('requestRideStop', riderData);
       }
       if (!data) {
         let riderData = {};
         riderData.message = "ERROR: no data object"
         riderData.timestamp = Date.now();
         riderData.socketId = socket.id;
-        io.to(socket.id).emit('requestRideProgress', riderData);
+        io.to(socket.id).emit('requestRideStop', riderData);
       }
       if (data.type === undefined || data.cost === undefined || data.endLat === undefined || data.endLong === undefined) {
         let riderData = {};
         riderData.message = "ERROR: data not complete"
         riderData.timestamp = Date.now();
         riderData.socketId = socket.id;
-        io.to(socket.id).emit('requestRideProgress', riderData);
+        io.to(socket.id).emit('requestRideStop', riderData);
       }
       let riderData = {};
       riderData.message = "Trip Matching Started!"
@@ -742,19 +755,21 @@ const MapServer = (app) => {
   // Create AI
   let driverArray = [];
   if (Constants.FLAG_AI_DRIVERS) {
-    driverArray.push(new DriverAI(37.293447, -121.904626));
-    driverArray.push(new DriverAI(37.315431, -121.861966));
-    driverArray.push(new DriverAI(37.339592, -121.842453));
-    driverArray.push(new DriverAI(37.391607, -121.889225));
-    driverArray.push(new DriverAI(37.34996, -121.825282));
+    for (let i = 0; i < Constants.NUM_AI_DRIVERS; i++) {
+      let lat = TripUtils.generateRandomDecimal(37.399026791869375, 37.24143720137937);
+      let long = TripUtils.generateRandomDecimal(-122.04096126819005, -121.77050796956928);
+      driverArray.push(new DriverAI(lat, long));
+    }
   }
   let riderArray = [];
   if (Constants.FLAG_AI_RIDERS) {
-    riderArray.push(new RiderAI(37.334789, -121.888138));
-    riderArray.push(new RiderAI(37.33171, -121.93034));
-    riderArray.push(new RiderAI(37.413738, -121.899117));
-    riderArray.push(new RiderAI(37.362517, -121.925567));
-    riderArray.push(new RiderAI(37.313938, -121.927011));
+    for (let i = 0; i < Constants.NUM_AI_RIDERS; i++) {
+      let lat = TripUtils.generateRandomDecimal(37.399026791869375, 37.24143720137937);
+      let long = TripUtils.generateRandomDecimal(-122.04096126819005, -121.77050796956928);
+      let endLat = TripUtils.generateRandomDecimal(37.399026791869375, 37.24143720137937);
+      let endLong = TripUtils.generateRandomDecimal(-122.04096126819005, -121.77050796956928);
+      riderArray.push(new RiderAI(lat, long, endLat, endLong));
+    }
   }
   for (const driver of driverArray) {
     driver.start();

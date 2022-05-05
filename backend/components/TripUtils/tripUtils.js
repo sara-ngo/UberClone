@@ -76,15 +76,15 @@ class App {
     let driverDistanceArray = [];
     for (let [key, driverObjRef] of userMap) {
       // Don't match non-drivers
-      if(driverObjRef.type != "driver"){
+      if (driverObjRef.type != "driver") {
         continue;
       }
       // Don't match inactive drivers
-      if(!driverObjRef.isActive){
+      if (!driverObjRef.isActive) {
         continue;
       }
       // Don't match currently matching drivers and busy drivers
-      if(driverObjRef.tripMatching || driverObjRef.tripDoing){
+      if (driverObjRef.tripMatching || driverObjRef.tripDoing) {
         continue;
       }
       driverDistanceArray.push({
@@ -110,12 +110,16 @@ class App {
     return Math.hypot(riderObjRef.long - tripObjRef.endLong, riderObjRef.lat - tripObjRef.endLat);
   }
 
-  static userStopTrip(userObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap){
+  static userStopTrip(userObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap) {
     userObjRef.tripMatching = false;
     userObjRef.tripDoing = false;
     riderSocketIdToTripMap.delete(userObjRef.socketId);
     driverSocketIdToTripMap.delete(userObjRef.socketId);
   }
+
+  static generateRandomDecimal(min, max) {
+    return Math.random() * (max - min) + min;
+  };
 }
 
 export default App;
