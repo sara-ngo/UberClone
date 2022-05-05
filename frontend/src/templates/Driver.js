@@ -103,6 +103,12 @@ class App extends Component {
     console.log(data);
   }
 
+  tripTogetherStop = (data) => {
+    console.log("tripTogetherStop Data Received:");
+    console.log(data);
+    this.initialState();
+  }
+
   rateBegin = (data) => {
     console.log("rateBegin Data Received:");
     console.log(data);
@@ -126,6 +132,7 @@ class App extends Component {
     TripService.on('tripDriverToRiderConfirmProgress', this.tripDriverToRiderConfirmProgress);
     TripService.on('tripTogetherBegin', this.tripTogetherBegin);
     TripService.on('tripTogetherProgress', this.tripTogetherProgress);
+    TripService.on('tripTogetherStop', this.tripTogetherStop);
     TripService.on('rateBegin', this.rateBegin);
     TripService.on('rateDone', this.rateDone);
   };
@@ -139,6 +146,7 @@ class App extends Component {
     TripService.off('tripDriverToRiderConfirmProgress', this.tripDriverToRiderConfirmProgress);
     TripService.off('tripTogetherBegin', this.tripTogetherBegin);
     TripService.off('tripTogetherProgress', this.tripTogetherProgress);
+    TripService.off('tripTogetherStop', this.tripTogetherStop);
     TripService.off('rateBegin', this.rateBegin);
     TripService.off('rateDone', this.rateDone);
   }
