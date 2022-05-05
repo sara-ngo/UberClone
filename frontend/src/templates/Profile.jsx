@@ -8,8 +8,10 @@ import styles from "../styles/Profile.module.css";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const [profilePic, setProfilePic] = useState(null);
-  const [error, setError] = useState(false);
+  const [image, setImage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [data,setData]=useState(null)
+  const [update,setUpdate]=useState(false)
 
   useEffect(() => {
     const url = Constants.AUTHENTICATION_SERVER + "/api/userInfo";
@@ -34,22 +36,33 @@ const Profile = () => {
     window.location.reload();
   };
 
-  const imageHandler = (e) => {
-    setError(false);
-    const selected = e.target.files[0];
-    const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg"];
-    if (selected && ALLOWED_TYPES.includes(selected.type)) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setProfilePic(reader.result);
-      };
-      reader.readAsDataURL(selected);
-    } else {
-      setError(true);
-    }
-  };
+  const uploadImage = async e => {
+    const files = e.target.files
+    const data = new FormData()
+    data.append('file', files[0])
+    data.append('upload_preset', 'darwin')
+    setLoading(true)
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/ngannguyen/image/upload',
+      {
+        method: 'POST',
+        body: data
+      }
+    )
+    const file = await res.json()
 
-  return (<div className={styles.main_container}>
+    setImage(file.secure_url)
+    setLoading(false)
+  }
+
+  function getData(val) {
+    console.warn(val.target.value)
+    setData(val.target.value)
+    setUpdate(false)
+  }
+
+  return (
+  <div className={styles.main_container}>
 
     < Navbar/>
     <button className={styles.white_btn} onClick={handleLogout}>
@@ -58,21 +71,13 @@ const Profile = () => {
 
     <div className={styles.container}>
       <h5>Profile</h5>
-      {error && <p className={styles.errorMsg}>File not supported</p>}
-      <div className="profilePic" style={{
-          background: styles.profilePic
-            ? `url("${styles.profilePic}") no-repeat center/cover`
-            : "#131313"
-        }}>
-        {
-          !profilePic && (<> < p > Add an image</p> < label htmlFor = "fileUpload" className = "customFileUpload" > Choose file < /label>
-              <input type="file" id="fileUpload" onChange={imageHandler} / > <span>(jpg, jpeg or png)</span>
-        </>)
-        }
-      </div>
-      {profilePic && (<button onClick={() => setProfilePic(null)}>Remove image</button>)}
-      {
-        (user == null)
+      <input type="file" name="file" placeholder="Upload an image" onChange={uploadImage}/>
+      {loading ? (
+        <h5>Loading...</h5>
+      ) : (
+        <img src={image} style={{ width: '300px' }} />
+      )}
+        {(user == null)
           ? ''
           : <div>
               <p>Name: {user.firstName}
@@ -82,15 +87,13 @@ const Profile = () => {
             </div>
       }
       <div>
-        <p>Phone Number:</p>
-        <input type="text" name="Phone Number"></input>
-      </div>
-      <div>
-        <p>New Password:</p>
-        <input type="text" name="Password"></input>
-      </div>
-      <div>
-        <input type="submit" value="Update Profile"></input>
+      <p>Phone Number:</p>
+				{update?
+                <h1> {data}</h1>
+                :null
+                }
+			<input type="text" onChange={getData}></input>
+			<button className={styles.button} onClick={()=>setUpdate(true)} >Update</button>
       </div>
     </div>
   </div>);
