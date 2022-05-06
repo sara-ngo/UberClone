@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from "react";
+import React, { Component} from "react";
 import TripService from "../TripService/emitter";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";

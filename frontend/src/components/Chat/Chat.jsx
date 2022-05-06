@@ -9,7 +9,7 @@ function Chat() {
   const [messageList, setMessageList] = useState([])
 
   const sendMessage = () => {
-    if (currentMessage != '') {
+    if (currentMessage !== '') {
       const messageData = {
         target: target,
         author: socket.id,
@@ -38,7 +38,7 @@ function Chat() {
       socket.off('receive_pm')
       socket.off('receive_target')
     }
-  }, [socket])
+  })
 
   return (
     <div className='chat'>
@@ -46,7 +46,7 @@ function Chat() {
       <div className="chat-body">
         {messageList.map((messageContent) => {
           return (
-            <div className='message' id={socket.id == messageContent.author ? 'you' : 'other'}>
+            <div className='message' id={socket.id === messageContent.author ? 'you' : 'other'}>
               <div>
                 <div className='message-content'>
                   <p>{messageContent.message}</p>
