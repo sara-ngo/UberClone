@@ -53,7 +53,7 @@ async function setRoute(mapboxObj, data) {
         }
       },
       paint: {
-        "circle-radius": 10,
+        "circle-radius": 5,
         "circle-color": "#3887be"
       }
     });

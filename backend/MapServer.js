@@ -94,6 +94,7 @@ async function requestRide(riderSocketId, requestData) {
   let tripId = TripUtils.generateTripId(tripMap);
   let tripData = {
     "tripId": tripId,
+    "isActive": true,
     "driverMatched": false,
     "driverMatchedConfirm": false,
     "inProgress": false,
@@ -121,9 +122,95 @@ async function requestRide(riderSocketId, requestData) {
   riderSocketIdToTripMap.set(riderSocketId, tripId);
   // set flags
   riderObjRef.tripMatching = true;
+  // notify rider about the trip
+  let riderData = {};
+  riderData.message = "Requested a ride!"
+  riderData.timestamp = Date.now();
+  riderData.socketId = riderSocketId;
+  riderData.tripId = tripId;
+  webSocketServer.to(riderSocketId).emit('requestRideBegin', riderData);
   // notify the rest of the system about the trip
   TripService.emit("newTrip", tripData);
   TripService.emit("matchRiderDriverTrip", tripId);
+}
+
+function requestRideCancel(riderSocketId) {
+  let riderObjRef = userMap.get(riderSocketId);
+  // delete the trip if possible (checks permissions)
+  userStopTripTryClearTrip(riderSocketId);
+  // Does the rider still exist?
+  if (riderObjRef === undefined || !riderObjRef) {
+    let riderData = {};
+    riderData.message = "ERROR: you are inactive!"
+    riderData.timestamp = Date.now();
+    riderData.socketId = riderSocketId;
+    webSocketServer.to(riderSocketId).emit('requestRideCancelProgress', riderData);
+    return;
+  }
+  // Stop trip for the rider regardless of anything else
+  TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
+  // notify rider
+  let riderData = {};
+  riderData.message = "You cancelled the trip successfully!"
+  riderData.timestamp = Date.now();
+  riderData.socketId = riderSocketId;
+  webSocketServer.to(riderSocketId).emit('requestRideStop', riderData);
+  console.log(riderSocketId + "(" + riderObjRef.firstName + ") ride request cancelled!");
+};
+
+function userStopTripTryClearTrip(userSocketId) {
+  let userObjRef = userMap.get(userSocketId);
+  // does the user exist?
+  if (userObjRef === undefined || !userObjRef) {
+    let userData = {};
+    userData.message = "ERROR: you do not exist"
+    userData.timestamp = Date.now();
+    userData.socketId = userSocketId;
+    webSocketServer.to(userSocketId).emit('tripDriverToRiderStop', userData);
+    return;
+  }
+  let userType = userObjRef.type;
+  // Is the current user already involved with a trip?
+  let tripIdRef = riderSocketIdToTripMap.get(userSocketId);
+  if (!tripIdRef) {
+    let userData = {};
+    userData.message = "You are not on a trip!"
+    userData.timestamp = Date.now();
+    userData.socketId = userSocketId;
+    webSocketServer.to(userSocketId).emit('requestRideCancelProgress', userData);
+    return;
+  }
+  let tripId = tripIdRef;
+  // Does the trip ID exist?
+  let tripObjRef = tripMap.get(tripId);
+  if (tripObjRef === undefined || !tripObjRef) {
+    let userData = {};
+    userData.message = "ERROR: can't find trip!"
+    userData.timestamp = Date.now();
+    userData.socketId = userSocketId;
+    webSocketServer.to(userSocketId).emit('requestRideCancelProgress', userData);
+    return;
+  }
+  // Is the driver involved with this trip?
+  if ((userType == "rider" && tripObjRef.riderSocketId != userSocketId) || (userType == "driver" && tripObjRef.driverSocketId != userSocketId)) {
+    let userData = {};
+    userData.message = "ERROR: you are not assigned to this trip!"
+    userData.timestamp = Date.now();
+    userData.socketId = userSocketId;
+    webSocketServer.to(userSocketId).emit('requestRideCancelProgress', userData);
+    return;
+  }
+  // conditions met. trip may be deleted.
+  tripObjRef.isActive = false;
+  tripObjRef.driverMatchedConfirm = false;
+  tripObjRef.inProgress = false;
+  tripMap.delete(tripId);
+  // notify user
+  let userData = {};
+  userData.message = "Trip deleted successfully!"
+  userData.timestamp = Date.now();
+  userData.socketId = userSocketId;
+  webSocketServer.to(userSocketId).emit('requestRideCancelProgress', userData);
 }
 
 /*
@@ -132,7 +219,7 @@ them with a driver. The server simply looks for the closest, available driver an
 Drivers only have a few seconds to confirm the match before the server releases their claim to the rider
 and re-requests a driver (The same driver may be assigned).
 */
-async function matchDriverToRider(tripId) {
+async function matchRiderDriverTrip(tripId) {
   let tripObjRef = tripMap.get(tripId);
   if (tripObjRef === undefined) {
     return;
@@ -142,7 +229,7 @@ async function matchDriverToRider(tripId) {
   /*
   Search for a match in a loop
   */
-  while (true) {
+  while (tripObjRef.isActive) {
     // Is rider still active?
     if (!TripUtils.matchDriverToRiderActiveCheck(webSocketServer, riderObjRef)) {
       TripUtils.matchDriverToRiderCancel(webSocketServer, riderObjRef);
@@ -200,7 +287,7 @@ async function matchDriverToRider(tripId) {
     // If driver did not accept, then continue the loop and keep searching
     if (!tripObjRef.driverMatchedConfirm) {
       driverObjRef.tripMatching = false;
-      if(removeUserIfDisconnected(driverSocketId)){
+      if (removeUserIfDisconnected(driverSocketId)) {
         continue;
       }
       // notify driver they were unmatched
@@ -226,7 +313,7 @@ async function driverToRiderTrip(tripId) {
   let driverSocketId = tripObjRef.driverSocketId;
   let riderObjRef = userMap.get(riderSocketId);
   let driverObjRef = userMap.get(driverSocketId);
-  while (true) {
+  while (tripObjRef.isActive) {
     // Is rider still active?
     if (!TripUtils.driverToRiderActiveCheck(webSocketServer, riderObjRef)) {
       TripUtils.driverToRiderCancel(webSocketServer, riderObjRef);
@@ -303,7 +390,7 @@ async function togetherTrip(tripId) {
   let driverSocketId = tripObjRef.driverSocketId;
   let riderObjRef = userMap.get(riderSocketId);
   let driverObjRef = userMap.get(driverSocketId);
-  while (true) {
+  while (tripObjRef.isActive) {
     // Is rider still active?
     if (!TripUtils.togetherActiveCheck(webSocketServer, riderObjRef)) {
       TripUtils.togetherCancel(webSocketServer, riderObjRef);
@@ -613,10 +700,10 @@ const MapServer = (webSocketServer_) => {
 
   webSocketServer.on('connection', socket => {
     // Reject all connections that are not for the trip service
-    if(!socket.handshake.query.service){
+    if (!socket.handshake.query.service) {
       return;
     }
-    if(socket.handshake.query.service != "trip"){
+    if (socket.handshake.query.service != "trip") {
       return;
     }
     // Create a new user
@@ -702,6 +789,10 @@ const MapServer = (webSocketServer_) => {
       requestRide(socket.id, data);
     });
 
+    socket.on('requestRideCancel', (data) => {
+      requestRideCancel(socket.id);
+    });
+
     socket.on('currentTrip', () => {
       var data = {};
       if (!userObjRef.tripDoing) {
@@ -750,7 +841,7 @@ const MapServer = (webSocketServer_) => {
   });
 
   TripService.on("driverToRiderTrip", driverToRiderTrip);
-  TripService.on("matchRiderDriverTrip", matchDriverToRider);
+  TripService.on("matchRiderDriverTrip", matchRiderDriverTrip);
   TripService.on("togetherTrip", togetherTrip);
   TripService.on("rateTrip", rateTrip);
 
