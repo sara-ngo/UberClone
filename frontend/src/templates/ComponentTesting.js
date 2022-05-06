@@ -18,30 +18,72 @@ import '../styles/matthewjamestaylor/r-c.css'
 import '../styles/matthewjamestaylor/r-c-min.css'
 import '../styles/matthewjamestaylor/site-styles.css'
 
-export const MapContext = React.createContext();
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 /* BRAD: This page is for testing all the components available */
 class App extends Component {
   constructor(props) {
     super(props);
 
+    this.abort = false;
+    
     this.state = {
-      "tripDuration": "",
-      "tripDistance": ""
+      "tripStatsBlock": ""
+    }
+
+    this.positionUpdateLoop();
+  }
+
+  positionUpdate = () => {
+    TripService.emit("positionUpdate", {
+      "long": this.userLong,
+      "lat": this.userLat,
+      "heading": this.userHeading,
+      "type": this.type,
+      "token": localStorage.getItem("token")
+    });
+  }
+
+  async positionUpdateLoop() {
+    while (this.abort === false) {
+      this.positionUpdate();
+      await sleep(3000);
     }
   }
 
   destinationSelected = (data) => {
     console.log("destinationSelected Data Received:");
     console.log(data);
+    // set the map route
+    TripService.emit("setRoute", {
+      "routeId": "main",
+      "startLat": data.routeStartLat,
+      "startLong": data.routeStartLong,
+      "endLat": data.routeEndLat,
+      "endLong": data.routeEndLong
+    });
   }
 
-  tripEstimateData = (data) => {
-    this.tripEstimateData = data.data;
-    let tripDuration = Math.floor(this.tripEstimateData.duration / 60);
-    let tripDistance = Math.floor(this.tripEstimateData.distance / 1000);
-
-    this.setState({"tripDuration": `Trip duration: ${tripDuration} minutes`, "tripDistance": `Trip distance: ${tripDistance} miles`});
+  mapNewRoute = (data) => {
+    if (data.routeId !== "main") {
+      return;
+    }
+    this.tripDuration = Math.floor(data.duration / 60);
+    this.tripDistance = Math.floor(data.distance / 1000);
+    this.setState({
+      tripStatsBlock: <> < p > Trip Stats: </p>
+    <p>Trip duration: {
+        this.tripDuration
+      }
+      minutes < br / >Trip distance: {
+        this.tripDistance
+      }
+      miles < /p> < / >
+    });
   }
 
   requestRideProgress = (data) => {
@@ -114,7 +156,7 @@ class App extends Component {
 
   componentDidMount = () => {
     TripService.on('destinationSelected', this.destinationSelected);
-    TripService.on("tripEstimateData", this.tripEstimateData);
+    TripService.on("mapNewRoute", this.mapNewRoute);
     TripService.on('requestRideProgress', this.requestRideProgress);
     TripService.on('requestRideStop', this.requestRideStop);
     TripService.on('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
@@ -129,7 +171,7 @@ class App extends Component {
 
   componentWillUnmount = () => {
     TripService.off('destinationSelected', this.destinationSelected);
-    TripService.off("tripEstimateData", this.tripEstimateData);
+    TripService.off("mapNewRoute", this.mapNewRoute);
     TripService.off('requestRideProgress', this.requestRideProgress);
     TripService.off('requestRideStop', this.requestRideStop);
     TripService.off('tripDriverToRiderBegin', this.tripDriverToRiderBegin);
@@ -148,12 +190,7 @@ class App extends Component {
         <Map userType='rider'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
-        < p >
-          Trip Stats:
-        </p>
-        <p>
-          {this.state.tripDuration}
-          < br/> {this.state.tripDistance}</p>
+        {this.state.tripStatsBlock}
         <p>RideTypeSelection:</p>
         <RideTypeSelection/>
         <p>RequestRideButton:</p>

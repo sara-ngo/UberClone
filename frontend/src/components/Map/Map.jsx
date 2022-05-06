@@ -5,7 +5,7 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "../../styles/Map.css";
 import "mapbox-gl/dist/mapbox-gl.css"; // for zoom and navigation control
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import getRoute from "./Navigation";
+import setRoute from "./Navigation";
 import TripService from "../TripService/emitter";
 //import loadRiderLocation from "./loadRiderLocation";
 //import loadDriverLocation from "./loadDriverLocation";
@@ -179,43 +179,6 @@ class App extends Component {
       }
     });
 
-    // Add route starting point to the map
-    this.mapboxObj.addLayer({
-      id: "routeStartPoint",
-      type: "circle",
-      source: {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: []
-        }
-      },
-      paint: {
-        "circle-radius": 10,
-        "circle-color": "#3887be"
-      }
-    });
-
-    // Add route ending point to the map
-    this.mapboxObj.addLayer({
-      id: "routeEndPoint",
-      type: "symbol",
-      source: {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: []
-        }
-      },
-      'layout': {
-        'icon-image': 'routeEndIcon', // reference the image
-        'icon-size': 0.6,
-        'icon-anchor': 'bottom',
-        'icon-allow-overlap': true,
-        'icon-ignore-placement': true
-      }
-    });
-
     TripService.on("positionData", this.onPositionData);
     TripService.on("setRoute", this.setRoute);
     this.mapboxObj.on("click", this.onClick);
@@ -246,10 +209,6 @@ class App extends Component {
   };
 
   onClick = (event) => {
-    // drivers do not set the route
-    if (this.userType == "driver") {
-      return;
-    }
     // console.log(event);
     this.getDestination({"routeEndLong": event.lngLat.lng, "routeEndLat": event.lngLat.lat});
   }
@@ -259,10 +218,6 @@ Fired when input is set */
   onGeocoderResult = (e) => {
     //console.log(e);
     if (!e) {
-      return;
-    }
-    // drivers do not set the route
-    if (this.userType == "driver") {
       return;
     }
     // set variables
@@ -283,29 +238,8 @@ Fired when input is set */
   }
 
   setRoute = (data) => {
-    // update UI with end position marker
-    const endFeatures = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "Point",
-            coordinates: [data.routeEndLong, data.routeEndLat]
-          }
-        }
-      ]
-    };
-    this.mapboxObj.getSource("routeEndPoint").setData(endFeatures);
-    // get route information from API
-    let returnStatus = getRoute(this.mapboxObj, {
-      "routeId": data.routeId,
-      "startLong": data.startLong,
-      "startLat": data.startLat,
-      "endLong": data.endLong,
-      "endLat": data.endLat
-    });
+    // set route with information from API
+    let returnStatus = setRoute(this.mapboxObj, data);
     return returnStatus;
   }
 
