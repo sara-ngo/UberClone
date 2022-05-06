@@ -124,7 +124,7 @@ class App extends Component {
                     label={this.state.uberX_Text}
                   />
                   <img src={car1} alt="car1" 
-                  style={{width: 250, top: this.props.top, left: this.props.left}}/>
+                  style={{width: 250, top: this.props.top, right: this.props.right}}/>
                   <p id="caption">UberX</p>
                 </CardContent>
               </CardActionArea>
@@ -138,8 +138,8 @@ class App extends Component {
                     control={<Radio />}
                     label={this.state.comfort_Text}
                   />
-                  <img src={car3} alt="car3" 
-                  style={{width: 250, top: this.props.top, left: this.props.left}}/>
+                  <img src={car2} alt="car2" 
+                  style={{width: 250, top: this.props.top, right: this.props.right}}/>
                   <p id="caption">Newer cars with extra legroom</p>
                 </CardContent>
               </CardActionArea>
@@ -153,8 +153,8 @@ class App extends Component {
                     control={<Radio />}
                     label={this.state.pool_Text}
                   />
-                  <img src={car2} alt="car2" 
-                  style={{width: 250, top: this.props.top, left: this.props.left}}/>
+                  <img src={car3} alt="car3" 
+                  style={{width: 250, top: this.props.top, right: this.props.right}}/>
                   <p id="caption">Share the ride with 1 to 3 people</p>
                 </CardContent>
               </CardActionArea>

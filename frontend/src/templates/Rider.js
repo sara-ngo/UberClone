@@ -80,12 +80,12 @@ class App extends Component {
       messageBlock: data.message,
       tripStatsBlock: <> < p > Trip Stats: </p>
     <p>Trip duration: {
-        this.tripDuration
+        this.tripDuration 
       }
-      minutes < br /> Trip distance: {
-        this.tripDistance
+      <> </>minutes < br /> Trip distance: {
+        this.tripDistance 
       }
-      miles < /p> < / >
+      < ></> miles < /p> < / >
     });
   }
 
@@ -207,10 +207,11 @@ class App extends Component {
   render() {
     return (<> < Navbar /> <r-c join="join">
       <main data-md2-3="data-md2-3" className="main-content no-padding">
+        <p></p>
         <Map userType='rider'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
-        <r-c> </r-c>
+        <r-c></r-c>
         {this.state.messageBlock}{this.state.chatBlock}
         {this.state.tripStatsBlock}{this.state.tripBlock}
       </aside>
