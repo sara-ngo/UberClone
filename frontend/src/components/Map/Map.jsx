@@ -12,6 +12,7 @@ import TripService from "../TripService/emitter";
 
 import driverIcon from './driverIcon.png';
 import riderIcon from './riderIcon.png';
+import routeEndIcon from './routeEndIcon.png';
 
 const ACCESS_TOKEN = "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
 mapboxgl.accessToken = ACCESS_TOKEN;
@@ -120,7 +121,7 @@ class App extends Component {
 
       // Add the image to the map style.
       this.mapboxObj.addImage('driverIcon', image);
-    })
+    });
 
     this.mapboxObj.loadImage(riderIcon, (error, image) => {
       if (error)
@@ -128,7 +129,15 @@ class App extends Component {
 
       // Add the image to the map style.
       this.mapboxObj.addImage('riderIcon', image);
-    })
+    });
+
+    this.mapboxObj.loadImage(routeEndIcon, (error, image) => {
+      if (error)
+        throw error;
+
+      // Add the image to the map style.
+      this.mapboxObj.addImage('routeEndIcon', image);
+    });
 
     // Add driver symbol layer
     this.mapboxObj.addLayer({
@@ -190,7 +199,7 @@ class App extends Component {
     // Add route ending point to the map
     this.mapboxObj.addLayer({
       id: "routeEndPoint",
-      type: "circle",
+      type: "symbol",
       source: {
         type: "geojson",
         data: {
@@ -198,9 +207,13 @@ class App extends Component {
           features: []
         }
       },
-      paint: {
-        "circle-radius": 10,
-        "circle-color": "#f30"
+      'layout': {
+        'icon-image': 'routeEndIcon', // reference the image
+        'icon-size': 0.6,
+        'icon-anchor': 'bottom',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        "icon-rotate": ["get", "rotate"]
       }
     });
 
