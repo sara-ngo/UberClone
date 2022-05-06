@@ -56,9 +56,16 @@ class App extends Component {
   }
 
   requestRideProgress = (data) => {
-    console.log("requestRideProgress Data Received:");
-    console.log(data);
+    //console.log("requestRideProgress Data Received:");
+    //console.log(data);
     this.setState({"className": "CancelRideButton", "buttonText": `${data.message} (CLICK TO CANCEL)`});
+  }
+
+  requestRideStop = (data) => {
+    //console.log("requestRideStop Data Received:");
+    //console.log(data);
+    this.rideRequested = false;
+    this.setState({"className": "RequestRideButton", "buttonText": `Request ${this.tripType} @ $${this.tripCost.toFixed(2)}`});
   }
 
   chooseRideType = (data) => {
@@ -72,6 +79,7 @@ class App extends Component {
     TripService.on('destinationSelected', this.destinationSelected);
     TripService.on("tripEstimateData", this.tripEstimateData);
     TripService.on('requestRideProgress', this.requestRideProgress);
+    TripService.on('requestRideStop', this.requestRideStop);
     TripService.on('chooseRideType', this.chooseRideType);
   };
 
@@ -79,6 +87,7 @@ class App extends Component {
     TripService.off('destinationSelected', this.destinationSelected);
     TripService.off("tripEstimateData", this.tripEstimateData);
     TripService.off('requestRideProgress', this.requestRideProgress);
+    TripService.off('requestRideStop', this.requestRideStop);
     TripService.off('chooseRideType', this.chooseRideType);
   }
 

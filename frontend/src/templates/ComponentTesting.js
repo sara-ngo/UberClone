@@ -29,13 +29,24 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    this.userLong = 0.0;
+    this.userLat = 0.0;
+    this.userHeading = 0.0;
+    this.type = "admin";
     this.abort = false;
-    
+
     this.state = {
       "tripStatsBlock": ""
     }
 
     this.positionUpdateLoop();
+  }
+
+  onGeolocatePositionUpdate = (data) => {
+    this.userLong = data.long;
+    this.userLat = data.lat;
+    this.userHeading = data.heading;
+    this.positionUpdate();
   }
 
   positionUpdate = () => {
@@ -155,6 +166,7 @@ class App extends Component {
   }
 
   componentDidMount = () => {
+    TripService.on('onGeolocatePositionUpdate', this.onGeolocatePositionUpdate);
     TripService.on('destinationSelected', this.destinationSelected);
     TripService.on("mapNewRoute", this.mapNewRoute);
     TripService.on('requestRideProgress', this.requestRideProgress);
@@ -170,6 +182,7 @@ class App extends Component {
   };
 
   componentWillUnmount = () => {
+    TripService.off('onGeolocatePositionUpdate', this.onGeolocatePositionUpdate);
     TripService.off('destinationSelected', this.destinationSelected);
     TripService.off("mapNewRoute", this.mapNewRoute);
     TripService.off('requestRideProgress', this.requestRideProgress);
@@ -187,7 +200,7 @@ class App extends Component {
   render() {
     return (<> < Navbar /> <r-c join="join">
       <main data-md2-3="data-md2-3" className="main-content no-padding">
-        <Map userType='rider'/>
+        <Map userType='admin'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
         {this.state.tripStatsBlock}

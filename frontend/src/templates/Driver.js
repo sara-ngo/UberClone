@@ -78,9 +78,12 @@ class App extends Component {
   tripDriverToRiderBegin = (data) => {
     console.log("tripDriverToRiderBegin Data Received:");
     console.log(data);
-    TripService.emit('setDestination', {
-      "routeEndLong": data.riderLong,
-      "routeEndLat": data.riderLat
+    TripService.emit("setRoute", {
+      "routeId": "main",
+      "startLat": this.userLat,
+      "startLong": this.userLong,
+      "endLat": data.riderLat,
+      "endLong": data.riderLong
     });
     this.setState({
       chatBlock: <Chat/>,
@@ -119,9 +122,12 @@ class App extends Component {
     console.log(data);
     this.endLong = data.endLong;
     this.endLat = data.endLat;
-    TripService.emit('setDestination', {
-      "routeEndLong": this.endLong,
-      "routeEndLat": this.endLat
+    TripService.emit("setRoute", {
+      "routeId": "main",
+      "startLat": this.userLat,
+      "startLong": this.userLong,
+      "endLat": this.endLat,
+      "endLong": this.endLong
     });
     this.setState({
       messageBlock: data.message,
