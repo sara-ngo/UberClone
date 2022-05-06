@@ -1,8 +1,7 @@
-import React, {Component, useEffect} from 'react';
+import React, {Component} from 'react';
 import TripService from '../TripService/emitter';
 
 let tripEstimateData = {};
-let steps = [];
 
 class App extends Component {
 

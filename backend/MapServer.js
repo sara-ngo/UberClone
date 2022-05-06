@@ -1,8 +1,3 @@
-import http from 'http'
-import {
-  Server
-} from 'socket.io'
-
 import TripService from './components/TripService/emitter.js';
 import TripUtils from './components/TripUtils/tripUtils.js';
 import UserUtils from './components/UserUtils/UserUtils.js';
@@ -14,7 +9,7 @@ let userMap = new Map();
 let tripMap = new Map();
 let riderSocketIdToTripMap = new Map();
 let driverSocketIdToTripMap = new Map();
-let io = {};
+let webSocketServer = {};
 let connectedUserLoopFlag = true;
 
 let userCheckDisconnectMS = 8000;
@@ -46,7 +41,9 @@ function newUserIfNotExist(socketId) {
     userMap.set(socketId, {
       "tripMatching": false,
       "tripDoing": false,
-      "isActive": true
+      "isActive": true,
+      "socketId": socketId,
+      "timeCreated": Date.now()
     });
   }
 }
@@ -83,7 +80,7 @@ async function requestRide(riderSocketId, requestData) {
     riderData.timestamp = Date.now();
     riderData.socketId = riderSocketId;
     riderData.tripId = tripIdRef;
-    io.to(riderSocketId).emit('requestRideProgress', riderData);
+    webSocketServer.to(riderSocketId).emit('requestRideProgress', riderData);
     return;
   }
   // Checking to see if user exists
@@ -94,7 +91,7 @@ async function requestRide(riderSocketId, requestData) {
     riderData.message = "SERVER ERROR: Rider does not exist!"
     riderData.timestamp = Date.now();
     riderData.socketId = riderSocketId;
-    io.to(riderSocketId).emit('requestRideStop', riderData);
+    webSocketServer.to(riderSocketId).emit('requestRideStop', riderData);
     return;
   }
   // Create a trip
@@ -145,8 +142,8 @@ async function matchDriverToRider(tripId) {
   */
   while (true) {
     // Is rider still active?
-    if (!TripUtils.matchDriverToRiderActiveCheck(io, riderObjRef)) {
-      TripUtils.matchDriverToRiderCancel(io, riderObjRef);
+    if (!TripUtils.matchDriverToRiderActiveCheck(webSocketServer, riderObjRef)) {
+      TripUtils.matchDriverToRiderCancel(webSocketServer, riderObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
     }
@@ -158,7 +155,7 @@ async function matchDriverToRider(tripId) {
       data.message = "No drivers were found! Search continuing..."
       data.timestamp = Date.now();
       data.socketId = riderSocketId;
-      io.to(riderSocketId).emit('requestRideProgress', data)
+      webSocketServer.to(riderSocketId).emit('requestRideProgress', data)
       await sleep(5000);
       continue;
     }
@@ -187,7 +184,7 @@ async function matchDriverToRider(tripId) {
     driverData.riderFirstName = riderObjRef.firstName;
     driverData.riderLastName = riderObjRef.lastName;
     driverData.tripId = tripId;
-    io.to(driverSocketId).emit('requestRideConfirm', driverData);
+    webSocketServer.to(driverSocketId).emit('requestRideConfirm', driverData);
     // tell the Rider
     let riderData = {};
     riderData.message = "A driver was found! Waiting for them to confirm trip."
@@ -196,7 +193,7 @@ async function matchDriverToRider(tripId) {
     riderData.driverFirstName = driverObjRef.firstName;
     riderData.driverLastName = driverObjRef.lastName;
     riderData.tripId = tripId;
-    io.to(riderSocketId).emit('requestRideProgress', riderData);
+    webSocketServer.to(riderSocketId).emit('requestRideProgress', riderData);
     await sleep(5000);
     // If driver did not accept, then continue the loop and keep searching
     if (!tripObjRef.driverMatchedConfirm) {
@@ -221,17 +218,17 @@ async function driverToRiderTrip(tripId) {
   let driverObjRef = userMap.get(driverSocketId);
   while (true) {
     // Is rider still active?
-    if (!TripUtils.driverToRiderActiveCheck(io, riderObjRef)) {
-      TripUtils.driverToRiderCancel(io, riderObjRef);
-      TripUtils.driverToRiderCancel(io, driverObjRef);
+    if (!TripUtils.driverToRiderActiveCheck(webSocketServer, riderObjRef)) {
+      TripUtils.driverToRiderCancel(webSocketServer, riderObjRef);
+      TripUtils.driverToRiderCancel(webSocketServer, driverObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
     }
     // Is driver still active?
-    if (!TripUtils.driverToRiderActiveCheck(io, driverObjRef)) {
-      TripUtils.driverToRiderCancel(io, riderObjRef);
-      TripUtils.driverToRiderCancel(io, driverObjRef);
+    if (!TripUtils.driverToRiderActiveCheck(webSocketServer, driverObjRef)) {
+      TripUtils.driverToRiderCancel(webSocketServer, riderObjRef);
+      TripUtils.driverToRiderCancel(webSocketServer, driverObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
@@ -249,7 +246,7 @@ async function driverToRiderTrip(tripId) {
       riderData.message = "Driver hasn't arrived yet!"
       riderData.timestamp = Date.now();
       riderData.socketId = riderSocketId;
-      io.to(riderSocketId).emit('tripDriverToRiderProgress', riderData);
+      webSocketServer.to(riderSocketId).emit('tripDriverToRiderProgress', riderData);
       // tell driver
       let driverData = {};
       driverData.message = "Go to rider."
@@ -257,7 +254,7 @@ async function driverToRiderTrip(tripId) {
       driverData.socketId = driverSocketId;
       driverData.riderLong = riderObjRef.long;
       driverData.riderLat = riderObjRef.lat;
-      io.to(driverSocketId).emit('tripDriverToRiderProgress', driverData);
+      webSocketServer.to(driverSocketId).emit('tripDriverToRiderProgress', driverData);
       await sleep(5000);
       continue;
     }
@@ -266,7 +263,7 @@ async function driverToRiderTrip(tripId) {
     riderData.message = "The driver is coming to pick you up."
     riderData.timestamp = Date.now();
     riderData.socketId = riderSocketId;
-    io.to(riderSocketId).emit('tripDriverToRiderProgress', riderData);
+    webSocketServer.to(riderSocketId).emit('tripDriverToRiderProgress', riderData);
     // driver has arrived!
     // send driver a confirmation
     let driverData = {};
@@ -275,7 +272,7 @@ async function driverToRiderTrip(tripId) {
     driverData.socketId = driverSocketId;
     driverData.riderLong = riderObjRef.long;
     driverData.riderLat = riderObjRef.lat;
-    io.to(driverSocketId).emit('tripDriverToRiderConfirm', driverData);
+    webSocketServer.to(driverSocketId).emit('tripDriverToRiderConfirm', driverData);
     await sleep(5000);
     // If driver did not pick up rider, keep confirming
     if (!tripObjRef.inProgress) {
@@ -298,16 +295,16 @@ async function togetherTrip(tripId) {
   let driverObjRef = userMap.get(driverSocketId);
   while (true) {
     // Is rider still active?
-    if (!TripUtils.togetherActiveCheck(io, riderObjRef)) {
-      TripUtils.togetherCancel(io, riderObjRef);
-      TripUtils.togetherCancel(io, driverObjRef);
+    if (!TripUtils.togetherActiveCheck(webSocketServer, riderObjRef)) {
+      TripUtils.togetherCancel(webSocketServer, riderObjRef);
+      TripUtils.togetherCancel(webSocketServer, driverObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
     }
-    if (!TripUtils.togetherActiveCheck(io, driverObjRef)) {
-      TripUtils.togetherCancel(io, riderObjRef);
-      TripUtils.togetherCancel(io, driverObjRef);
+    if (!TripUtils.togetherActiveCheck(webSocketServer, driverObjRef)) {
+      TripUtils.togetherCancel(webSocketServer, riderObjRef);
+      TripUtils.togetherCancel(webSocketServer, driverObjRef);
       TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
       break;
@@ -320,12 +317,12 @@ async function togetherTrip(tripId) {
       riderData.message = "You've separated from the driver!"
       riderData.timestamp = Date.now();
       riderData.socketId = riderSocketId;
-      io.to(riderSocketId).emit('tripTogetherProgress', riderData);
+      webSocketServer.to(riderSocketId).emit('tripTogetherProgress', riderData);
       let driverData = {};
       driverData.message = "You've separated from the rider!"
       driverData.timestamp = Date.now();
       driverData.socketId = driverSocketId;
-      io.to(driverSocketId).emit('tripTogetherProgress', driverData);
+      webSocketServer.to(driverSocketId).emit('tripTogetherProgress', driverData);
       await sleep(5000);
       continue;
     }
@@ -339,14 +336,14 @@ async function togetherTrip(tripId) {
       riderData.socketId = riderSocketId;
       riderData.destDistance = riderDestinationDistance;
       riderData.destDistanceThresh = riderDestinationProximity;
-      io.to(riderSocketId).emit('tripTogetherProgress', riderData);
+      webSocketServer.to(riderSocketId).emit('tripTogetherProgress', riderData);
       let driverData = {};
       driverData.message = "Still on the way to destination!"
       driverData.timestamp = Date.now();
       driverData.socketId = driverSocketId;
       driverData.destDistance = riderDestinationDistance;
       driverData.destDistanceThresh = riderDestinationProximity;
-      io.to(driverSocketId).emit('tripTogetherProgress', driverData);
+      webSocketServer.to(driverSocketId).emit('tripTogetherProgress', driverData);
       await sleep(5000);
       continue;
     }
@@ -360,13 +357,13 @@ async function togetherTrip(tripId) {
     riderData.message = "You've arrived at your destination!"
     riderData.timestamp = Date.now();
     riderData.socketId = riderSocketId;
-    io.to(riderSocketId).emit('tripTogetherSuccess', riderData);
+    webSocketServer.to(riderSocketId).emit('tripTogetherSuccess', riderData);
     // tell the Rider
     let driverData = {};
     driverData.message = "You've arrived at your destination!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('tripTogetherSuccess', driverData);
+    webSocketServer.to(driverSocketId).emit('tripTogetherSuccess', driverData);
     // set the trip complete flags
     tripObjRef.completed = true;
     TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
@@ -396,7 +393,7 @@ function rateTrip(tripId) {
     riderData.timestamp = Date.now();
     riderData.socketId = riderSocketId;
     riderData.tripId = tripId;
-    io.to(riderSocketId).emit('rateBegin', riderData);
+    webSocketServer.to(riderSocketId).emit('rateBegin', riderData);
   }
   // driver
   if (driverObjRef) {
@@ -405,7 +402,7 @@ function rateTrip(tripId) {
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
     driverData.tripId = tripId;
-    io.to(driverSocketId).emit('rateBegin', driverData);
+    webSocketServer.to(driverSocketId).emit('rateBegin', driverData);
   }
 }
 
@@ -418,7 +415,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
     driverData.message = "ERROR: can't find trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
+    webSocketServer.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
     return;
   }
   // Is the driver involved with this trip?
@@ -427,7 +424,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
     driverData.message = "ERROR: you are not assigned to this trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
+    webSocketServer.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
     return;
   }
   // Does the rider still exist?
@@ -438,7 +435,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
     driverData.message = "ERROR: the rider has gone inactive!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
+    webSocketServer.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
     return;
   }
   // Is the rider already doing a trip?
@@ -447,7 +444,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
     driverData.message = "ERROR: the rider already is in a trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
+    webSocketServer.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
     return;
   }
   // Is the driver already doing a trip?
@@ -456,7 +453,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
     driverData.message = "ERROR: You are already is in a trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
+    webSocketServer.to(driverSocketId).emit('requestRideConfirmProgress', driverData);
     return;
   }
   // Trip conditions are satisfied
@@ -475,7 +472,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
   driverData.riderLastName = riderObjRef.lastName;
   driverData.riderLong = riderObjRef.long;
   driverData.riderLat = riderObjRef.lat;
-  io.to(driverSocketId).emit('tripDriverToRiderBegin', driverData);
+  webSocketServer.to(driverSocketId).emit('tripDriverToRiderBegin', driverData);
   let riderData = {};
   riderData.message = "Matched to a driver!"
   riderData.timestamp = Date.now();
@@ -483,7 +480,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
   riderData.driverSocketId = driverSocketId;
   riderData.driverFirstName = driverObjRef.firstName;
   riderData.driverLastName = driverObjRef.lastName;
-  io.to(riderSocketId).emit('tripDriverToRiderBegin', riderData);
+  webSocketServer.to(riderSocketId).emit('tripDriverToRiderBegin', riderData);
   console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") matched!");
 }
 
@@ -496,7 +493,7 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
     driverData.message = "You are not on a trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
+    webSocketServer.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
     return;
   }
   let tripId = tripIdRef;
@@ -507,7 +504,7 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
     driverData.message = "ERROR: can't find trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
+    webSocketServer.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
     return;
   }
   // Is the driver involved with this trip?
@@ -516,7 +513,7 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
     driverData.message = "ERROR: you are not assigned to this trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
+    webSocketServer.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
     return;
   }
   // Does the rider still exist?
@@ -527,7 +524,7 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
     driverData.message = "ERROR: the rider has gone inactive!"
     driverData.timestamp = Date.now();
     driverData.socketId = driverSocketId;
-    io.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
+    webSocketServer.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
     return;
   }
   // Rider pickup conditions are satisfied
@@ -546,7 +543,7 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
   driverData.riderLastName = riderObjRef.lastName;
   driverData.endLong = tripObjRef.endLong;
   driverData.endLat = tripObjRef.endLat;
-  io.to(driverSocketId).emit('tripTogetherBegin', driverData);
+  webSocketServer.to(driverSocketId).emit('tripTogetherBegin', driverData);
   let riderData = {};
   riderData.message = "Trip together begins!"
   riderData.timestamp = Date.now();
@@ -556,7 +553,7 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
   riderData.driverLastName = driverObjRef.lastName;
   riderData.endLong = tripObjRef.endLong;
   riderData.endLat = tripObjRef.endLat;
-  io.to(riderSocketId).emit('tripTogetherBegin', riderData);
+  webSocketServer.to(riderSocketId).emit('tripTogetherBegin', riderData);
   console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") together!");
 }
 
@@ -569,7 +566,7 @@ function rateDone(socketId, tripId, data) {
     driverData.message = "ERROR: can't find trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = socketId;
-    io.to(socketId).emit('rateProgress', driverData);
+    webSocketServer.to(socketId).emit('rateProgress', driverData);
     return;
   }
   // Is the driver involved with this trip?
@@ -578,7 +575,7 @@ function rateDone(socketId, tripId, data) {
     driverData.message = "ERROR: you are not assigned to this trip!"
     driverData.timestamp = Date.now();
     driverData.socketId = socketId;
-    io.to(socketId).emit('rateProgress', driverData);
+    webSocketServer.to(socketId).emit('rateProgress', driverData);
     return;
   }
   // rate conditions are satisfied
@@ -596,29 +593,31 @@ function rateDone(socketId, tripId, data) {
   driverData.timestamp = Date.now();
   driverData.socketId = socketId;
   driverData.score = data.score;
-  io.to(socketId).emit('rateDone', driverData);
+  webSocketServer.to(socketId).emit('rateDone', driverData);
   console.log(socketId + "(" + userObjRef.firstName + ") rated trip ID:", tripId, "with a score:", data.score);
   TripService.emit("rateTrip", tripObjRef);
 }
 
-const MapServer = (app) => {
-  const httpServer = http.createServer(app)
-  io = new Server(httpServer, {
-    cors: {
-      origin: "*",
-      methods: ["PUT", "GET", "POST", "DELETE", "OPTIONS"],
-      credentials: false
-    }
-  })
+const MapServer = (webSocketServer_) => {
+  webSocketServer = webSocketServer_;
 
-  io.on('connection', socket => {
-    console.log(`Position User Connected: ${socket.id}`);
+  webSocketServer.on('connection', socket => {
+    // Reject all connections that are not for the trip service
+    if(!socket.handshake.query.service){
+      return;
+    }
+    if(socket.handshake.query.service != "trip"){
+      return;
+    }
+    // Create a new user
     newUserIfNotExist(socket.id);
     // user object passed by reference
     var userObjRef = userMap.get(socket.id);
+    console.log("[MapServer] User Connected:");
+    console.log(userObjRef);
 
     socket.on('request_target', () => {
-      io.allSockets().then((result) => {
+      webSocketServer.allSockets().then((result) => {
         for (let item of result) {
           if (item != socket.id) {
             console.log('targets:', socket.id, item)
@@ -659,7 +658,7 @@ const MapServer = (app) => {
         }
       }
       // console.log("position update from:", socket.id, "at", data.timestamp)
-      io.sockets.emit('positionData', data);
+      webSocketServer.sockets.emit('positionData', data);
     })
 
     socket.on('requestRide', (data) => {
@@ -668,27 +667,27 @@ const MapServer = (app) => {
         riderData.message = "User is already being matched!"
         riderData.timestamp = Date.now();
         riderData.socketId = socket.id;
-        io.to(socket.id).emit('requestRideStop', riderData);
+        webSocketServer.to(socket.id).emit('requestRideStop', riderData);
       }
       if (!data) {
         let riderData = {};
         riderData.message = "ERROR: no data object"
         riderData.timestamp = Date.now();
         riderData.socketId = socket.id;
-        io.to(socket.id).emit('requestRideStop', riderData);
+        webSocketServer.to(socket.id).emit('requestRideStop', riderData);
       }
       if (data.type === undefined || data.cost === undefined || data.endLat === undefined || data.endLong === undefined) {
         let riderData = {};
         riderData.message = "ERROR: data not complete"
         riderData.timestamp = Date.now();
         riderData.socketId = socket.id;
-        io.to(socket.id).emit('requestRideStop', riderData);
+        webSocketServer.to(socket.id).emit('requestRideStop', riderData);
       }
       let riderData = {};
       riderData.message = "Trip Matching Started!"
       riderData.timestamp = Date.now();
       riderData.socketId = socket.id;
-      io.to(socket.id).emit('requestRideProgress', riderData);
+      webSocketServer.to(socket.id).emit('requestRideProgress', riderData);
       requestRide(socket.id, data);
     });
 
@@ -704,7 +703,7 @@ const MapServer = (app) => {
       }
       data.timestamp = Date.now();
       data.socketId = socket.id;
-      io.to(socket.id).emit('currentTripData', data)
+      webSocketServer.to(socket.id).emit('currentTripData', data)
     });
 
     socket.on('requestRideDone', (data) => {
@@ -743,14 +742,6 @@ const MapServer = (app) => {
   TripService.on("matchRiderDriverTrip", matchDriverToRider);
   TripService.on("togetherTrip", togetherTrip);
   TripService.on("rateTrip", rateTrip);
-
-  httpServer.listen(4001, function() {
-    console.log('Position Socket server listening at http://localhost:4001')
-  });
-  httpServer.on('error', (err) => {
-    console.log('server error:')
-    console.log(err);
-  });
 
   connectedUserLoop();
   // Create AI

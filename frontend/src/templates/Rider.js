@@ -1,4 +1,4 @@
-import React, {Component, useEffect} from 'react';
+import React, {Component} from 'react';
 import '../styles/App.css'
 import Map from '../components/Map/Map'
 import RideTypeSelection from '../components/RideTypeSelection/RideTypeSelection'
