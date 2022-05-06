@@ -26,6 +26,7 @@ class App extends Component {
     this.abort = false;
     this.userLong = 0.0;
     this.userLat = 0.0;
+    this.userHeading = 0.0;
     this.type = "rider";
 
     this.state = {
@@ -40,6 +41,7 @@ class App extends Component {
     TripService.emit("positionUpdate", {
       "long": this.userLong,
       "lat": this.userLat,
+      "heading": this.userHeading,
       "type": this.type,
       "token": localStorage.getItem("token")
     });
@@ -61,6 +63,7 @@ class App extends Component {
   onGeolocatePositionUpdate = (data) => {
     this.userLong = data.long;
     this.userLat = data.lat;
+    this.userHeading = data.heading;
     this.positionUpdate();
   }
 

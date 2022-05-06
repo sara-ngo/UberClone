@@ -27,6 +27,7 @@ class App extends Component {
     this.abort = false;
     this.userLong = 0.0;
     this.userLat = 0.0;
+    this.userHeading = 0.0;
     this.endLong = 0.0;
     this.endLat = 0.0;
     this.type = "driver";
@@ -42,6 +43,7 @@ class App extends Component {
     TripService.emit("positionUpdate", {
       "long": this.userLong,
       "lat": this.userLat,
+      "heading": this.userHeading,
       "type": this.type,
       "token": localStorage.getItem("token")
     });
@@ -63,16 +65,13 @@ class App extends Component {
   onGeolocatePositionUpdate = (data) => {
     this.userLong = data.long;
     this.userLat = data.lat;
+    this.userHeading = data.heading;
     this.positionUpdate();
   }
 
   requestRideConfirm = (data) => {
     console.log("requestRideConfirm Data Received:");
     console.log(data);
-    if (data.tripId === undefined) {
-      console.log("requestRideConfirm ERROR");
-      return;
-    }
     this.setState({tripBlock: <DriverConfirmTrip tripId={data.tripId}/>});
   }
 

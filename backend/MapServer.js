@@ -12,11 +12,6 @@ let driverSocketIdToTripMap = new Map();
 let webSocketServer = {};
 let connectedUserLoopFlag = true;
 
-let userCheckDisconnectMS = 8000;
-let userDisconnectThresholdMS = 20000;
-let driverToRiderProximity = 0.0002;
-let riderDestinationProximity = 0.0002;
-
 function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -25,7 +20,7 @@ function sleep(ms) {
 
 async function connectedUserLoop() {
   while (connectedUserLoopFlag) {
-    await sleep(userCheckDisconnectMS);
+    await sleep(Constants.userCheckDisconnectMS);
     // Remove disconnected users
     for (let [key, value] of userMap) {
       removeUserIfDisconnected(key);
@@ -57,7 +52,7 @@ function removeUserIfDisconnected(socketId) {
   } else if (userObjRef.lastUpdate === undefined) {
     // delete if no update time
     deleteFlag = true;
-  } else if ((userObjRef.lastUpdate + userDisconnectThresholdMS) < Date.now()) {
+  } else if ((userObjRef.lastUpdate + Constants.userDisconnectThresholdMS) < Date.now()) {
     // user did not update for awhile so we delete
     // Date.now() is in milliseconds
     deleteFlag = true;
@@ -68,6 +63,7 @@ function removeUserIfDisconnected(socketId) {
     riderSocketIdToTripMap.delete(socketId);
     driverSocketIdToTripMap.delete(socketId);
   }
+  return deleteFlag;
 }
 
 async function requestRide(riderSocketId, requestData) {
@@ -130,6 +126,12 @@ async function requestRide(riderSocketId, requestData) {
   TripService.emit("matchRiderDriverTrip", tripId);
 }
 
+/*
+This is the process that runs when a user requests a ride and the server attempts to match
+them with a driver. The server simply looks for the closest, available driver and matches them
+Drivers only have a few seconds to confirm the match before the server releases their claim to the rider
+and re-requests a driver (The same driver may be assigned).
+*/
 async function matchDriverToRider(tripId) {
   let tripObjRef = tripMap.get(tripId);
   if (tripObjRef === undefined) {
@@ -198,7 +200,15 @@ async function matchDriverToRider(tripId) {
     // If driver did not accept, then continue the loop and keep searching
     if (!tripObjRef.driverMatchedConfirm) {
       driverObjRef.tripMatching = false;
-      removeUserIfDisconnected(driverSocketId);
+      if(removeUserIfDisconnected(driverSocketId)){
+        continue;
+      }
+      // notify driver they were unmatched
+      let driverData = {};
+      driverData.message = "You have been unmatched for not accepting the match in a timely manner."
+      driverData.timestamp = Date.now();
+      driverData.socketId = driverSocketId;
+      webSocketServer.to(driverSocketId).emit('tripDriverToRiderStop', driverData);
       continue;
     }
     TripService.emit("driverRiderMatchedTrip", tripObjRef);
@@ -240,7 +250,7 @@ async function driverToRiderTrip(tripId) {
     // calculate the distance between the rider and driver
     let distance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
-    if (distance > driverToRiderProximity) {
+    if (distance > Constants.driverToRiderProximity) {
       // tell rider
       let riderData = {};
       riderData.message = "Driver hasn't arrived yet!"
@@ -312,7 +322,7 @@ async function togetherTrip(tripId) {
     // calculate the distance between the rider and driver
     let riderDriverDistance = TripUtils.getRiderDriverDistance(riderObjRef, driverObjRef);
     // see if the driver is within proximity
-    if (riderDriverDistance > driverToRiderProximity) {
+    if (riderDriverDistance > Constants.driverToRiderProximity) {
       let riderData = {};
       riderData.message = "You've separated from the driver!"
       riderData.timestamp = Date.now();
@@ -329,20 +339,20 @@ async function togetherTrip(tripId) {
     // calculate the distance between the rider and destination
     let riderDestinationDistance = TripUtils.getRiderDestinationDistance(riderObjRef, tripObjRef);
     // see if the driver is within proximity
-    if (riderDestinationDistance > riderDestinationProximity) {
+    if (riderDestinationDistance > Constants.riderDestinationProximity) {
       let riderData = {};
       riderData.message = "Still on the way to destination!"
       riderData.timestamp = Date.now();
       riderData.socketId = riderSocketId;
       riderData.destDistance = riderDestinationDistance;
-      riderData.destDistanceThresh = riderDestinationProximity;
+      riderData.destDistanceThresh = Constants.riderDestinationProximity;
       webSocketServer.to(riderSocketId).emit('tripTogetherProgress', riderData);
       let driverData = {};
       driverData.message = "Still on the way to destination!"
       driverData.timestamp = Date.now();
       driverData.socketId = driverSocketId;
       driverData.destDistance = riderDestinationDistance;
-      driverData.destDistanceThresh = riderDestinationProximity;
+      driverData.destDistanceThresh = Constants.riderDestinationProximity;
       webSocketServer.to(driverSocketId).emit('tripTogetherProgress', driverData);
       await sleep(5000);
       continue;
@@ -637,6 +647,7 @@ const MapServer = (webSocketServer_) => {
       userObjRef.socketId = socket.id;
       userObjRef.long = data.long;
       userObjRef.lat = data.lat;
+      userObjRef.heading = data.heading;
       userObjRef.type = data.type;
       /*
       Don't query for the user information too often
