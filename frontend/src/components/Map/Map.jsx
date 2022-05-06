@@ -10,6 +10,9 @@ import TripService from "../TripService/emitter";
 //import loadRiderLocation from "./loadRiderLocation";
 //import loadDriverLocation from "./loadDriverLocation";
 
+import driverIcon from './driverIcon.png';
+import riderIcon from './riderIcon.png';
+
 const ACCESS_TOKEN = "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
 mapboxgl.accessToken = ACCESS_TOKEN;
 
@@ -28,6 +31,7 @@ class App extends Component {
     this.mapContainerRef = React.createRef();
     this.userLong = 0.0;
     this.userLat = 0.0;
+    this.userHeading = 0.0;
     this.userType = props.userType;
     this.viewLongInit = -121.9098;
     this.viewLatInit = 37.3413;
@@ -52,27 +56,39 @@ class App extends Component {
   refreshMarkers = (mapObj) => {
     let driverFeatureArray = [];
     let riderFeatureArray = [];
-    for (let [key, value] of this.locationMap) {
-      if (value.type == "driver") {
+    let timeThreshold = Date.now() - 20000;
+    for (let [socketId, userObjRef] of this.locationMap) {
+      if (userObjRef.timestamp < timeThreshold) {
+        this.locationMap.delete(socketId);
+        continue;
+      }
+      // set heading to 0 (north) if not set
+      // old server version did not have heading
+      if(!userObjRef.heading){
+        userObjRef.heading = 0;
+      }
+      if (userObjRef.type == "driver") {
         driverFeatureArray.push({
           type: "Feature",
           geometry: {
             type: "Point",
-            coordinates: [value.long, value.lat]
+            coordinates: [userObjRef.long, userObjRef.lat]
           },
           properties: {
-            title: value.socketId
+            title: userObjRef.socketId,
+            "rotate": userObjRef.heading
           }
         });
-      } else if (value.type == "rider") {
+      } else if (userObjRef.type == "rider") {
         riderFeatureArray.push({
           type: "Feature",
           geometry: {
             type: "Point",
-            coordinates: [value.long, value.lat]
+            coordinates: [userObjRef.long, userObjRef.lat]
           },
           properties: {
-            title: value.socketId
+            title: userObjRef.socketId,
+            "rotate": userObjRef.heading
           }
         });
       }
@@ -97,55 +113,60 @@ class App extends Component {
   }
 
   mapLoaded = () => {
+    // Load an image from an external URL.
+    this.mapboxObj.loadImage(driverIcon, (error, image) => {
+      if (error)
+        throw error;
+
+      // Add the image to the map style.
+      this.mapboxObj.addImage('driverIcon', image);
+    })
+
+    this.mapboxObj.loadImage(riderIcon, (error, image) => {
+      if (error)
+        throw error;
+
+      // Add the image to the map style.
+      this.mapboxObj.addImage('riderIcon', image);
+    })
+
     // Add driver symbol layer
     this.mapboxObj.addLayer({
       id: "driverPoints",
-      type: "circle",
+      type: "symbol",
       source: {
         type: "geojson",
         data: {
           type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "Point",
-                coordinates: [0, 0]
-              }
-            }
-          ]
+          features: []
         }
       },
-      paint: {
-        "circle-radius": 10,
-        "circle-color": "#0000ff"
+      'layout': {
+        'icon-image': 'driverIcon', // reference the image
+        'icon-size': 0.05,
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        "icon-rotate": ["get", "rotate"]
       }
     });
 
     // Add rider symbol layer
     this.mapboxObj.addLayer({
       id: "riderPoints",
-      type: "circle",
+      type: "symbol",
       source: {
         type: "geojson",
         data: {
           type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "Point",
-                coordinates: [0, 0]
-              }
-            }
-          ]
+          features: []
         }
       },
-      paint: {
-        "circle-radius": 5,
-        "circle-color": "#f08"
+      'layout': {
+        'icon-image': 'riderIcon', // reference the image
+        'icon-size': 0.3,
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        "icon-rotate": ["get", "rotate"]
       }
     });
 
@@ -157,16 +178,7 @@ class App extends Component {
         type: "geojson",
         data: {
           type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "Point",
-                coordinates: [0, 0]
-              }
-            }
-          ]
+          features: []
         }
       },
       paint: {
@@ -183,16 +195,7 @@ class App extends Component {
         type: "geojson",
         data: {
           type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "Point",
-                coordinates: [0, 0]
-              }
-            }
-          ]
+          features: []
         }
       },
       paint: {
@@ -216,6 +219,17 @@ class App extends Component {
   onPositionData = (data) => {
     //console.log("Position Data Received:");
     //console.log(data);
+    /*
+    Example:
+    {
+      lat: 37.34293857374593,
+      long: -121.96381019791124,
+      socketId: "3eXdAmTYVU8PVZ4rAAAZ",
+      timestamp: 1651802163469,
+      token: 0,
+      type: "driver"
+    }
+    */
     this.locationMap.set(data.socketId, data);
   };
 
@@ -279,15 +293,19 @@ Fired when input is set */
   }
 
   onGeolocate = (position) => {
+    //console.log("onGeolocate");
+    //console.log(position);
     // set class member variables
     this.userLong = position.coords.longitude;
     this.userLat = position.coords.latitude;
+    this.userHeading = position.coords.heading;
     this.routeStartLong = this.userLong;
     this.routeStartLat = this.userLat;
     // emit user location
     let positionData = {};
     positionData.long = position.coords.longitude;
     positionData.lat = position.coords.latitude;
+    positionData.heading = position.coords.heading;
     TripService.emit("onGeolocatePositionUpdate", positionData);
   }
 

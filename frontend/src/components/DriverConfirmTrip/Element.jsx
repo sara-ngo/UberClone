@@ -1,4 +1,4 @@
-import React, {Component, useEffect} from 'react';
+import React, {Component} from 'react';
 import TripService from '../TripService/emitter';
 
 import './element.css'
@@ -19,6 +19,7 @@ class App extends Component {
   requestRideConfirm = (data) => {
     console.log("requestRideConfirm Data Received:");
     console.log(data);
+    this.tripId = data.tripId;
     this.setState({message: data.message});
   }
 
@@ -39,10 +40,9 @@ class App extends Component {
   }
 
   render() {
-    return (<> < div className = "DriverConfirmTrip" > <span className="message">{this.state.message}</span>
-    <button className="button" onClick={this.confirmTrip}>Confirm Trip</button>
-  </div>
-</>)
+    return (<> < button className = "button" onClick = {
+      this.confirmTrip
+    } > Confirm Trip</button> < />)
   }
 }
 

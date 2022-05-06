@@ -1,28 +1,12 @@
 import io from "socket.io-client";
 import * as Constants from "../../../constants.js"
-
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
-// from stackoverflow lol
-function getPositionAlongALine(x1, y1, x2, y2, percentage) {
-  return {
-    x: x1 * (1.0 - percentage) + x2 * percentage,
-    y: y1 * (1.0 - percentage) + y2 * percentage
-  };
-}
-
-function generateRandomDecimal(min, max) {
-  return Math.random() * (max - min) + min;
-};
+import commonAIUtils from "./common.js"
 
 class App {
   constructor(lat_, long_) {
     this.lat = lat_;
     this.long = long_;
+    this.heading = 0;
     this.type = "driver";
     this.abort = false;
     this.userMap = new Map();
@@ -36,7 +20,7 @@ class App {
     this.moveCounter = 0;
   }
   async start() {
-    this.socket = io(Constants.MAP_SERVER, {
+    this.socket = io(Constants.MAP_SERVER + "?service=trip", {
       cors: {
         origin: "*",
         methods: ["PUT", "GET", "POST", "DELETE", "OPTIONS"],
@@ -58,6 +42,7 @@ class App {
     this.socket.emit("positionUpdate", {
       "long": this.long,
       "lat": this.lat,
+      "heading": this.heading,
       "type": this.type,
       "token": 0
     });
@@ -66,7 +51,7 @@ class App {
   async positionUpdateLoop() {
     while (this.abort === false) {
       this.positionUpdate();
-      await sleep(5000);
+      await commonAIUtils.sleep(5000);
     }
   }
 
@@ -80,6 +65,7 @@ class App {
     this.moveInProgress = true;
     let x1 = this.long;
     let y1 = this.lat;
+    this.heading = commonAIUtils.bearing(y1, x1, y2, x2);
     let distance = Math.hypot(x1 - x2, y1 - y2);
     let frac = 0.0;
     let speed = Constants.DRIVER_AI_SPEED; // distance/second
@@ -88,13 +74,13 @@ class App {
     let fracIncrement = timeQuanta / time;
     let loopCheck = true;
     while (loopCheck && frac < 1) {
-      var xy = getPositionAlongALine(x1, y1, x2, y2, frac);
+      var xy = commonAIUtils.getPositionAlongALine(x1, y1, x2, y2, frac);
       this.long = xy.x;
       this.lat = xy.y;
       //console.log(xy.x, xy.y, frac);
       this.positionUpdate();
       frac += fracIncrement;
-      await sleep(timeQuanta);
+      await commonAIUtils.sleep(timeQuanta);
       loopCheck = this.moveMap.get(currentCounter);
       if (!loopCheck) {
         return;
@@ -113,7 +99,7 @@ class App {
       return;
     }
     this.tripId = data.tripId;
-    await sleep(1000);
+    await commonAIUtils.sleep(1000);
     this.socket.emit('requestRideDone', {
       "tripId": this.tripId
     });
@@ -138,7 +124,7 @@ class App {
   async tripDriverToRiderConfirm(data) {
     //console.log("tripDriverToRiderConfirm Data Received:");
     //console.log(data);
-    await sleep(1000);
+    await commonAIUtils.sleep(1000);
     this.socket.emit('tripDriverToRiderConfirmDone', {
       "tripId": this.tripId
     });
@@ -161,7 +147,7 @@ class App {
   async rateBegin(data) {
     //console.log("rateBegin Data Received:");
     //console.log(data);
-    await sleep(1000);
+    await commonAIUtils.sleep(1000);
     this.socket.emit('rateDone', {
       "tripId": this.tripId,
       "score": 5

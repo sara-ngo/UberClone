@@ -1,4 +1,4 @@
-import React, {Component, useEffect} from 'react';
+import React, {Component} from 'react';
 import '../styles/App.css'
 import Map from '../components/Map/Map'
 import RideTypeSelection from '../components/RideTypeSelection/RideTypeSelection'
@@ -26,6 +26,7 @@ class App extends Component {
     this.abort = false;
     this.userLong = 0.0;
     this.userLat = 0.0;
+    this.userHeading = 0.0;
     this.type = "rider";
 
     this.state = {
@@ -40,6 +41,7 @@ class App extends Component {
     TripService.emit("positionUpdate", {
       "long": this.userLong,
       "lat": this.userLat,
+      "heading": this.userHeading,
       "type": this.type,
       "token": localStorage.getItem("token")
     });
@@ -61,6 +63,7 @@ class App extends Component {
   onGeolocatePositionUpdate = (data) => {
     this.userLong = data.long;
     this.userLat = data.lat;
+    this.userHeading = data.heading;
     this.positionUpdate();
   }
 
@@ -80,12 +83,12 @@ class App extends Component {
       messageBlock: data.message,
       tripStatsBlock: <> < p > Trip Stats: </p>
     <p>Trip duration: {
-        this.tripDuration
+        this.tripDuration 
       }
-      minutes < br /> Trip distance: {
-        this.tripDistance
+      <> </>minutes < br /> Trip distance: {
+        this.tripDistance 
       }
-      miles < /p> < / >
+      < ></> miles < /p> < / >
     });
   }
 
@@ -207,14 +210,16 @@ class App extends Component {
   render() {
     return (<> < Navbar /> <r-c join="join">
       <main data-md2-3="data-md2-3" className="main-content no-padding">
+        <p></p>
         <Map userType='rider'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
+        <r-c></r-c>
         {this.state.messageBlock}{this.state.chatBlock}
         {this.state.tripStatsBlock}{this.state.tripBlock}
       </aside>
     </r-c>
-    <footer data-r-c="data-r-c" data-join="data-join" className="footer">
+    <footer data-r-c="data-r-c" data-join="data-join" className="footer" >
       <c1-1>
         <ul className="menu-links">
           <li>
@@ -232,7 +237,7 @@ class App extends Component {
         </ul>
         <p>
           <small>Made with
-            <a href="https://matthewjamestaylor.com/responsive-columns" target="_blank" rel="noopener">Responsive Columns</a>.</small>
+            <a href="https://matthewjamestaylor.com/responsive-columns" target="_blank" rel="noopener"> Responsive Columns</a>.</small>
         </p>
       </c1-1>
     </footer>

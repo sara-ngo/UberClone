@@ -1,28 +1,12 @@
 import io from "socket.io-client";
 import * as Constants from "../../../constants.js"
-
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
-// from stackoverflow lol
-function getPositionAlongALine(x1, y1, x2, y2, percentage) {
-  return {
-    x: x1 * (1.0 - percentage) + x2 * percentage,
-    y: y1 * (1.0 - percentage) + y2 * percentage
-  };
-}
-
-function generateRandomDecimal(min, max) {
-  return Math.random() * (max - min) + min;
-};
+import commonAIUtils from "./common.js"
 
 class App {
   constructor(lat_, long_, endLat_, endLong_) {
     this.lat = lat_;
     this.long = long_;
+    this.heading = 0;
     this.type = "rider";
     this.abort = false;
     this.userMap = new Map();
@@ -34,7 +18,7 @@ class App {
     this.endLong = endLong_;
   }
   async start() {
-    this.socket = io(Constants.MAP_SERVER, {
+    this.socket = io(Constants.MAP_SERVER + "?service=trip", {
       cors: {
         origin: "*",
         methods: ["PUT", "GET", "POST", "DELETE", "OPTIONS"],
@@ -50,7 +34,7 @@ class App {
     this.socket.on('tripTogetherStop', this.tripTogetherStop.bind(this));
     this.socket.on('tripTogetherSuccess', this.tripTogetherSuccess.bind(this));
     // wait before requesting a ride
-    await sleep(3000);
+    await commonAIUtils.sleep(3000);
     this.requestRide();
   }
 
@@ -71,6 +55,7 @@ class App {
     this.socket.emit("positionUpdate", {
       "long": this.long,
       "lat": this.lat,
+      "heading": this.heading,
       "type": this.type,
       "token": 0
     });
@@ -79,7 +64,7 @@ class App {
   async positionUpdateLoop() {
     while (this.abort === false) {
       this.positionUpdate();
-      await sleep(5000);
+      await commonAIUtils.sleep(5000);
     }
   }
 
@@ -91,8 +76,10 @@ class App {
     }
     this.moveCounter++;
     this.moveInProgress = true;
+    // first set the heading
     let x1 = this.long;
     let y1 = this.lat;
+    this.heading = commonAIUtils.bearing(y1, x1, y2, x2);
     let distance = Math.hypot(x1 - x2, y1 - y2);
     let frac = 0.0;
     let speed = Constants.RIDER_AI_SPEED; // distance/second
@@ -101,13 +88,13 @@ class App {
     let fracIncrement = timeQuanta / time;
     let loopCheck = true;
     while (loopCheck && frac < 1) {
-      var xy = getPositionAlongALine(x1, y1, x2, y2, frac);
+      var xy = commonAIUtils.getPositionAlongALine(x1, y1, x2, y2, frac);
       this.long = xy.x;
       this.lat = xy.y;
       //console.log(xy.x, xy.y, frac);
       this.positionUpdate();
       frac += fracIncrement;
-      await sleep(timeQuanta);
+      await commonAIUtils.sleep(timeQuanta);
       loopCheck = this.moveMap.get(currentCounter);
       if (!loopCheck) {
         return;
@@ -134,9 +121,9 @@ class App {
   }
 
   async tripDriverToRiderStop(data) {
-    await sleep(3000);
-    this.endLat = generateRandomDecimal(37.399026791869375, 37.24143720137937);
-    this.endLong = generateRandomDecimal(-122.04096126819005, -121.77050796956928);
+    await commonAIUtils.sleep(3000);
+    this.endLat = commonAIUtils.generateRandomDecimal(37.399026791869375, 37.24143720137937);
+    this.endLong = commonAIUtils.generateRandomDecimal(-122.04096126819005, -121.77050796956928);
     this.requestRide();
   }
 
@@ -152,9 +139,9 @@ class App {
     //console.log(data);
     this.inProgressTogether = false;
     // wait before requesting a ride
-    await sleep(3000);
-    this.endLat = generateRandomDecimal(37.399026791869375, 37.24143720137937);
-    this.endLong = generateRandomDecimal(-122.04096126819005, -121.77050796956928);
+    await commonAIUtils.sleep(3000);
+    this.endLat = commonAIUtils.generateRandomDecimal(37.399026791869375, 37.24143720137937);
+    this.endLong = commonAIUtils.generateRandomDecimal(-122.04096126819005, -121.77050796956928);
     this.requestRide();
   }
 
@@ -163,9 +150,9 @@ class App {
     //console.log(data);
     this.inProgressTogether = false;
     // wait before requesting a ride
-    await sleep(3000);
-    this.endLat = generateRandomDecimal(37.399026791869375, 37.24143720137937);
-    this.endLong = generateRandomDecimal(-122.04096126819005, -121.77050796956928);
+    await commonAIUtils.sleep(3000);
+    this.endLat = commonAIUtils.generateRandomDecimal(37.399026791869375, 37.24143720137937);
+    this.endLong = commonAIUtils.generateRandomDecimal(-122.04096126819005, -121.77050796956928);
     this.requestRide();
   }
 }
