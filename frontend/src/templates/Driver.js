@@ -216,7 +216,7 @@ class App extends Component {
         </ul>
         <p>
           <small>Made with
-            <a href="https://matthewjamestaylor.com/responsive-columns" target="_blank" rel="noopener">Responsive Columns</a>.</small>
+            <a href="https://matthewjamestaylor.com/responsive-columns" target="_blank" rel="noopener"> Responsive Columns</a>.</small>
         </p>
       </c1-1>
     </footer>

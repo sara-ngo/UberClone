@@ -11,7 +11,7 @@ const handleLogout = () => {
 function Navbar() {
   return (
     <div className="container mb-1">
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <a className="navbar-brand" href="#">
           <strong>UBER</strong>
         </a>
@@ -49,18 +49,13 @@ function Navbar() {
               </Link>
             </li>
             <li className="nav-item active">
-              <Link to="/Login" className="nav-link">
-                  Login
-              </Link>
-            </li>
-            <li className="nav-item active">
-              <Link to="/Signup" className="nav-link">
-                Sign Up
-              </Link>
-            </li>
-            <li className="nav-item active">
               <Link to="/DriverSignup" className="nav-link">
                 Become a Driver?
+              </Link>
+            </li>
+            <li className="nav-item active">
+              <Link to="/Login" className="nav-link">
+                  Log out
               </Link>
             </li>
           </ul>

@@ -8,6 +8,9 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import "../../styles/CostEstimation.css";
+import car1 from '../../images/car1.png'
+import car2 from '../../images/car2.png'
+import car3 from '../../images/car3.png'
 
 const BASE_FEE = 2.0;
 const BOOKING_FEE = 2.5;
@@ -112,7 +115,7 @@ class App extends Component {
             defaultValue="uberX"
             name="radio-buttons-group"
           >
-            <Card value="uberX" onClick={chooseUberX}>
+            <Card value="uberX" onClick={chooseUberX} >
               <CardActionArea>
                 <CardContent>
                   <FormControlLabel
@@ -120,6 +123,9 @@ class App extends Component {
                     control={<Radio />}
                     label={this.state.uberX_Text}
                   />
+                  <img src={car1} alt="car1" 
+                  style={{width: 250, top: this.props.top, right: this.props.right}}/>
+                  <p id="caption">UberX</p>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -132,6 +138,8 @@ class App extends Component {
                     control={<Radio />}
                     label={this.state.comfort_Text}
                   />
+                  <img src={car2} alt="car2" 
+                  style={{width: 250, top: this.props.top, right: this.props.right}}/>
                   <p id="caption">Newer cars with extra legroom</p>
                 </CardContent>
               </CardActionArea>
@@ -145,6 +153,8 @@ class App extends Component {
                     control={<Radio />}
                     label={this.state.pool_Text}
                   />
+                  <img src={car3} alt="car3" 
+                  style={{width: 250, top: this.props.top, right: this.props.right}}/>
                   <p id="caption">Share the ride with 1 to 3 people</p>
                 </CardContent>
               </CardActionArea>

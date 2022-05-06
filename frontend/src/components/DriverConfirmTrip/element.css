@@ -6,5 +6,6 @@
   stroke-linecap: butt;
   stroke-miterlimit: 4;
   shape-rendering: auto;
-  color: #000000;
+  font-weight: bold;
+	font-size: 20px;
 }
