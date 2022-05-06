@@ -34,7 +34,7 @@ class App {
     this.endLong = endLong_;
   }
   async start() {
-    this.socket = io(Constants.MAP_SERVER, {
+    this.socket = io(Constants.MAP_SERVER + "?service=trip", {
       cors: {
         origin: "*",
         methods: ["PUT", "GET", "POST", "DELETE", "OPTIONS"],

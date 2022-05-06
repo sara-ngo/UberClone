@@ -22,3 +22,11 @@ cd "UberClone\frontend" #windows path :(
 npm install
 npm start
 ```
+
+## production server
+Go to frontend/constants.js and change the variables:
+```node
+export const AUTHENTICATION_SERVER = "https://uberclonecs160.herokuapp.com";
+export const CHAT_SERVER = "https://uberclonecs160.herokuapp.com";
+export const MAP_SERVER = "https://uberclonecs160.herokuapp.com";
+```
