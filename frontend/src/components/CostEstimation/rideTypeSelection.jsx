@@ -18,7 +18,6 @@ const COMFORT_FEE = 8.0;
 const COMFORT_RATE = 1.35;
 const POOL_FEE = 5.0;
 
-let tripEstimateData = {};
 let costType_UberX = 0;
 let costType_Comfort = 0;
 let costType_Pool = 0;
@@ -72,10 +71,12 @@ class App extends Component {
     };
   }
 
-  tripEstimateData = (data) => {
-    tripEstimateData = data.data;
-    var tripDuration = Math.floor(tripEstimateData.duration / 60);
-    var tripDistance = Math.floor(tripEstimateData.distance / 1000);
+  mapNewRoute = (data) => {
+    if (data.routeId !== "main") {
+      return;
+    }
+    var tripDuration = Math.floor(data.duration / 60);
+    var tripDistance = Math.floor(data.distance / 1000);
     var tripCost =
       tripDuration * TIME_FEE +
       tripDistance * RIDE_DISTANCE +
@@ -94,11 +95,11 @@ class App extends Component {
   }
 
   componentDidMount = () => {
-    TripService.on("tripEstimateData", this.tripEstimateData);
+    TripService.on("mapNewRoute", this.mapNewRoute);
   };
 
   componentWillUnmount = () => {
-    TripService.off("tripEstimateData", this.tripEstimateData);
+    TripService.off("mapNewRoute", this.mapNewRoute);
   }
 
   render = () => {

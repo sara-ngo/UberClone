@@ -212,13 +212,12 @@ class App extends Component {
         'icon-size': 0.6,
         'icon-anchor': 'bottom',
         'icon-allow-overlap': true,
-        'icon-ignore-placement': true,
-        "icon-rotate": ["get", "rotate"]
+        'icon-ignore-placement': true
       }
     });
 
     TripService.on("positionData", this.onPositionData);
-    TripService.on("setDestination", this.setDestination);
+    TripService.on("setRoute", this.setRoute);
     this.mapboxObj.on("click", this.onClick);
 
     // centers the map on your current location
@@ -247,12 +246,12 @@ class App extends Component {
   };
 
   onClick = (event) => {
-    // drivers to not set the route
+    // drivers do not set the route
     if (this.userType == "driver") {
       return;
     }
     // console.log(event);
-    this.setDestination({"routeEndLong": event.lngLat.lng, "routeEndLat": event.lngLat.lat});
+    this.getDestination({"routeEndLong": event.lngLat.lng, "routeEndLat": event.lngLat.lat});
   }
 
   /* MapboxGeocoder
@@ -262,18 +261,28 @@ Fired when input is set */
     if (!e) {
       return;
     }
-    // drivers to not set the route
+    // drivers do not set the route
     if (this.userType == "driver") {
       return;
     }
     // set variables
-    this.setDestination({"routeEndLong": e.result.center[0], "routeEndLat": e.result.center[1]});
+    this.getDestination({"routeEndLong": e.result.center[0], "routeEndLat": e.result.center[1]});
   }
 
-  setDestination = (data) => {
+  getDestination = (data) => {
     // set variables
     this.routeEndLong = data.routeEndLong;
     this.routeEndLat = data.routeEndLat;
+    // emit for other components to use
+    TripService.emit("destinationSelected", {
+      "routeStartLong": this.routeStartLong,
+      "routeStartLat": this.routeStartLat,
+      "routeEndLong": this.routeEndLong,
+      "routeEndLat": this.routeEndLat
+    });
+  }
+
+  setRoute = (data) => {
     // update UI with end position marker
     const endFeatures = {
       type: "FeatureCollection",
@@ -283,26 +292,21 @@ Fired when input is set */
           properties: {},
           geometry: {
             type: "Point",
-            coordinates: [this.routeEndLong, this.routeEndLat]
+            coordinates: [data.routeEndLong, data.routeEndLat]
           }
         }
       ]
     };
     this.mapboxObj.getSource("routeEndPoint").setData(endFeatures);
-    // emit for other components to use
-    TripService.emit("destinationSelected", {
-      "routeStartLong": this.routeStartLong,
-      "routeStartLat": this.routeStartLat,
-      "routeEndLong": this.routeEndLong,
-      "routeEndLat": this.routeEndLat
-    });
     // get route information from API
     let returnStatus = getRoute(this.mapboxObj, {
-      "routeStartLong": this.routeStartLong,
-      "routeStartLat": this.routeStartLat,
-      "routeEndLong": this.routeEndLong,
-      "routeEndLat": this.routeEndLat
+      "routeId": data.routeId,
+      "startLong": data.startLong,
+      "startLat": data.startLat,
+      "endLong": data.endLong,
+      "endLat": data.endLat
     });
+    return returnStatus;
   }
 
   onGeolocate = (position) => {
@@ -392,7 +396,7 @@ Fired when input is set */
     this.geocoder.off('result', this.onGeocoderResult);
     if (this.mapLoadedFlag) {
       TripService.off("positionData", this.onPositionData);
-      TripService.off("setDestination", this.setDestination);
+      TripService.off("setRoute", this.setRoute);
       this.mapboxObj.off("click", this.onClick);
     }
   }
