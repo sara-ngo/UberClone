@@ -66,7 +66,7 @@ const Profile = () => {
 
     < Navbar/>
     <button className={styles.white_btn} onClick={handleLogout}>
-      Logout
+      Log out
     </button>
 
     <div className={styles.container}>
