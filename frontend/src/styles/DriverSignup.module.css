@@ -82,16 +82,19 @@
 .green_btn {
 	border: none;
 	outline: none;
+	margin: 10px;
 	padding: 12px 0;
 	background-color: white;
 	border-radius: 20px;
 	width: 180px;
 	font-weight: bold;
-	font-size: 14px;
+	font-size: 15px;
+	color: black;
 	cursor: pointer;
 }
 
 .black_btn {
+	border-radius: 25;
 	background-color: #040e0c;
 	color: white;
 	margin: 10px;
@@ -99,7 +102,7 @@
 	outline: none;
 	border-radius: 20px;
 	padding: 0px;
-	width: 370px;
+	width: 100px;
 	height: 40px;
 	font-weight: bold;
 	font-size: 14px;

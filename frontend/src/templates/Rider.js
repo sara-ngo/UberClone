@@ -210,11 +210,12 @@ class App extends Component {
         <Map userType='rider'/>
       </main>
       <aside data-md1-3="data-md1-3" data-md1="data-md1" className="left-sidebar">
+        <r-c> </r-c>
         {this.state.messageBlock}{this.state.chatBlock}
         {this.state.tripStatsBlock}{this.state.tripBlock}
       </aside>
     </r-c>
-    <footer data-r-c="data-r-c" data-join="data-join" className="footer">
+    <footer data-r-c="data-r-c" data-join="data-join" className="footer" >
       <c1-1>
         <ul className="menu-links">
           <li>
@@ -232,7 +233,7 @@ class App extends Component {
         </ul>
         <p>
           <small>Made with
-            <a href="https://matthewjamestaylor.com/responsive-columns" target="_blank" rel="noopener">Responsive Columns</a>.</small>
+            <a href="https://matthewjamestaylor.com/responsive-columns" target="_blank" rel="noopener"> Responsive Columns</a>.</small>
         </p>
       </c1-1>
     </footer>
