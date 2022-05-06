@@ -94,15 +94,21 @@ function DatabaseServer(app) {
   TripService.on("newTrip", (data) => {
     // TODO: Handle adding a trip to the database
     // Triggers when request a ride button is pressed by rider
-    //console.log("newTrip data:");
-    //console.log(data);
+    console.log("newTrip data:");
+    console.log(data);
+    const newTrip = new Trip(data)
+    newTrip.save()
   });
 
   TripService.on("driverRiderMatchedTrip", (data) => {
     // TODO: Handle adding a trip to the database
     // Triggers when driver and rider are matched successfully
-    //console.log("driverRiderMatchedTrip data:");
-    //console.log(data);
+    console.log("driverRiderMatchedTrip data:");
+    console.log(data)
+    const query = {tripId: data.tripId}
+    Trip.findOneAndUpdate(query, data, (err, match) => { // finds and executes the update
+      //console.log(match)
+    })
   });
 
   TripService.on("completeTrip", (data) => {

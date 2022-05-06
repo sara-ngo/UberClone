@@ -651,7 +651,7 @@ const MapServer = (webSocketServer_) => {
         // get user info
         let userInfo = await UserUtils.getUserInfoByTokenId(userObjRef.token);
         if (userInfo) {
-          userObjRef.userId = userInfo._id;
+          userObjRef.userId = userInfo.id;
           userObjRef.firstName = userInfo.firstName;
           userObjRef.lastName = userInfo.lastName;
           userObjRef.email = userInfo.email;
