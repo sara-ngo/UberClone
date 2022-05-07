@@ -22,17 +22,16 @@ async function connectedUserLoop() {
   while (connectedUserLoopFlag) {
     await sleep(Constants.userCheckDisconnectMS);
     // Remove disconnected users
-    for (let [key, value] of userMap) {
-      removeUserIfDisconnected(key);
+    for (let [socketId, userObjRef] of userMap) {
+      removeUserIfDisconnected(socketId);
     }
-    //console.log("userMap:", userMap);
+    //console.log("[TripServer] userMap:", userMap);
   }
 }
 
 function newUserIfNotExist(socketId) {
   var userObjRef = userMap.get(socketId);
   if (!userObjRef) {
-    console.log("New User:", socketId);
     userMap.set(socketId, {
       "tripMatching": false,
       "tripDoing": false,
@@ -40,11 +39,12 @@ function newUserIfNotExist(socketId) {
       "socketId": socketId,
       "timeCreated": Date.now()
     });
+    console.log("[TripServer] User Added:", socketId);
   }
 }
 
 function removeUserIfDisconnected(socketId) {
-  // console.log("attempt to remove", socketId);
+  // console.log("[TripServer] attempt to remove", socketId);
   var userObjRef = userMap.get(socketId);
   var deleteFlag = false;
   if (userObjRef === undefined || !userObjRef) {
@@ -81,7 +81,7 @@ async function requestRide(riderSocketId, requestData) {
   }
   // Checking to see if user exists
   if (!riderObjRef) {
-    console.log("SERVER ERROR: Rider does not exist!");
+    console.log("[TripServer] SERVER ERROR: Rider does not exist!");
     console.log(riderObjRef);
     let riderData = {};
     riderData.message = "SERVER ERROR: Rider does not exist!"
@@ -155,7 +155,7 @@ function requestRideCancel(riderSocketId) {
   riderData.timestamp = Date.now();
   riderData.socketId = riderSocketId;
   webSocketServer.to(riderSocketId).emit('requestRideStop', riderData);
-  console.log(riderSocketId + "(" + riderObjRef.firstName + ") ride request cancelled!");
+  console.log("[TripServer]" + riderSocketId + "(" + riderObjRef.firstName + ") ride request cancelled!");
 };
 
 function userStopTripTryClearTrip(userSocketId) {
@@ -465,7 +465,7 @@ async function togetherTrip(tripId) {
     tripObjRef.completed = true;
     TripUtils.userStopTrip(riderObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
     TripUtils.userStopTrip(driverObjRef, riderSocketIdToTripMap, driverSocketIdToTripMap);
-    console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") completed a trip!");
+    console.log("[TripServer]" + driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") completed a trip!");
     // let them rate trip
     // both local only
     TripService.emit("completeTrip", tripObjRef);
@@ -578,7 +578,7 @@ function matchDriverToRiderDone(driverSocketId, tripId) {
   riderData.driverFirstName = driverObjRef.firstName;
   riderData.driverLastName = driverObjRef.lastName;
   webSocketServer.to(riderSocketId).emit('tripDriverToRiderBegin', riderData);
-  console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") matched!");
+  console.log("[TripServer]" + driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") matched!");
 }
 
 function tripDriverToRiderConfirmDone(driverSocketId) {
@@ -651,7 +651,7 @@ function tripDriverToRiderConfirmDone(driverSocketId) {
   riderData.endLong = tripObjRef.endLong;
   riderData.endLat = tripObjRef.endLat;
   webSocketServer.to(riderSocketId).emit('tripTogetherBegin', riderData);
-  console.log(driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") together!");
+  console.log("[TripServer]" + driverSocketId + "(" + driverObjRef.firstName + ") and " + riderSocketId + "(" + riderObjRef.firstName + ") together!");
 }
 
 function rateDone(socketId, tripId, data) {
@@ -691,7 +691,7 @@ function rateDone(socketId, tripId, data) {
   driverData.socketId = socketId;
   driverData.score = data.score;
   webSocketServer.to(socketId).emit('rateDone', driverData);
-  console.log(socketId + "(" + userObjRef.firstName + ") rated trip ID:", tripId, "with a score:", data.score);
+  console.log("[TripServer]" + socketId + "(" + userObjRef.firstName + ") rated trip ID:", tripId, "with a score:", data.score);
   TripService.emit("rateTrip", tripObjRef);
 }
 
@@ -710,20 +710,8 @@ const MapServer = (webSocketServer_) => {
     newUserIfNotExist(socket.id);
     // user object passed by reference
     var userObjRef = userMap.get(socket.id);
-    console.log("[MapServer] User Connected:");
-    console.log(userObjRef);
-
-    socket.on('request_target', () => {
-      webSocketServer.allSockets().then((result) => {
-        for (let item of result) {
-          if (item != socket.id) {
-            console.log('targets:', socket.id, item)
-            socket.emit('receive_target', item)
-            socket.to(item).emit('receive_target', socket.id)
-          }
-        }
-      })
-    })
+    // console.log("[TripServer] User Connected:");
+    // console.log(userObjRef);
 
     socket.on('positionUpdate', async (data) => {
       newUserIfNotExist(socket.id);
@@ -755,8 +743,11 @@ const MapServer = (webSocketServer_) => {
           userObjRef.email = userInfo.email;
         }
       }
-      // console.log("position update from:", socket.id, "at", data.timestamp)
-      webSocketServer.sockets.emit('positionData', data);
+      // console.log("[TripServer]  position update from:", socket.id, "at", data.timestamp)
+      let socketIdArray = TripUtils.getAllUserSockets(userMap)
+      for (let socketId of socketIdArray) {
+        webSocketServer.to(socketId).emit('positionData', data);
+      }
     })
 
     socket.on('requestRide', (data) => {
@@ -811,11 +802,11 @@ const MapServer = (webSocketServer_) => {
     socket.on('requestRideDone', (data) => {
       let driverSocketId = socket.id;
       if (data === undefined) {
-        console.log("requestRideDone ERROR no data");
+        console.log("[TripServer] requestRideDone ERROR no data");
         return;
       }
       if (data.tripId === undefined) {
-        console.log("requestRideDone ERROR no tripId");
+        console.log("[TripServer] requestRideDone ERROR no tripId");
         return;
       }
       let tripId = data.tripId;
@@ -829,11 +820,11 @@ const MapServer = (webSocketServer_) => {
 
     socket.on('rateDone', (data) => {
       if (data === undefined) {
-        console.log("rateDone ERROR no data");
+        console.log("[TripServer] rateDone ERROR no data");
         return;
       }
       if (data.tripId === undefined) {
-        console.log("rateDone ERROR no tripId");
+        console.log("[TripServer] rateDone ERROR no tripId");
         return;
       }
       rateDone(socket.id, data.tripId, data);

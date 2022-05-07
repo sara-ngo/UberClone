@@ -120,6 +120,16 @@ class App {
   static generateRandomDecimal(min, max) {
     return Math.random() * (max - min) + min;
   };
+
+  static getAllUserSockets(userMap){
+    let socketIdArray = [];
+    for (let [socketId, userObjRef] of userMap) {
+      if(userObjRef.isActive === true){
+        socketIdArray.push(socketId);
+      }
+    }
+    return socketIdArray;
+  }
 }
 
 export default App;
