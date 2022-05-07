@@ -3,14 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mapbox/mapbox-gl-geocoder": "^5.0.0",
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.4",
-    "@testing-library/user-event": "^13.5.0",
-    "@turf/turf": "^6.5.0",
-    "@mui/material": "^5.6.3",
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
     "axios": "^0.26.1",
     "eventemitter3": "^4.0.7",
     "mapbox-gl": "2.8.1",
@@ -23,7 +15,15 @@
     "react-scripts": "^5.0.0",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "@mapbox/mapbox-gl-geocoder": "^5.0.0",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/user-event": "^13.5.0",
+    "@turf/turf": "^6.5.0",
+    "@mui/material": "^5.6.3",
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1"
   },
   "engines": {
     "node": "16.13.2",
