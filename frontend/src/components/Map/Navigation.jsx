@@ -8,8 +8,8 @@ async function setRoute(mapboxObj, data) {
   if (!data.routeId) {
     return false;
   }
-  const query = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${data.startLong},${data.startLat};${data.endLong},${data.endLat}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`, {method: "GET"});
-  const json = await query.json();
+  const response = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${data.startLong},${data.startLat};${data.endLong},${data.endLat}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`, {method: "GET"});
+  const json = await response.json();
   if (!json.routes) {
     return false;
   }
