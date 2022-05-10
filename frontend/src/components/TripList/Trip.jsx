@@ -2,6 +2,7 @@ import StarRating from "../StarRating/StarRating"
 import { useEffect, useState } from "react"
 import axios from "axios";
 import { FaStar } from "react-icons/fa";
+import * as Constants from "../../constants.js"
 
 const Trip = ({ trip, other, otherRating, otherID, wasRider }) => {
    const [ratingVisible, setRatingVisible] = useState(false);
@@ -15,7 +16,7 @@ const Trip = ({ trip, other, otherRating, otherID, wasRider }) => {
   const tripInfo = (wasRider) ? `${other} drove you` : `You drove ${other}`
 
   const rateUser = (newRating) => {
-    axios.post('http://localhost:5000/rate', {
+    axios.post(Constants.AUTHENTICATION_SERVER + "/rate", {
       wasRider: wasRider,
       userID: otherID,
       tripID: trip._id,
