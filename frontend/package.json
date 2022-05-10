@@ -3,6 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^5.0.0",
+    "@mapbox/eslint-config-mapbox": "^3.0.0",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/user-event": "^13.5.0",
+    "@turf/turf": "^6.5.0",
+    "@mui/material": "^5.6.3",
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
     "axios": "^0.26.1",
     "eventemitter3": "^4.0.7",
     "mapbox-gl": "2.8.1",
@@ -16,18 +25,8 @@
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1",
     "web-vitals": "^2.1.4",
-    "@mapbox/mapbox-gl-geocoder": "^5.0.0",
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.4",
-    "@testing-library/user-event": "^13.5.0",
-    "@turf/turf": "^6.5.0",
-    "@mui/material": "^5.6.3",
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1"
-  },
-  "engines": {
-    "node": "16.13.2",
-    "npm": "8.1.2"
+    "eslint": "^8.15.0",
+    "eslint-plugin-node": "^11.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -45,12 +44,25 @@
     "production": [
       ">0.2%",
       "not dead",
-      "not op_mini all"
+      "not ie 11",
+      "not chrome < 51",
+      "not safari < 10",
+      "not android < 51"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      ">0.2%",
+      "not dead",
+      "not ie 11",
+      "not chrome < 51",
+      "not safari < 10",
+      "not android < 51"
     ]
+  },
+  "use": {
+    "loader": "babel-loader",
+    "options": {
+      "presets": ["my-custom-babel-preset"],
+      "ignore": ["./node_modules/mapbox-gl/dist/mapbox-gl.js"]
+    }
   }
 }
