@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "^5.0.0",
+    "@mapbox/eslint-config-mapbox": "^3.0.0",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
@@ -23,11 +24,9 @@
     "react-scripts": "^5.0.0",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1",
-    "web-vitals": "^2.1.4"
-  },
-  "engines": {
-    "node": "16.13.2",
-    "npm": "8.1.2"
+    "web-vitals": "^2.1.4",
+    "eslint": "^8.15.0",
+    "eslint-plugin-node": "^11.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -45,12 +44,25 @@
     "production": [
       ">0.2%",
       "not dead",
-      "not op_mini all"
+      "not ie 11",
+      "not chrome < 51",
+      "not safari < 10",
+      "not android < 51"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      ">0.2%",
+      "not dead",
+      "not ie 11",
+      "not chrome < 51",
+      "not safari < 10",
+      "not android < 51"
     ]
+  },
+  "use": {
+    "loader": "babel-loader",
+    "options": {
+      "presets": ["my-custom-babel-preset"],
+      "ignore": ["./node_modules/mapbox-gl/dist/mapbox-gl.js"]
+    }
   }
 }
