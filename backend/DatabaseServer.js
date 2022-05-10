@@ -6,7 +6,7 @@ import TripService from './components/TripService/emitter.js';
 
 function DatabaseServer(app) {
   // routes
-  app.post('/rate', function(request, response) {
+  app.post('/rate', function (request, response) {
     const id = request.body.otherID
     const tripID = request.body.tripID
     const rating = request.body.rating
@@ -45,7 +45,7 @@ function DatabaseServer(app) {
     })
   })
 
-  app.post('/user', function(req, res) {
+  app.post('/user', function (req, res) {
     const id = req.body.data
     User.findById(id, (err, data) => {
       res.send({
@@ -54,7 +54,7 @@ function DatabaseServer(app) {
     })
   })
 
-  app.post('/trip', function(req, res) {
+  app.post('/trip', function (req, res) {
     const id = req.body.data
     Trip.findById(id, (err, data) => {
       res.send({
@@ -95,14 +95,41 @@ function DatabaseServer(app) {
     // TODO: Handle adding a trip to the database
     // Triggers when request a ride button is pressed by rider
     //console.log("newTrip data:");
-    //console.log(data);
+    // console.log(data);
+    const newTrip = new Trip(data)
+
+    User.findById(data.riderId, (err, user) => {
+      if (user) {
+        user.trips = [
+          ...user.trips,
+          newTrip.id,
+        ]
+        user.save()
+        newTrip.save() // save the trip on valid user
+      }
+    })
+
   });
 
   TripService.on("driverRiderMatchedTrip", (data) => {
     // TODO: Handle adding a trip to the database
     // Triggers when driver and rider are matched successfully
     //console.log("driverRiderMatchedTrip data:");
-    //console.log(data);
+    console.log(data)
+    const query = { tripId: data.tripId }
+    // Add the entry for the driver trip
+    User.findById(data.driverId, (err, user) => {
+      if (user) {
+        user.trips = [
+          ...user.trips,
+          newTrip.id,
+        ]
+        user.save()
+      }
+    })
+    Trip.findOneAndUpdate(query, data, (err, match) => { // finds and executes the update
+      //console.log(match)
+    })
   });
 
   TripService.on("completeTrip", (data) => {
@@ -110,6 +137,10 @@ function DatabaseServer(app) {
     // Triggers when the trip is completed successfully
     //console.log("completeTrip data:");
     //console.log(data);
+    const query = { tripId: data.tripId }
+    Trip.findOneAndUpdate(query, data, (err, match) => { // finds and executes the update
+      //console.log(match)
+    })
   });
 
   TripService.on("rateTrip", (data) => {
@@ -117,6 +148,10 @@ function DatabaseServer(app) {
     // Triggers when either the driver or rider rate the trip
     //console.log("rateTrip data:");
     //console.log(data);
+    const query = { tripId: data.tripId }
+    Trip.findOneAndUpdate(query, data, (err, match) => { // finds and executes the update
+      //console.log(match)
+    })
   });
 }
 export default DatabaseServer;
