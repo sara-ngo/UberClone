@@ -13,6 +13,20 @@ We also have a database to store users ride-sharing history and their ratings.
 
 ![image](https://user-images.githubusercontent.com/69872401/168938995-a13b27b5-8c1c-4c61-896e-c5f0e384d5f5.png)
 
+Build with:
+* MongoDB
+* Express
+* React
+* Node
+* Heroku
+
+## Team members:
+* Alan Kashiwagi
+* Branden Lee
+* Ngan Nguyen 
+* Sara Ngo
+* Shaoyue Liu
+
 ## Quick start
 Start the node server using: nodemon server
 
