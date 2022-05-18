@@ -52,7 +52,7 @@ npm install
 npm start
 ```
 
-### Production server
+### Production server (this will generate AI riders and drivers)
 Go to frontend/constants.js and change the variables:
 ```node
 export const AUTHENTICATION_SERVER = "https://uberclonecs160.herokuapp.com";
